@@ -21,29 +21,29 @@
     <ImageView
         android:id="@+id/logo_husq-1"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/guide_hori_35"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo_husq_2"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@id/guide_hori_35"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guide_hori_35"
-        android:scaleType="center"
-        android:adjustViewBounds="true"
-        android:background="@drawable/logo-husqvarna-1" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/bntDrive"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:text="Drive"
+        android:textSize="20sp"
+        android:textColor="@color/colorWhite"
         android:background="@drawable/custom_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/guide_hori_70" />
+        app:layout_constraintTop_toTopOf="@id/guide_hori_60" />
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guide_hori_70"
-        app:layout_constraintGuide_percent="0.7"
+        android:id="@+id/guide_hori_60"
+        app:layout_constraintGuide_percent="0.6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal" />
