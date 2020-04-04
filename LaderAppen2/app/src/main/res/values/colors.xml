@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="la_colorPrimary">#273A60</color>
-    <color name="la_colorPrimaryLight">#54648E</color>
-    <color name="la_colorPrimaryDark">#001536</color>
-    <color name="la_colorSecondary">#FCD734</color>
-    <color name="la_colorSecondaryLight">#FFFF6B</color>
-    <color name="la_colorSecondaryDark">#C5A600</color>
-    <color name="la_colorPrimaryText">#FFFFFF</color>
-    <color name="la_colorSecondaryText">#000000</color>
+    -->
+    <color name="colorPrimary">#273A60</color>
+    <color name="colorPrimaryLight">#54648E</color>
+    <color name="colorPrimaryDark">#001536</color>
+    <color name="colorSecondary">#FCD734</color>
+    <color name="colorSecondaryLight">#FFFF6B</color>
+    <color name="colorSecondaryDark">#C5A600</color>
+    <color name="colorPrimaryText">#FFFFFF</color>
+    <color name="colorSecondaryText">#000000</color>
+
+
+    <!-- POSSIBLE ACCENT COLORS (BASED ON MATERIAL DESIGN)-->
+    <!-- OBS IF USED MAYBE THE YELLOW ONES SHOULD GO-->
+    <!--
+    COMPLEMENTARY:
+    <color name="colorBrown">#604d27</color>
+    <color name="colorBrownLight">#d8cbb5</color>
+
+    ANALOGOUS:
+    <color name="colorTeal">#275760</color>
+    <color name="colorTealLight">#b6e6f6</color>
+    <color name="colorViolet">#312760</color>
+    <color name="colorVioletLight">#c8cae1</color>
+
+    TRIADIC:
+    <color name="colorPurple">#4d2760</color>
+    <color name="colorPurpleLight">#dec1dc</color>
+    <color name="colorPinkDark">#60273a</color>
+    <color name="colorPink">#ecbac6</color>
+     -->
 </resources>

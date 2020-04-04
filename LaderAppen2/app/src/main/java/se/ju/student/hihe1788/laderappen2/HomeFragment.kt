@@ -1,9 +1,7 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 
 class HomeFragment: Fragment() {
@@ -12,6 +10,7 @@ class HomeFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.home_fragment, container, false)
     }
 
@@ -19,5 +18,9 @@ class HomeFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //DO STUFF THAT WE WANT TO DO HERE :D
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
     }
 }

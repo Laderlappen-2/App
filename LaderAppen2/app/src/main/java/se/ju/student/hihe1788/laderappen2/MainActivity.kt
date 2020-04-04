@@ -1,29 +1,58 @@
 package se.ju.student.hihe1788.laderappen2
+
+import android.content.res.Resources
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.findNavController
+import androidx.navigation.ui.*
+import com.google.android.material.navigation.NavigationView
 
 public class MainActivity : AppCompatActivity() {
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         val host: NavHostFragment = supportFragmentManager
-            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
+            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?:return
 
         val navController : NavController = host.navController
+        appBarConfiguration = AppBarConfiguration(navController.graph)
 
+        setupActionBar(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
+
+    }
+
+    private fun setupActionBar(navController: NavController, appBarconfig: AppBarConfiguration) {
+        setupActionBarWithNavController(navController, appBarconfig)
     }
 
     private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav: BottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav?.setupWithNavController(navController)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(findNavController(R.id.my_nav_host_fragment))
+                || super.onOptionsItemSelected(item)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
     }
 }
