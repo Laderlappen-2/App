@@ -7,19 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
 class RoutesFragment: Fragment() {
-    private var theView: View? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (theView == null) {
-            //val view = inflater.inflate(R.layout.fragment_routes, container, false)
+        return inflater.inflate(R.layout.routes_fragment, container, false)
+    }
 
-            //theView = view
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        return theView
+        //DO STUFF THAT WE WANT TO DO HERE :D
     }
 }

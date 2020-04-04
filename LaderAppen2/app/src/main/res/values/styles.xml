@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LaderAppenTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/la_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/la_colorPrimaryDark</item>
+        <item name="colorAccent">@color/la_colorSecondary</item>
+    </style>
 </resources>

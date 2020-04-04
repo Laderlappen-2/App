@@ -3,35 +3,27 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 public class MainActivity : AppCompatActivity() {
 
-    private lateinit var bottomNavigation: BottomNavigationView
-    private val onNavItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when (item.itemId) {
-            R.id.naviation_settings -> {
-                return@OnNavigationItemSelectedListener true
-            }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.navigation_activity)
 
-            R.id.navigation_home -> {
-                return@OnNavigationItemSelectedListener true
-            }
+        val host: NavHostFragment = supportFragmentManager
+            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
 
-            R.id.navigation_routes -> {
-                return@OnNavigationItemSelectedListener true
-            }
-        }
-        false
+        val navController : NavController = host.navController
+
+        setupBottomNavMenu(navController)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        setContentView(R.layout.activity_main)
-
-        bottomNavigation = findViewById(R.id.bottom_navigation)
-        bottomNavigation.setOnNavigationItemSelectedListener(onNavItemSelectedListener)
-
-
+    private fun setupBottomNavMenu(navController: NavController) {
+        val bottomNav: BottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        bottomNav?.setupWithNavController(navController)
     }
 }
