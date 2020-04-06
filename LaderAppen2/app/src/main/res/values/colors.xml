@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <!--
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
@@ -34,4 +35,36 @@
     <color name="colorPinkDark">#60273a</color>
     <color name="colorPink">#ecbac6</color>
      -->
+=======
+    <color name="colorYellow">#e3b200</color>
+    <color name="colorNavyDark">#0a004d</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorBlack2"></color>
+    <color name="colorWhite">#ffffff</color>
+
+    <color name="colorBlackOpa05">#0D000000</color>
+    <color name="colorBlackOpa10">#1A000000</color>
+    <color name="colorBlackOpa15">#26000000</color>
+    <color name="colorBlackOpa20">#33000000</color>
+    <color name="colorBlackOpa30">#4D000000</color>
+    <color name="colorBlackOpa40">#66000000</color>
+    <color name="colorBlackOpa50">#80000000</color>
+    <color name="colorBlackOpa60">#99000000</color>
+    <color name="colorBlackOpa70">#B3000000</color>
+    <color name="colorBlackOpa80">#CC000000</color>
+    <color name="colorBlackOpa90">#E6000000</color>
+
+    <color name="colorWhiteOpa05">#0DFFFFFF</color>
+    <color name="colorWhiteOpa10">#1AFFFFFF</color>
+    <color name="colorWhiteOpa15">#26FFFFFF</color>
+    <color name="colorWhiteOpa20">#33FFFFFF</color>
+    <color name="colorWhiteOpa30">#4DFFFFFF</color>
+    <color name="colorWhiteOpa40">#66FFFFFF</color>
+    <color name="colorWhiteOpa50">#80FFFFFF</color>
+    <color name="colorWhiteOpa60">#99FFFFFF</color>
+    <color name="colorWhiteOpa70">#B3FFFFFF</color>
+    <color name="colorWhiteOpa80">#CCFFFFFF</color>
+    <color name="colorWhiteOpa90">#E6FFFFFF</color>
+
+>>>>>>> layout/home
 </resources>
