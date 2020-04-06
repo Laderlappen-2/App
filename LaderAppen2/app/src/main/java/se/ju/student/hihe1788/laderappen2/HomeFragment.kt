@@ -19,10 +19,13 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //navigate to DriveFragment with no arguments, will probably change
-        view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener(
-            Navigation.createNavigateOnClickListener(R.id.next_action, null)
-        )
+        view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener {
+            if (!BluetoothHandler.isBluetoothEnabled()) {
+                //check if user wants to enable bluetooth
+                context?.let { it1 -> AlertDialog.acceptBtDialog(it1, "Bluetooth", "You need bluetooth for this.\nDo you want to activate bluetooth?") }
+            }
+            //navigate to DriveFragment
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
