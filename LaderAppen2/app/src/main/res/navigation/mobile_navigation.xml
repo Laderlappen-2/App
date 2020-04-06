@@ -10,7 +10,11 @@
         android:id="@+id/home_dest"
         android:name="se.ju.student.hihe1788.laderappen2.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home"/>
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/next_action"
+            app:destination="@id/driveFragment" />
+    </fragment>
     <fragment
         android:id="@+id/routes_dest"
         android:name="se.ju.student.hihe1788.laderappen2.RoutesFragment"
@@ -21,4 +25,9 @@
         android:name="se.ju.student.hihe1788.laderappen2.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="@layout/settings_fragment"/>
+    <fragment
+        android:id="@+id/driveFragment"
+        android:name="se.ju.student.hihe1788.laderappen2.DriveFragment"
+        android:label="DriveFragment"
+        tools:layout="@layout/drive_fragment"/>
 </navigation>

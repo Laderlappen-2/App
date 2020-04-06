@@ -7,4 +7,5 @@
     <string name="settings_text">Settings fragment</string>
     <string name="routes_text">Routes fragment</string>
     <string name="home_text">Home fragment</string>
+    <string name="drive_text">Drive fragment</string>
 </resources>
