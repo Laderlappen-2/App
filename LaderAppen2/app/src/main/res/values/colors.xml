@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<<<<<<< HEAD
     <!--
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
@@ -35,7 +34,7 @@
     <color name="colorPinkDark">#60273a</color>
     <color name="colorPink">#ecbac6</color>
      -->
-=======
+
     <color name="colorYellow">#e3b200</color>
     <color name="colorNavyDark">#0a004d</color>
     <color name="colorBlack">#000000</color>
