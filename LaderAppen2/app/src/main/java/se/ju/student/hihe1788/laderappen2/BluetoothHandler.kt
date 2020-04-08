@@ -1,26 +1,61 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothSocket
+import android.os.Handler
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 
-object BluetoothHandler {
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+const val MESSAGE_READ: Int = 0
+const val MESSAGE_WRITE: Int = 1
+const val MESSAGE_TOAST: Int = 2
 
-    fun isBluetoothEnabled(): Boolean {
-        if (bluetoothAdapter?.isEnabled == false) {
-            return false
+class BluetoothService(private val handler: Handler) {
+
+    // ConnectThread
+
+    private inner class ConnectedThread(private val socket: BluetoothSocket) : Thread() {
+
+        private val inStream: InputStream = socket.inputStream
+        private val outStream: OutputStream = socket.outputStream
+        private val buffer: ByteArray = ByteArray(1024)
+
+        override fun run() {
+            var numBytes: Int // Amount of bytes returned from read()
+
+            while(true) {
+                numBytes = try {
+                    inStream.read(buffer)
+                } catch (e: IOException) {
+                    println("Unable to read from stream. Msg: $e")
+                    break
+                }
+
+                val readMsg = handler.obtainMessage(MESSAGE_READ, numBytes, -1, buffer)
+                readMsg.sendToTarget()
+
+            }
         }
-        return true
-    }
 
-    fun enableBluetooth() {
-        if (bluetoothAdapter == null) {
-            // device does not support Bluetooth -> send msg to user
+        fun write(bytes: ByteArray) {
+            try {
+                outStream.write(bytes)
+            } catch (e: IOException) {
+                println("Error occurred when sending data. Msg: $e")
+                /* TODO: Perhaps take care of these errors in a better way.*/
+                return
+            }
+
+            val writtenMsg = handler.obtainMessage(MESSAGE_WRITE, -1, -1, buffer)
+            writtenMsg.sendToTarget()
         }
 
-        if (bluetoothAdapter?.isEnabled == false) {
-            bluetoothAdapter.enable()
-        } else {
-            bluetoothAdapter?.disable()
+        fun cancel() {
+            try {
+                socket.close()
+            } catch (e: IOException) {
+                println("Could not close the connect socket. Msg: $e")
+            }
         }
     }
 }
