@@ -25,6 +25,7 @@ class SettingsFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.bluetooth_btn_on)?.setOnClickListener {
             if (!BluetoothHandler.isBluetoothEnabled()) {
                 BluetoothHandler.enableBluetooth()
+                //TODO STATE CHECKED
                 Toast.makeText(context, "Bluetooth enabled", Toast.LENGTH_SHORT).show()
             }
         }
@@ -32,6 +33,7 @@ class SettingsFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.bluetooth_btn_off)?.setOnClickListener {
             if (BluetoothHandler.isBluetoothEnabled()) {
                 BluetoothHandler.enableBluetooth()
+                //TODO STATE CHECKED
                 Toast.makeText(context, "Bluetooth disabled", Toast.LENGTH_SHORT).show()
             }
         }
