@@ -16,4 +16,11 @@ object Constants {
     // Key names received from the BluetoothService Handler
     val DEVICE_NAME = "device_name"
     val TOAST = "toast"
+
+    // Intent request codes
+    val REQUEST_CONNECT_DEVICE_SECURE = 1
+    val REQUEST_CONNECT_DEVICE_INSECURE = 2
+    val REQUEST_ENABLE_BT = 3
+
+
 }

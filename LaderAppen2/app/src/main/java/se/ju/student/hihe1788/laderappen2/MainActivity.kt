@@ -27,11 +27,18 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 public class MainActivity : AppCompatActivity() {
+
+    companion object {
+        lateinit var appContext: Context
+    }
+
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
+
+        appContext = applicationContext
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

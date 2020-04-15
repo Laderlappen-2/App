@@ -14,12 +14,13 @@ import java.util.UUID
 
 class BluetoothService(var mHandler: Handler, var context: Context) {
 
-    // Debugging
-    private val TAG = "BluetoothService"
     private val MY_UUID = UUID.fromString("d42ac549-9825-4b1d-b586-80757bed9788")
     private var mState = Constants.STATE_NONE
     private var mNewState = mState
-
+    private lateinit var mConnectThread: ConnectThread
+    private lateinit var mConnectedThread: ConnectedThread
+    private var isConnectThreadExisting = false
+    private var isConnectedThreadExisting = false
 
     @Synchronized
     fun getState(): Int {
@@ -28,15 +29,16 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
     @Synchronized
     fun connect(device: BluetoothDevice) {
+
         if (mState == Constants.STATE_CONNECTING) {
-            if (mConnectThread != null) {
+            if (isConnectThreadExisting) {
                 mConnectThread.cancel()
-                mConnectThread = null
+                isConnectThreadExisting = false
             }
         }
-        if (mConnectedThread != null) {
+        if (isConnectedThreadExisting) {
             mConnectedThread.cancel()
-            mConnectedThread = null
+            isConnectedThreadExisting = false
         }
 
         mConnectThread = ConnectThread(device)
@@ -48,14 +50,14 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
     @Synchronized
     fun connected(socket: BluetoothSocket, device: BluetoothDevice) {
 
-        if (mConnectThread != null) {
+        if (isConnectThreadExisting) {
             mConnectThread.cancel()
-            mConnectThread = null
+            isConnectThreadExisting = false
         }
 
-        if (mConnectedThread != null) {
+        if (isConnectedThreadExisting) {
             mConnectedThread.cancel()
-            mConnectedThread = null
+            isConnectedThreadExisting = false
         }
 
         mConnectedThread = ConnectedThread(socket)
@@ -71,14 +73,14 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
     @Synchronized
     fun stop() {
-        if (mConnectThread != null) {
+        if (isConnectThreadExisting) {
             mConnectThread.cancel()
-            mConnectThread = null
+            isConnectThreadExisting = false
         }
 
-        if (mConnectedThread != null) {
+        if (isConnectedThreadExisting) {
             mConnectedThread.cancel()
-            mConnectedThread = null
+            isConnectedThreadExisting = false
         }
 
         mState = Constants.STATE_NONE
@@ -107,10 +109,10 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
     }
 
-    // ConnectThread
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         val mmDevice: BluetoothDevice
         init {
+            isConnectThreadExisting = true
             mState = Constants.STATE_CONNECTING
             mmDevice = device
         }
@@ -153,45 +155,57 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
     }
 
-    private inner class ConnectedThread(private val socket: BluetoothSocket) : Thread() {
+    private inner class ConnectedThread(private val mmSocket: BluetoothSocket) : Thread() {
 
-        private val inStream: InputStream = socket.inputStream
-        private val outStream: OutputStream = socket.outputStream
-        private val buffer: ByteArray = ByteArray(1024)
+        private lateinit var mmInStream: InputStream
+        private lateinit var mmOutStream: OutputStream
+
+        init {
+            isConnectedThreadExisting = true
+
+            try {
+                mmInStream = mmSocket.inputStream
+                mmOutStream = mmSocket.outputStream
+
+          } catch (e: IOException) {
+                println("ConnectedThreadSockets not created. Msg: $e")
+            }
+
+            mState = Constants.STATE_CONNECTED
+        }
 
         override fun run() {
+            val buffer = ByteArray(1024)
             var numBytes: Int // Amount of bytes returned from read()
 
-            while(true) {
-                numBytes = try {
-                    inStream.read(buffer)
+            while(mState == Constants.STATE_CONNECTED) {
+                try {
+                    numBytes = mmInStream.read(buffer)
+                    mHandler.obtainMessage(Constants.MESSAGE_READ, numBytes, -1, buffer)
+                        .sendToTarget()
                 } catch (e: IOException) {
                     println("Unable to read from stream. Msg: $e")
+                    connectionFail("connection lost")
                     break
                 }
-
-                val readMsg = handler.obtainMessage(MESSAGE_READ, numBytes, -1, buffer)
-                readMsg.sendToTarget()
-
             }
         }
 
         fun write(bytes: ByteArray) {
             try {
-                outStream.write(bytes)
+                mmOutStream.write(bytes)
+
+                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, bytes)
+                    .sendToTarget()
             } catch (e: IOException) {
                 println("Error occurred when sending data. Msg: $e")
                 /* TODO: Perhaps take care of these errors in a better way.*/
-                return
             }
-
-            val writtenMsg = handler.obtainMessage(MESSAGE_WRITE, -1, -1, buffer)
-            writtenMsg.sendToTarget()
         }
 
         fun cancel() {
             try {
-                socket.close()
+                mmSocket.close()
             } catch (e: IOException) {
                 println("Could not close the connect socket. Msg: $e")
             }
