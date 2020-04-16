@@ -31,8 +31,34 @@ public class MainActivity : AppCompatActivity() {
     companion object {
         lateinit var appContext: Context
     }
-
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val mBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val action = intent?.action
+
+            when (action) {
+                Constants.ACTION_STATE_CONNECTING -> {
+                    //loading screen??
+                }
+                Constants.ACTION_STATE_CONNECTED ->
+                    MowerModel.isConnected = true
+
+                Constants.ACTION_STATE_LISTEN ->
+                    MowerModel.isConnected = false
+
+                Constants.ACTION_STATE_NONE ->
+                    MowerModel.isConnected = false
+
+                Constants.ACTION_MSG_RECEIVED -> {
+                    // save to activeRoute( when a route is finished driveFragment sends to backend)
+                }
+                Constants.ACTION_ALERT -> {
+                    AlertDialog.createSimpleDialog(appContext, intent.getStringExtra("message"),
+                        "${intent.getStringExtra("message")}. Try again")
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,29 +71,30 @@ public class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         val host: NavHostFragment = supportFragmentManager
-            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?:return
+            .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?: return
 
-        val navController : NavController = host.navController
+        val navController: NavController = host.navController
         appBarConfiguration = AppBarConfiguration(navController.graph)
 
         setupActionBar(navController, appBarConfiguration)
         setupBottomNavMenu(navController)
 
-
+        setupBroadcastReceiver()
     }
 
     override fun onDestroy() {
         super.onDestroy()
     }
 
-    /*---------------------[  SET UP VIEWS AND NAVIGATION  ]-----------------------------*/
+    // region SET UP VIEWS AND NAVIGATION
 
     private fun setupActionBar(navController: NavController, appBarconfig: AppBarConfiguration) {
         setupActionBarWithNavController(navController, appBarconfig)
     }
 
     private fun setupBottomNavMenu(navController: NavController) {
-        val bottomNav: BottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+        val bottomNav: BottomNavigationView =
+            findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav?.setupWithNavController(navController)
     }
 
@@ -79,5 +106,22 @@ public class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
     }
+
+    //endregion
+
+    // region INITIALIZE BROADCAST RECEIVER(S)
+    private fun setupBroadcastReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(Constants.ACTION_STATE_CONNECTING)
+        filter.addAction(Constants.ACTION_STATE_CONNECTED)
+        filter.addAction(Constants.ACTION_STATE_LISTEN)
+        filter.addAction(Constants.ACTION_STATE_NONE)
+        filter.addAction(Constants.ACTION_MSG_RECEIVED)
+        filter.addAction(Constants.ACTION_ALERT)
+
+        registerReceiver(mBroadcastReceiver, filter)
+    }
+
+    // endregion
 
 }

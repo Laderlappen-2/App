@@ -70,7 +70,7 @@ android:layout_height="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="30dp"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_bluetooth_selector"
             android:src="@drawable/ic_bluetooth_black_24dp"
             android:layout_toLeftOf="@id/bluetooth_btn_off"/>
 
@@ -79,7 +79,7 @@ android:layout_height="match_parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_bluetooth_selector"
             android:src="@drawable/ic_bluetooth_disabled_black_24dp"
             android:layout_alignParentEnd="true"/>
     </RelativeLayout>
@@ -109,7 +109,7 @@ android:layout_height="match_parent"
             android:layout_height="wrap_content"
             android:text="L"
             android:layout_marginEnd="30dp"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_steering_selector"
             android:layout_toLeftOf="@id/steering_btn_one"/>
 
         <ImageButton
@@ -118,7 +118,7 @@ android:layout_height="match_parent"
             android:layout_height="wrap_content"
             android:text="O"
             android:layout_marginEnd="30dp"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_steering_selector"
             android:layout_toLeftOf="@id/steering_btn_right"/>
 
         <ImageButton
@@ -126,7 +126,7 @@ android:layout_height="match_parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="R"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_steering_selector"
             android:layout_alignParentEnd="true"/>
     </RelativeLayout>
     
@@ -164,12 +164,12 @@ android:layout_height="match_parent"
                 android:layout_alignParentStart="true"/>
 
             <ImageButton
+                android:id="@+id/device_connected"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_check_white_24dp"
-                android:background="@drawable/button_settings"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"/>
+                android:background="@drawable/button_connect_selector"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -186,8 +186,7 @@ android:layout_height="match_parent"
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_autorenew_black_24dp"
-                android:background="@drawable/button_settings"
+                android:background="@drawable/button_connect_selector"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"/>
         </RelativeLayout>
@@ -195,14 +194,10 @@ android:layout_height="match_parent"
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_black_24dp"
-            android:background="@drawable/button_settings"
+            android:background="@drawable/button_add_device_selector"
             android:layout_marginTop="15dp"/>
 
     </LinearLayout>
-
-
-
 
 
     <androidx.constraintlayout.widget.Guideline

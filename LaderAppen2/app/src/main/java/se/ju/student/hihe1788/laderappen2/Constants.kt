@@ -22,5 +22,13 @@ object Constants {
     val REQUEST_CONNECT_DEVICE_INSECURE = 2
     val REQUEST_ENABLE_BT = 3
 
+    // ACTION INTENTS
+    val ACTION_STATE_NONE = "0"
+    val ACTION_STATE_LISTEN = "1"
+    val ACTION_STATE_CONNECTING = "2"
+    val ACTION_STATE_CONNECTED = "3"
 
+    val ACTION_ALERT = "4"
+
+    val ACTION_MSG_RECEIVED = "5"
 }

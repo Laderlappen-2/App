@@ -2,7 +2,6 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.DialogInterface.OnClickListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 object AlertDialog {
@@ -20,7 +19,8 @@ object AlertDialog {
             .setTitle(title)
             .setMessage(message)
             .setPositiveButton("Yes", DialogInterface.OnClickListener { dialog, id ->
-                BluetoothHandler.enableBluetooth()
+                BluetoothHandler.toggleBluetooth()
+
             })
             .setNegativeButton("No",null)
             .show()
