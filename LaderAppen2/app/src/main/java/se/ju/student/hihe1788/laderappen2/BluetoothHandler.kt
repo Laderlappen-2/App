@@ -2,6 +2,7 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Handler
 import android.os.Message
@@ -9,6 +10,7 @@ import android.os.Message
 object BluetoothHandler {
     val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var mBluetoothService: BluetoothService
+    private lateinit var mDevice: BluetoothDevice
 
     private var mHandler = @SuppressLint("HandlerLeak")
     object: Handler() {
@@ -48,10 +50,6 @@ object BluetoothHandler {
                     intent.action = Constants.ACTION_MSG_RECEIVED
                     intent.putExtra("message", data)
                 }
-                Constants.MESSAGE_DEVICE_NAME -> {
-                    /* Save the connected device's name */
-                    println("We have the connected device's name")
-                }
                 Constants.MESSAGE_TOAST -> {
                     /* Receives e.g Connection failed/lost. */
                     val m = msg.data.getString(Constants.TOAST)
@@ -88,10 +86,14 @@ object BluetoothHandler {
     }
 
     fun connectDevice() {
-        val device = mBluetoothAdapter.getRemoteDevice(MowerModel.address)
-        mBluetoothService = BluetoothService(mHandler, MainActivity.appContext)
+        mDevice = mBluetoothAdapter.getRemoteDevice(MowerModel.address)
+        mBluetoothService = BluetoothService(mHandler)
 
-        mBluetoothService.connect(device)
+        mBluetoothService.connect(mDevice)
+    }
+
+    fun disconnectDevice() {
+        mBluetoothService.stop()
     }
 
     fun sendMsg(bytes: ByteArray) {

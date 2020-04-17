@@ -2,21 +2,17 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
-import android.content.Context
 import android.os.Bundle
-
 import android.os.Handler
-import android.os.Message
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
-class BluetoothService(var mHandler: Handler, var context: Context) {
+class BluetoothService(var mHandler: Handler) {
 
     private val MY_UUID = UUID.fromString("d42ac549-9825-4b1d-b586-80757bed9788")
     private var mState = Constants.STATE_NONE
-    private var mNewState = mState
     private lateinit var mConnectThread: ConnectThread
     private lateinit var mConnectedThread: ConnectedThread
     private var isConnectThreadExisting = false
@@ -25,6 +21,13 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
     @Synchronized
     fun getState(): Int {
         return mState
+    }
+
+    @Synchronized
+    private fun setState(state: Int) {
+        mState = state
+        mHandler.obtainMessage(mState)
+            .sendToTarget()
     }
 
     @Synchronized
@@ -43,12 +46,10 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
         mConnectThread = ConnectThread(device)
         mConnectThread.start()
-
-        // TODO Update UI in some elegant way
     }
 
     @Synchronized
-    fun connected(socket: BluetoothSocket, device: BluetoothDevice) {
+    fun connected(socket: BluetoothSocket) {
 
         if (isConnectThreadExisting) {
             mConnectThread.cancel()
@@ -62,13 +63,6 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
 
         mConnectedThread = ConnectedThread(socket)
         mConnectedThread.start()
-
-
-        val msg = mHandler.obtainMessage(Constants.MESSAGE_DEVICE_NAME)
-        val bundle = Bundle()
-        bundle.putString(Constants.DEVICE_NAME, device.name)
-        msg.data = bundle
-        mHandler.sendMessage(msg)
     }
 
     @Synchronized
@@ -83,9 +77,7 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
             isConnectedThreadExisting = false
         }
 
-        mState = Constants.STATE_NONE
-
-        // TODO Indicate to user that we are not connected anymore
+        setState(Constants.STATE_NONE)
     }
 
     fun write(out: ByteArray) {
@@ -105,15 +97,14 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
         msg.data = bundle
         mHandler.sendMessage(msg)
 
-        mState = Constants.STATE_NONE
-
+        setState(Constants.STATE_NONE)
     }
 
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
         val mmDevice: BluetoothDevice
         init {
             isConnectThreadExisting = true
-            mState = Constants.STATE_CONNECTING
+            setState(Constants.STATE_CONNECTING)
             mmDevice = device
         }
 
@@ -138,10 +129,7 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
                     connectionFail("Unable to connect to socket from ConnectThread")
                     return
                 }
-                // Maybe set mConnectThread = null.
-
-                // Start the connected thread
-                connected(socket, mmDevice)
+                connected(socket)
             }
         }
 
@@ -171,7 +159,7 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
                 println("ConnectedThreadSockets not created. Msg: $e")
             }
 
-            mState = Constants.STATE_CONNECTED
+            setState(Constants.STATE_CONNECTED)
         }
 
         override fun run() {
@@ -199,7 +187,6 @@ class BluetoothService(var mHandler: Handler, var context: Context) {
                     .sendToTarget()
             } catch (e: IOException) {
                 println("Error occurred when sending data. Msg: $e")
-                /* TODO: Perhaps take care of these errors in a better way.*/
             }
         }
 

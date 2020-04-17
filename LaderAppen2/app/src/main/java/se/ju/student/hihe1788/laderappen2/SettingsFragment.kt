@@ -19,6 +19,7 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUI()
 
         view.findViewById<ImageButton>(R.id.bluetooth_btn_on)?.setOnClickListener {
 
@@ -40,20 +41,27 @@ class SettingsFragment : Fragment() {
         }
 
         view.findViewById<ImageButton>(R.id.device_connected)?.setOnClickListener {
-            /*
-            if (BluetoothHandler.isBluetoothEnabled()) {
-                BluetoothHandler.connectDevice()
-                // updateUI()? or state button
-            }*/
-            Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
-            it.isSelected = true
 
+        if (!MowerModel.isConnected && BluetoothHandler.isBluetoothEnabled()) {
+            BluetoothHandler.connectDevice()
+            it.isSelected = true
+        } else {
+            BluetoothHandler.disconnectDevice()
+            it.isSelected = false
+        }
+
+        Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onResume() {
         super.onResume()
+        setUI()
+    }
 
-        // TODO updateUI()
+    private fun setUI() {
+        if (MowerModel.isConnected) {
+            view?.findViewById<ImageButton>(R.id.device_connected)?.isSelected = true
+        }
     }
 }
