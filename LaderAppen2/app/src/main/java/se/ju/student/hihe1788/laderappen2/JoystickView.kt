@@ -2,19 +2,18 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.sqrt
 
 class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
 
-    private lateinit var mCanvasCenter: Point
-    private lateinit var mTopHatCenter: Point
-    private lateinit var mCanvas: Canvas
+    private lateinit var mCanvasCenter: Pixel
+    private lateinit var mTopHatCenter: Pixel
     private lateinit var mDirectionalRect: Rect
     private var mBoundsRadius = 0.0f
     private var mTopHatRadius = 0.0f
@@ -40,16 +39,16 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        mCanvasCenter = Point(w/2f, h/2f)
+        mCanvasCenter = Pixel(w/2f, h/2f)
         mBoundsRadius = w/2 * 0.95f             // Arbitrary value
 
         mTopHatCenter = mCanvasCenter
-        mTopHatRadius = mBoundsRadius * 0.3f    // Arbitrary value
+        mTopHatRadius = w/2 * 0.3f    // Arbitrary value
 
         mDirectionalRect = Rect((mCanvasCenter.x - 10).toInt(),
-                                ((mCanvasCenter.y - mBoundsRadius) * 0.8).toInt(),
+                                (mCanvasCenter.y - w/2 * 0.8f).toInt(),
                                 (mCanvasCenter.x + 10).toInt(),
-                                ((mCanvasCenter.y + mBoundsRadius) * 0.8).toInt())
+                                (mCanvasCenter.y + w/2 * 0.8f).toInt())
 
     }
     override fun onDraw(canvas: Canvas?) {
@@ -63,39 +62,61 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         }
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         var value = super.onTouchEvent(event)
 
-        // Calculate isInsideTopHat
-        // Calculate dist from topHat
-        // Calculate dist from CanvasCenter
+        val pressedPixel = Pixel(event.x, event.y)
+
+        // To know if inside bounds
+        val distToCanvasCenter = mCanvasCenter.getDistanceTo(pressedPixel)
+
+        // To know if inside topHat
+        val distToTopHatCenter = mTopHatCenter.getDistanceTo(pressedPixel)
 
         when(event?.action) {
-            MotionEvent.ACTION_DOWN -> {
-                // Calculate pixel to tophat center
-                if (true) {
 
+            MotionEvent.ACTION_DOWN -> {
+                if (distToTopHatCenter <= mTopHatRadius / 2) {
                     isInsideTopHat = true
                 }
                 return true
             }
+
             MotionEvent.ACTION_UP -> {
                 isInsideTopHat = false
                 mTopHatCenter = mCanvasCenter
+                invalidate()
                 return true
             }
+
             MotionEvent.ACTION_MOVE -> {
                 if (isInsideTopHat) {
-                    // Do stuff
+                    if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
+                        // change mTopHatCenter accordingly to chosen logic
+                        mTopHatCenter = pressedPixel
+                        // Other alternatives exist
+
+                        // Evaluate new move and send new instructions to mower if needed
+                        // if newTopHatCenter exceeds threshold
+                        //      send data
+                        //      Update threshold
+                    }
+                    invalidate()
                 }
-                var newPoint = Point(event.x, event.y)
-                
+                return true
             }
         }
-
         return false
     }
 
-    private inner class Point (var x : Float = 0f, var y : Float = 0f)
+    private inner class Pixel (var x : Float = 0f, var y : Float = 0f) {
+
+        fun getDistanceTo(pixel: Pixel) : Float {
+            val diffX = this.x - pixel.x
+            val diffY = this.y - pixel.y
+            return sqrt((diffX * diffX) + (diffY * diffY))
+
+        }
+    }
 
 }
