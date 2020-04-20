@@ -9,16 +9,16 @@ class DriveInstructionsModel {
         mTurn = turn
     }
 
+
     /*
     “@Left/Right,Back/Forward,Light,Honk$”
     @: start of message
-    Left/Right: -250:250
-    Back/Forward: -250:250
-    Light: 0 eller 1
-    Honk: 0 eller 1
+    Left/Right: -100:100
+    Back/Forward: -100:100
+    Light: 0 / 1
+    Honk: 0 / 1
     $: end of message
     */
-
     fun instructionsToMessage(): ByteArray {
         return "@$mTurn,$mThrust$".toByteArray()
     }
