@@ -11,4 +11,10 @@
     <string name="home_text">Home fragment</string>
     <string name="drive_text">Drive fragment</string>
     <string name="unableToConnect">Unable to connect device</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="btNotSupported">Your device does not support Bluetooth</string>
+    <string name="Bluetooth">Bluetooth</string>
+    <string name="connectionLost">Connection lost</string>
+    <string name="tryAgain">Try again</string>
 </resources>

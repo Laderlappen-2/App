@@ -74,8 +74,8 @@ object BluetoothHandler {
 
     fun toggleBluetooth() {
         if (mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(MainActivity.appContext, "Bluetooth",
-                "Your device does not support Bluetooth.")
+            AlertDialog.createSimpleDialog(MainActivity.appContext, MainActivity.appContext.getString(R.string.Bluetooth),
+                MainActivity.appContext.getString(R.string.btNotSupported))
         }
 
         if (mBluetoothAdapter?.isEnabled == false) {

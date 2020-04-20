@@ -43,7 +43,7 @@ public class MainActivity : AppCompatActivity() {
                 }
                 Constants.ACTION_ALERT -> {
                     AlertDialog.createSimpleDialog(appContext, intent.getStringExtra("message"),
-                        "${intent.getStringExtra("message")}. Try again")
+                        "${intent.getStringExtra("message")}. ${MainActivity.appContext.getString(R.string.tryAgain)}")
                 }
             }
         }

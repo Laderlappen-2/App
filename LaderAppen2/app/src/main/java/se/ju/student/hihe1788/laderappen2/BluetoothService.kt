@@ -126,7 +126,7 @@ class BluetoothService(var mHandler: Handler) {
                         println("Unable to close ConnectSocket. Msg: $e2")
                     }
 
-                    connectionFail("Unable to connect to socket from ConnectThread")
+                    connectionFail(MainActivity.appContext.getString(R.string.unableToConnect))
                     return
                 }
                 connected(socket)
@@ -137,7 +137,7 @@ class BluetoothService(var mHandler: Handler) {
             try {
                 mmSocket?.close()
             } catch (e: IOException) {
-                print("ConnectThread could not close. Msg: $e")
+                println("ConnectThread could not close. Msg: $e")
             }
         }
 
@@ -173,7 +173,7 @@ class BluetoothService(var mHandler: Handler) {
                         .sendToTarget()
                 } catch (e: IOException) {
                     println("Unable to read from stream. Msg: $e")
-                    connectionFail("connection lost")
+                    connectionFail(MainActivity.appContext.getString(R.string.connectionLost))
                     break
                 }
             }
