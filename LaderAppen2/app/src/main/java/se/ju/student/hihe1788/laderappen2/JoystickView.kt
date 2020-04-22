@@ -76,7 +76,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         when(event?.action) {
 
             MotionEvent.ACTION_DOWN -> {
-                if (distToTopHatCenter <= mTopHatRadius / 2) {
+                if (distToTopHatCenter <= mTopHatRadius) { 
                     isInsideTopHat = true
                 }
                 return true
