@@ -20,4 +20,10 @@ class DriveFragment: Fragment() {
 
         //DO STUFF THAT WE WANT TO DO HERE :D
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        //or here :D
+    }
 }

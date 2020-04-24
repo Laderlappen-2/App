@@ -73,6 +73,7 @@ public class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        unregisterReceiver(mBroadcastReceiver)
     }
 
     // region SET UP VIEWS AND NAVIGATION
