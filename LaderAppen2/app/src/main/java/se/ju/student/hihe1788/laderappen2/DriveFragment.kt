@@ -61,12 +61,9 @@ class DriveFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         joystickThrust = getView()!!.findViewById(R.id.joystick_left)
         joystickTurn = getView()!!.findViewById(R.id.joystick_right)
         joystickThrust.setToThrust(true)
-
-
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
