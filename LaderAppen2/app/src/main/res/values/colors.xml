@@ -35,11 +35,17 @@
     <color name="colorPink">#ecbac6</color>
      -->
 
-    <color name="colorYellow">#e3b200</color>
+    <color name="colorYellow">#FCDA30</color>
+    <color name="colorYellowLight">#FFE66A</color>
     <color name="colorNavyDark">#0a004d</color>
+    <color name="colorNavyDarkOpa50">#800A004D</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorGreen">#159D68</color>
+    <color name="colorGreenLight">#5EFFC0</color>
     <color name="colorBlack2"></color>
     <color name="colorWhite">#ffffff</color>
+
+    <color name="transparent">#00000000</color>
 
     <color name="colorBlackOpa05">#0D000000</color>
     <color name="colorBlackOpa10">#1A000000</color>
