@@ -22,8 +22,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
 
     private val mDirectionRectPaint = Paint(ANTI_ALIAS_FLAG).apply {
-        this.color = mContext.getColor(R.color.colorBlack)
-
+        this.color = mContext.getColor(R.color.colorBlackOpa50)
     }
 
     /**
@@ -48,15 +47,15 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         mTopHatRadius = w/2 * 0.3f    // Arbitrary value
 
         if (isThrust) {
-            mDirectionalRect = Rect((mCanvasCenter.x - 10).toInt(),
-                                    (mCanvasCenter.y - w/2 * 0.8f).toInt(),
-                                    (mCanvasCenter.x + 10).toInt(),
-                                    (mCanvasCenter.y + w/2 * 0.8f).toInt())
+            mDirectionalRect = Rect((mCanvasCenter.x - 5).toInt(),
+                                    (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
+                                    (mCanvasCenter.x + 5).toInt(),
+                                    (mCanvasCenter.y + (mBoundsRadius-mTopHatRadius)).toInt())
         } else {
-            mDirectionalRect = Rect((mCanvasCenter.x - w/2 * 0.8f).toInt(),
-                                    (mCanvasCenter.y - 10).toInt(),
-                                    (mCanvasCenter.x + w/2 * 0.8f).toInt(),
-                                    (mCanvasCenter.y + 10).toInt())
+            mDirectionalRect = Rect((mCanvasCenter.x - (mBoundsRadius-mTopHatRadius)).toInt(),
+                                    (mCanvasCenter.y - 5).toInt(),
+                                    (mCanvasCenter.x + (mBoundsRadius-mTopHatRadius)).toInt(),
+                                    (mCanvasCenter.y + 5).toInt())
         }
 
 
