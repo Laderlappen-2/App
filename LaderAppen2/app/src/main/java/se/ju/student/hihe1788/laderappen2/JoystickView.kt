@@ -18,6 +18,8 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     private var mBoundsRadius = 0.0f
     private var mTopHatRadius = 0.0f
     private var isInsideTopHat = false
+    private var isThrust = false
+
 
     private val mDirectionRectPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.colorBlack)
@@ -42,13 +44,21 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         mCanvasCenter = Pixel(w/2f, h/2f)
         mBoundsRadius = w/2 * 0.95f             // Arbitrary value
 
-        mTopHatCenter = mCanvasCenter
+        mTopHatCenter = Pixel(w/2f, h/2f)
         mTopHatRadius = w/2 * 0.3f    // Arbitrary value
 
-        mDirectionalRect = Rect((mCanvasCenter.x - 10).toInt(),
-                                (mCanvasCenter.y - w/2 * 0.8f).toInt(),
-                                (mCanvasCenter.x + 10).toInt(),
-                                (mCanvasCenter.y + w/2 * 0.8f).toInt())
+        if (isThrust) {
+            mDirectionalRect = Rect((mCanvasCenter.x - 10).toInt(),
+                                    (mCanvasCenter.y - w/2 * 0.8f).toInt(),
+                                    (mCanvasCenter.x + 10).toInt(),
+                                    (mCanvasCenter.y + w/2 * 0.8f).toInt())
+        } else {
+            mDirectionalRect = Rect((mCanvasCenter.x - w/2 * 0.8f).toInt(),
+                                    (mCanvasCenter.y - 10).toInt(),
+                                    (mCanvasCenter.x + w/2 * 0.8f).toInt(),
+                                    (mCanvasCenter.y + 10).toInt())
+        }
+
 
     }
     override fun onDraw(canvas: Canvas?) {
@@ -65,13 +75,21 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var value = super.onTouchEvent(event)
 
-        val pressedPixel = Pixel(event.x, event.y)
+        val currentPixel = Pixel(event.x, event.y)
+        var distanceInAxis = 0f
 
         // To know if inside bounds
-        val distToCanvasCenter = mCanvasCenter.getDistanceTo(pressedPixel)
+        val distToCanvasCenter = mCanvasCenter.getDistanceTo(currentPixel)
 
         // To know if inside topHat
-        val distToTopHatCenter = mTopHatCenter.getDistanceTo(pressedPixel)
+        val distToTopHatCenter = mTopHatCenter.getDistanceTo(currentPixel)
+
+        if (isThrust) {
+            distanceInAxis = mCanvasCenter.y - currentPixel.y
+        } else {
+            distanceInAxis = currentPixel.x - mCanvasCenter.x
+        }
+
 
         when(event?.action) {
 
@@ -84,7 +102,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
             MotionEvent.ACTION_UP -> {
                 isInsideTopHat = false
-                mTopHatCenter = mCanvasCenter
+                mTopHatCenter.clone(mCanvasCenter)
                 invalidate()
                 return true
             }
@@ -93,9 +111,20 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
                 if (isInsideTopHat) {
                     if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
                         // change mTopHatCenter accordingly to chosen logic
-                        mTopHatCenter = pressedPixel
+                        //mTopHatCenter = currentPixel
                         // Other alternatives exist
 
+                        if (isThrust) {
+                            mTopHatCenter.y = currentPixel.y
+                            //mTopHatCenter.x = mCanvasCenter.x
+                        } else {
+                            mTopHatCenter.x = currentPixel.x
+                            //mTopHatCenter.y = mCanvasCenter.y
+                        }
+
+                        val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
+                        println(force)
+                        //println(force)
                         // Evaluate new move and send new instructions to mower if needed
                         // if newTopHatCenter exceeds threshold
                         //      send data
@@ -109,6 +138,10 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         return false
     }
 
+    fun setToThrust(yesOrNo: Boolean) {
+        isThrust = yesOrNo
+    }
+
     private inner class Pixel (var x : Float = 0f, var y : Float = 0f) {
 
         fun getDistanceTo(pixel: Pixel) : Float {
@@ -117,6 +150,12 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
             return sqrt((diffX * diffX) + (diffY * diffY))
 
         }
+
+        fun clone(pixel: Pixel) {
+            this.x = pixel.x
+            this.y = pixel.y
+        }
+
     }
 
 }
