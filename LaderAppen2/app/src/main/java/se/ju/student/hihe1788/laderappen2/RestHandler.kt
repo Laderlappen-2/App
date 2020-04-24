@@ -10,34 +10,54 @@ object RestHandler {
     val DRIVE_SESSION = "drivingsessions"
     val ALL_DRIVE_SESSIONS = "drivingsessions"
     //val PAGINATION_DRIVE_SESSIONS = "drivingsessions?from=1&limit=10"
-    val DRIVE_SESSION_BY_ID = "drivingsessions/:sessionId"
+    val DRIVE_SESSION_BY_ID = "drivingsessions/:" // + sessionId
     val EVENT = "events"
 
     fun getAllRoutes() {
-        // get all routes
         val url = REST_URL+ ALL_DRIVE_SESSIONS
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
-            // on success
             Response.Listener {
-                //do stuff with response
+                val newPagination = Klaxon().parse<PaginationModel>(it.toString())
+
+                newPagination?.let { DataHandler.setPagination(newPagination) }
             },
 
-            Response.ErrorListener {
-
+            Response.ErrorListener {error ->
+                println(error.toString())
             })
 
         RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 
     fun postRoute() {
-        // first post session
-        // receive id for that session
-        // loop through points in Route
-            // -> for each point: post event
+        // waiting for endpoint
+        val url = ""
+
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, null,
+            Response.Listener { response ->
+                println("Response: %s".format(response.toString()))
+            },
+            Response.ErrorListener { error ->
+                println(error.toString())
+            }
+        )
+
+        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun deleteAllRoutes() {
+    fun deleteRouteById(id: Int) {
+        val url = DRIVE_SESSION_BY_ID + id.toString()
 
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.DELETE, url, null,
+            Response.Listener { response ->
+                println("Response: %s".format(response.toString()))
+            },
+            Response.ErrorListener { error ->
+                println(error.toString())
+            }
+        )
+
+        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 }
