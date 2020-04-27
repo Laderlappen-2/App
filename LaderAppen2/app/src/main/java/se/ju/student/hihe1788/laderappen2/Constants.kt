@@ -27,4 +27,8 @@ object Constants {
     val ACTION_ALERT = "4"
 
     val ACTION_MSG_RECEIVED = "5"
+
+    val LIGHT_ACK = "L"
+    val POS_EVENT_ACK = "0"
+    val COLL_EVENT_ACK = "1"
 }

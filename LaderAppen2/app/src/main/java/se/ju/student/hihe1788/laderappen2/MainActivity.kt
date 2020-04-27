@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -44,6 +45,17 @@ public class MainActivity : AppCompatActivity() {
                     MowerModel.isConnected = false
 
                 Constants.ACTION_MSG_RECEIVED -> {
+                    
+                    /*val data = intent.getByteArrayExtra("message")
+                    val type = data!!.toString()
+                        when(type[1]) {
+                            Constants.LIGHT_ACK -> {
+                                if(type[3] == '1') {
+                                    requireViewById<ImageButton>(R.id.btn_drive_light).isSelected
+                                }
+
+                            }
+                    }*/
                     // save to activeRoute( when a route is finished driveFragment sends to backend)
                 }
                 Constants.ACTION_ALERT -> {

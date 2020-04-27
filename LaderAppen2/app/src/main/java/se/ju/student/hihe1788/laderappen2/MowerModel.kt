@@ -11,5 +11,7 @@ class MowerModel {
         // TODO - Need the Address of the Mower
         val address = "A MAC Address"
         var isConnected = false
+        var hasLightOn = false
+        var isAutonomous = false
     }
 }

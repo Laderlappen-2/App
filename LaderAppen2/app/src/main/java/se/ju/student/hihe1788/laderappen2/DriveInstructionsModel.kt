@@ -11,8 +11,6 @@ object DriveInstructionsModel {
 
     var mThrust: Int = 0
     var mTurn: Int = 0
-    var mLight: Int = 0
-    var mHonk: Int = 0
 
     /**
      * @param value A given value from -1:1
