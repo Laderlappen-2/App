@@ -48,10 +48,4 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
-
-    override fun onResume() {
-        super.onResume()
-
-        //or here :D
-    }
 }
