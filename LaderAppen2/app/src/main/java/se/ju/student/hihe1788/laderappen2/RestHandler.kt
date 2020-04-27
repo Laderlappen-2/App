@@ -4,7 +4,6 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
 import org.json.JSONObject
 
@@ -69,7 +68,7 @@ object RestHandler {
     }
 
     fun deleteRouteById(id: Int, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
-        val url = "$DRIVE_SESSION_BY_ID/$id"
+        val url = "$REST_URL$DRIVE_SESSION_BY_ID/$id"
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.DELETE, url, null,
             Response.Listener { response ->
