@@ -1,20 +1,17 @@
 package se.ju.student.hihe1788.laderappen2
 
-class RouteModel(val id: Int, val positionEvent: ArrayList<PointModel>?, val collisionAvoidanceEvent: ArrayList<PointModel>?) {
+import java.util.*
+import kotlin.collections.ArrayList
+
+class RouteModel(val id: Int, val positionEvents: ArrayList<PointModel> = ArrayList(), val collisionAvoidanceEvents: ArrayList<PointModel> = ArrayList()) {
 
     fun getPositions(): ArrayList<PointModel> {
-        var tempPositions: ArrayList<PointModel> = ArrayList()
-        positionEvent?.let { tempPositions = it }
-
-        return tempPositions
+        return positionEvents
     }
 
     fun getCollisonAvoidances(): ArrayList<PointModel> {
-        var tempCA: ArrayList<PointModel> = ArrayList()
-        collisionAvoidanceEvent?.let { tempCA = it }
-
-        return tempCA
+        return collisionAvoidanceEvents
     }
 }
 
-class PointModel(val positionX: Int, val positionY: Int, val isCollisionAvoidance: Boolean?) {}
+class PointModel(val eventId: Int, val positionX: Int, val positionY: Int, val dateCreated: Date) {}

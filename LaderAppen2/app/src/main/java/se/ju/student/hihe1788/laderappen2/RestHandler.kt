@@ -2,88 +2,103 @@ package se.ju.student.hihe1788.laderappen2
 
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.VolleyError
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.beust.klaxon.Klaxon
 import org.json.JSONObject
 
 object RestHandler {
-    val REST_URL = "https://laderlappen-2-rest-api.herokuapp.com/v1"
-    val ALL_DRIVE_SESSIONS = "/drivingsessions"      //?from=1&limit=10"
-    val DRIVE_SESSION_BY_ID = "/drivingsessions"   // + sessionId
-    val EVENTS = "/events/batch"
+    private const val REST_URL = "https://laderlappen-2-rest-api.herokuapp.com/v1"
+    private const val ALL_DRIVE_SESSIONS = "/drivingsessions"      //?from=1&limit=10"
+    private const val DRIVE_SESSION_BY_ID = "/drivingsessions"   // + sessionId
+    private const val EVENTS = "/events"
 
-    fun getAllRoutes() {
-        val url = REST_URL+ ALL_DRIVE_SESSIONS
+    fun getAllRoutes(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$REST_URL$ALL_DRIVE_SESSIONS"
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url, null,
             Response.Listener {
-                val newPagination = Klaxon().parse<PaginationModel>(it.toString())
-
-                newPagination?.let { DataHandler.setPagination(newPagination) }
+                parseResponse<PaginationModel>(it, { paginationModel ->
+                    paginationModel?.let { DataHandler.setPagination(paginationModel) }
+                    successCallback()
+                }, errorCallback)
             },
-
-            Response.ErrorListener {error ->
-                println("ERROR: ${error.toString()}")
+            Response.ErrorListener { error ->
+                errorCallback(getRestError(error))
             })
-
         RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun postDriveSession() {
-        val url = REST_URL + ALL_DRIVE_SESSIONS
+    fun postDriveSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$REST_URL$ALL_DRIVE_SESSIONS"
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, null,
-            Response.Listener {
-                //responsebody
-                /**
-                 {
-                "collisions": [], // collisionAvoidanceEvent?
-                "paths": [], //positionEvent ?
-                "id": 123
-                }
-                 */
+            Response.Listener() { response ->
+                parseResponse<Unit>(response, {
+                    val routeId = response.getInt("id")
+                    DataHandler.setCurrentRoute(RouteModel(routeId))
+                    successCallback()
+                }, errorCallback)
             },
 
             Response.ErrorListener { error ->
-                println("ERROR: ${error.toString()}")
+                errorCallback(getRestError(error))
             }
         )
+        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun postRoute(routes: RouteModel, id: String, successCallback: () -> Unit, errorCallback: () -> Unit) {
-        val url = REST_URL + DRIVE_SESSION_BY_ID + "/$id" + EVENTS
+    fun postRoute(routes: RouteModel, id: String, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$REST_URL$DRIVE_SESSION_BY_ID/$id$EVENTS"
         val jsonString = Klaxon().toJsonString(routes)
         val jsonObj = JSONObject(jsonString)
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.POST, url, jsonObj,
             Response.Listener { response ->
-                println("Response: %s".format(response.toString()))
-                /*
-                if(response.statusCode == 201)
-                  successCallback()
-                else
-                  errorCallback(parsaTillErrorObject)*/
+                parseResponse<Unit>(response, {
+                    successCallback()
+                }, errorCallback)
             },
             Response.ErrorListener { error ->
-                println("ERROR: ${error.toString()}")
+                errorCallback(getRestError(error))
             }
         )
 
         RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun deleteRouteById(id: Int) {
-        val url = DRIVE_SESSION_BY_ID + id.toString()
+    fun deleteRouteById(id: Int, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$DRIVE_SESSION_BY_ID/$id"
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.DELETE, url, null,
             Response.Listener { response ->
-                println("Response: %s".format(response.toString()))
+                parseResponse<Unit>(response, {
+                    successCallback()
+                }, errorCallback)
             },
             Response.ErrorListener { error ->
-                println("ERROR: ${error.toString()}")
+                errorCallback(getRestError(error))
             }
         )
 
         RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
+    }
+
+    inline fun<reified T> parseResponse(json: JSONObject, done: (T?) -> Unit, error: (RestErrorModel?) -> Unit) {
+        if(!json.has("error")) {
+            var responseObj: T? = null
+            if(Unit !is T) {
+                responseObj = Klaxon().parse<T>(json.toString())
+            }
+            done(responseObj)
+        }else{
+            val restError = Klaxon().parse<RestErrorModel>(json.toString())
+            error(restError)
+        }
+    }
+
+    private fun getRestError(error: VolleyError): RestErrorModel{
+        return RestErrorModel(0, error.message.orEmpty(), error.localizedMessage.orEmpty())
     }
 }
