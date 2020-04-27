@@ -23,7 +23,6 @@ class DriveFragment: Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         //or here :D
     }
 }
