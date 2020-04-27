@@ -121,25 +121,15 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
             MotionEvent.ACTION_MOVE -> {
                 if (mIsInsideTopHat) {
                     if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
-                        // change mTopHatCenter accordingly to chosen logic
-                        //mTopHatCenter = currentPixel
-                        // Other alternatives exist
 
                         if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
-                            //mTopHatCenter.x = mCanvasCenter.x
                         } else {
                             mTopHatCenter.x = currentPixel.x
-                            //mTopHatCenter.y = mCanvasCenter.y
                         }
 
                         val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
-                        println(force)
-                        //println(force)
-                        // Evaluate new move and send new instructions to mower if needed
-                        // if newTopHatCenter exceeds threshold
-                        //      send data
-                        //      Update threshold
+
                     }
                     invalidate()
                 }

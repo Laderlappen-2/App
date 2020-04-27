@@ -3,7 +3,7 @@ package se.ju.student.hihe1788.laderappen2
 /**
  * Represent the mowers current state
  */
-class DriveInstructionsModel {
+object DriveInstructionsModel {
     private val MIN_THRUST = -100
     private val MAX_THRUST = 100
     private val MIN_TURN = -100
@@ -11,20 +11,24 @@ class DriveInstructionsModel {
 
     var mThrust: Int = 0
     var mTurn: Int = 0
+    var mLight: Int = 0
+    var mHonk: Int = 0
 
     /**
-     * @param thrust A given thrust from -100:100 (maxBack:maxForward)
-     * @param turn A given turn-value from -100:100 (maxLeft:maxRight)
+     * @param value A given value from -1:1
+     * @param isThrust Sets if this new instruction is thrust or steer.
      */
-    fun setInstructions(thrust: Int, turn: Int) {
-        setThrust(thrust)
-        setTurn(turn)
+    fun setInstructions(value: Float, isThrust: Boolean) {
+        val transValue: Int = translateToRatio(value)
+        if (isThrust) setThrust(transValue)
+        else setTurn(transValue)
+
     }
 
     /**
      * @param thrust sets a new thrust
      */
-    fun setThrust(thrust: Int) {
+    private fun setThrust(thrust: Int) {
         if (thrust < MIN_THRUST)
             mThrust = MIN_THRUST
         else if (thrust > MAX_THRUST)
@@ -36,7 +40,7 @@ class DriveInstructionsModel {
     /**
      * @param turn sets a new turn
      */
-    fun setTurn(turn: Int) {
+    private fun setTurn(turn: Int) {
         if (turn < MIN_TURN)
             mThrust = MIN_TURN
         else if (turn > MAX_TURN)
@@ -57,8 +61,16 @@ class DriveInstructionsModel {
      * $: end of message
      * @return ByteArray consisting of the new instruction(s)
      */
-    fun instructionsToMessage(): ByteArray {
+    fun toMessage(): ByteArray {
         return "@$mTurn,$mThrust$".toByteArray()
     }
 
+    /**
+     * Sets the joysticks value to a value that the mower understands.
+     * @param value The value from the joystick
+     * @return A value that the mower understands
+     */
+    private fun translateToRatio(value: Float) : Int {
+        return (value * 100).toInt()
+    }
 }
