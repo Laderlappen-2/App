@@ -8,6 +8,9 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 
+/**
+ * Shows the settings view and its awesome customization features.
+ */
 class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +50,9 @@ class SettingsFragment : Fragment() {
         setUI()
     }
 
+    /**
+     * Setups the UI based on states in the application.
+     */
     private fun setUI() {
         if (MowerModel.isConnected) {
             view?.findViewById<ImageButton>(R.id.device_connected)?.isSelected = true

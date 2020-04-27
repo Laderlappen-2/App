@@ -18,9 +18,14 @@ import androidx.navigation.ui.*
 public class MainActivity : AppCompatActivity() {
 
     companion object {
-        lateinit var appContext: Context
+        lateinit var mAppContext: Context
     }
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var mAppBarConfiguration: AppBarConfiguration
+
+    /**
+     * Receives an intent from BluetoothHandler.mHandler and redirect it to the
+     * proper place.
+     */
     private val mBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val action = intent?.action
@@ -42,8 +47,8 @@ public class MainActivity : AppCompatActivity() {
                     // save to activeRoute( when a route is finished driveFragment sends to backend)
                 }
                 Constants.ACTION_ALERT -> {
-                    AlertDialog.createSimpleDialog(appContext, intent.getStringExtra("message"),
-                        "${intent.getStringExtra("message")}. ${MainActivity.appContext.getString(R.string.tryAgain)}")
+                    AlertDialog.createSimpleDialog(mAppContext, intent.getStringExtra("message"),
+                        "${intent.getStringExtra("message")}. ${MainActivity.mAppContext.getString(R.string.tryAgain)}")
                 }
             }
         }
@@ -53,7 +58,7 @@ public class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
-        appContext = applicationContext
+        mAppContext = applicationContext
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -63,9 +68,9 @@ public class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?: return
 
         val navController: NavController = host.navController
-        appBarConfiguration = AppBarConfiguration(navController.graph)
+        mAppBarConfiguration = AppBarConfiguration(navController.graph)
 
-        setupActionBar(navController, appBarConfiguration)
+        setupActionBar(navController, mAppBarConfiguration)
         setupBottomNavMenu(navController)
 
         setupBroadcastReceiver()
@@ -78,28 +83,45 @@ public class MainActivity : AppCompatActivity() {
 
     // region SET UP VIEWS AND NAVIGATION
 
+    /**
+     * Setup the action bar.
+     * @param navController A navigation controller
+     * @param appBarconfig The configuration for the appBar
+     */
     private fun setupActionBar(navController: NavController, appBarconfig: AppBarConfiguration) {
         setupActionBarWithNavController(navController, appBarconfig)
     }
 
+    /**
+     * Setup the bottom navigation menu
+     * @param navController A navigation controller
+     */
     private fun setupBottomNavMenu(navController: NavController) {
         val bottomNav: BottomNavigationView =
             findViewById<BottomNavigationView>(R.id.bottom_nav_view)
         bottomNav?.setupWithNavController(navController)
     }
 
+    /**
+     * Navigates to the chosen view from the bottom navigation
+     * @param item The item you clicked
+     * @return True or false if you could navigate there.
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController(R.id.my_nav_host_fragment))
                 || super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
+        return findNavController(R.id.my_nav_host_fragment).navigateUp(mAppBarConfiguration)
     }
 
     //endregion
 
     // region INITIALIZE BROADCAST RECEIVER(S)
+    /**
+     * Setup our BroadcastReceiver and registers all filter it should listen on.
+     */
     private fun setupBroadcastReceiver() {
         val filter = IntentFilter()
         filter.addAction(Constants.ACTION_STATE_CONNECTING)

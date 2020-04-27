@@ -10,6 +10,11 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.sqrt
 
+/**
+ * Represent a joystick so we can move the mower.
+ * @param mContext Application context
+ * @param attrs bonus info (Consultate Jonna for more info)
+ */
 class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
 
     private lateinit var mCanvasCenter: Pixel
@@ -17,17 +22,14 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     private lateinit var mDirectionalRect: Rect
     private var mBoundsRadius = 0.0f
     private var mTopHatRadius = 0.0f
-    private var isInsideTopHat = false
-    private var isThrust = false
-
+    private var mIsInsideTopHat = false
+    private var mIsThrust = false
 
     private val mDirectionRectPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.colorBlackOpa50)
     }
 
-    /**
-     * The thing you move
-     */
+
     private val mTopHatPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.colorNavyDarkOpa50)
     }
@@ -36,7 +38,10 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         this.color = mContext.getColor(R.color.transparent)
     }
 
-
+    /**
+     * Is called when the view is painted to the screen.
+     * Sets dimensions on all paints objects.
+     */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
@@ -46,7 +51,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         mTopHatCenter = Pixel(w/2f, h/2f)
         mTopHatRadius = w/2 * 0.4f    // Arbitrary value
 
-        if (isThrust) {
+        if (mIsThrust) {
             mDirectionalRect = Rect((mCanvasCenter.x - 2).toInt(),
                                     (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
                                     (mCanvasCenter.x + 2).toInt(),
@@ -60,6 +65,10 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
 
     }
+
+    /**
+     * Is called each time the objects are changed.
+     */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
@@ -71,6 +80,9 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         }
     }
 
+    /**
+     * Handles all user-input and take action
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var value = super.onTouchEvent(event)
 
@@ -83,7 +95,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         // To know if inside topHat
         val distToTopHatCenter = mTopHatCenter.getDistanceTo(currentPixel)
 
-        if (isThrust) {
+        if (mIsThrust) {
             distanceInAxis = mCanvasCenter.y - currentPixel.y
         } else {
             distanceInAxis = currentPixel.x - mCanvasCenter.x
@@ -94,26 +106,26 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
             MotionEvent.ACTION_DOWN -> {
                 if (distToTopHatCenter <= mTopHatRadius) { 
-                    isInsideTopHat = true
+                    mIsInsideTopHat = true
                 }
                 return true
             }
 
             MotionEvent.ACTION_UP -> {
-                isInsideTopHat = false
+                mIsInsideTopHat = false
                 mTopHatCenter.clone(mCanvasCenter)
                 invalidate()
                 return true
             }
 
             MotionEvent.ACTION_MOVE -> {
-                if (isInsideTopHat) {
+                if (mIsInsideTopHat) {
                     if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
                         // change mTopHatCenter accordingly to chosen logic
                         //mTopHatCenter = currentPixel
                         // Other alternatives exist
 
-                        if (isThrust) {
+                        if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
                             //mTopHatCenter.x = mCanvasCenter.x
                         } else {
@@ -137,12 +149,26 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         return false
     }
 
-    fun setToThrust(yesOrNo: Boolean) {
-        isThrust = yesOrNo
+    /**
+     * Sets the joystick to either be thrust or turn
+     * @param isThrust True or false
+     */
+    fun setToThrust(isThrust: Boolean) {
+        mIsThrust = isThrust
     }
 
+    /**
+     * Represent a Pixel in the view.
+     * @param x The x-coordinate
+     * @param y The y-coordinate
+     */
     private inner class Pixel (var x : Float = 0f, var y : Float = 0f) {
 
+        /**
+         * Calculate the distance between this pixel and the parameter
+         * @param pixel The pixel to calculate the distance to.
+         * @return The distance
+         */
         fun getDistanceTo(pixel: Pixel) : Float {
             val diffX = this.x - pixel.x
             val diffY = this.y - pixel.y
@@ -150,6 +176,11 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
         }
 
+        /**
+         * A quick fix since the assign operator would not work.
+         * It clones a pixel.
+         * @param pixel to clone from
+         */
         fun clone(pixel: Pixel) {
             this.x = pixel.x
             this.y = pixel.y

@@ -2,19 +2,21 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.navigation_activity.*
 
+/**
+ * This fragment controls the connected mower via
+ * its joysticks.
+ */
 class DriveFragment: Fragment() {
 
-    private lateinit var joystickThrust: JoystickView
-    private lateinit var joystickTurn: JoystickView
+    private lateinit var mJoystickThrust: JoystickView
+    private lateinit var mJoystickTurn: JoystickView
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -28,9 +30,9 @@ class DriveFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        joystickThrust = getView()!!.findViewById(R.id.joystick_left)
-        joystickTurn = getView()!!.findViewById(R.id.joystick_right)
-        joystickThrust.setToThrust(true)
+        mJoystickThrust = getView()!!.findViewById(R.id.joystick_left)
+        mJoystickTurn = getView()!!.findViewById(R.id.joystick_right)
+        mJoystickThrust.setToThrust(true)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
