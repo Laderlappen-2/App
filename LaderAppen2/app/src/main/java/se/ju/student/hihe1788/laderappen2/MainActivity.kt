@@ -45,7 +45,7 @@ public class MainActivity : AppCompatActivity() {
                     MowerModel.isConnected = false
 
                 Constants.ACTION_MSG_RECEIVED -> {
-                    
+
                     /*val data = intent.getByteArrayExtra("message")
                     val type = data!!.toString()
                         when(type[1]) {
