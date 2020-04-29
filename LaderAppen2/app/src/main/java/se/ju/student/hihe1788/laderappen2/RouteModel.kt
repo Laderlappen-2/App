@@ -14,4 +14,7 @@ class RouteModel(val id: Int, val positionEvents: ArrayList<PointModel> = ArrayL
     }
 }
 
-class PointModel(val eventId: Int, val positionX: Int, val positionY: Int, val dateCreated: Date) {}
+
+class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Int, val positionY: Int, val dateCreated: Date) {
+    /*3 collison 5 posision*/
+}
