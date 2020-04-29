@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -22,7 +23,7 @@ class DriveFragment: Fragment() {
     private lateinit var mBtnHonk: ImageButton
     private lateinit var mBtnBack: ImageButton
     private lateinit var mBtnBluetooth: ImageButton
-    private lateinit var mBtnAuto: ImageButton
+    private lateinit var mBtnAuto: Button
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -48,14 +49,14 @@ class DriveFragment: Fragment() {
 
         mBtnLight.setOnClickListener {
             if (MowerModel.hasLightOn) {
-                BluetoothHandler.sendMsg("@L,0,1$".toByteArray())
+                //BluetoothHandler.sendMsg("@L,0,1$".toByteArray())
             } else {
-                BluetoothHandler.sendMsg("@L,1,1$".toByteArray())
+                //BluetoothHandler.sendMsg("@L,1,1$".toByteArray())
             }
         }
 
         mBtnHonk.setOnClickListener {
-            BluetoothHandler.sendMsg("@H,1,0$".toByteArray())
+            //BluetoothHandler.sendMsg("@H,1,0$".toByteArray())
         }
 
         mBtnBack.setOnClickListener {
@@ -73,6 +74,8 @@ class DriveFragment: Fragment() {
                 BluetoothHandler.sendMsg("@A,1$".toByteArray())
             }
         }
+
+        BluetoothHandler.startSendingDriveInstructions()
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

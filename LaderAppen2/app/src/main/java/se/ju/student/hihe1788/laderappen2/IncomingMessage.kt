@@ -33,9 +33,6 @@ class IncomingMessage(bytes: ByteArray) {
                 mTimestamp = rawData[3].value.toInt().milliseconds
             }
         }
-        if (rawData[1].value == "A") {
-            mIsACK = true
-        }
     }
 }
 
