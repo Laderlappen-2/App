@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 
 /**
  * This fragment controls the connected mower via
@@ -33,6 +36,12 @@ class DriveFragment: Fragment() {
         mJoystickThrust = getView()!!.findViewById(R.id.joystick_left)
         mJoystickTurn = getView()!!.findViewById(R.id.joystick_right)
         mJoystickThrust.setToThrust(true)
+
+        // Backbutton
+        view.findViewById<ImageButton>(R.id.btn_drive_back)?.setOnClickListener {
+            // TODO: Stop autonomous mode if running?
+            findNavController().popBackStack()
+        }
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
