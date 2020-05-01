@@ -1,77 +1,103 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.content.BroadcastReceiver
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 
-public class MainActivity : AppCompatActivity() {
+val REQUEST_ENABLE_BT = 1
+
+class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var mAppContext: Context
     }
+
     private lateinit var mAppBarConfiguration: AppBarConfiguration
-
-    /**
-     * Receives an intent from BluetoothHandler.mHandler and redirect it to the
-     * proper place.
-     */
-    private val mBroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val action = intent?.action
-
-            when (action) {
-                Constants.ACTION_STATE_CONNECTING -> {
-                    //loading screen??
-                }
-                Constants.ACTION_STATE_CONNECTED ->
-                    MowerModel.isConnected = true
-
-                Constants.ACTION_STATE_LISTEN ->
-                    MowerModel.isConnected = false
-
-                Constants.ACTION_STATE_NONE ->
-                    MowerModel.isConnected = false
-
-                Constants.ACTION_MSG_RECEIVED -> {
-
-                    /*val data = intent.getByteArrayExtra("message")
-                    val type = data!!.toString()
-                        when(type[1]) {
-                            Constants.LIGHT_ACK -> {
-                                if(type[3] == '1') {
-                                    requireViewById<ImageButton>(R.id.btn_drive_light).isSelected
-                                }
-
-                            }
-                    }*/
-                    // save to activeRoute( when a route is finished driveFragment sends to backend)
-                }
-                Constants.ACTION_ALERT -> {
-                    AlertDialog.createSimpleDialog(mAppContext, intent.getStringExtra("message"),
-                        "${intent.getStringExtra("message")}. ${MainActivity.mAppContext.getString(R.string.tryAgain)}")
-                }
-            }
-        }
-    }
+    private lateinit var mBTStateReceiver: BTStateReceiver
+    private lateinit var mBLEHandler: BLEHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
         mAppContext = applicationContext
+        mBTStateReceiver = BTStateReceiver(mAppContext)
+        mBLEHandler = BLEHandler(mAppContext)
 
+        if (!mBLEHandler.isSupportingBLE())
+        {
+            /** Inform the user that the device isn't supporting BLE */
+        }
+
+        setupNavigationComponents()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(mBTStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+    }
+
+    /** onStop */
+    /** User navigates to the Activity */
+    /** onStart is called after onRestart */
+    override fun onRestart() {
+        super.onRestart()
+    }
+
+    /** onPause */
+    /** User returns to the Activity */
+    override fun onResume() {
+        super.onResume()
+    }
+
+    /** Another Activity comes into the foreground */
+    override fun onPause() {
+        super.onPause()
+    }
+
+    /** The Activity is no longer visible */
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(mBTStateReceiver)
+    }
+
+    /** The Activity is finishing or being destroyed by the system */
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Check which request is responded to
+        if (requestCode == REQUEST_ENABLE_BT)
+        {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK)
+            {
+                // Thank you for turning on Bluetooth
+            } else if (resultCode == RESULT_CANCELED)
+            {
+                // Please turn on Bluetooth
+            }
+        }
+    }
+
+    // region SET UP VIEWS AND NAVIGATION
+
+    private fun setupNavigationComponents() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -82,36 +108,19 @@ public class MainActivity : AppCompatActivity() {
         val navController: NavController = host.navController
         mAppBarConfiguration = AppBarConfiguration(navController.graph)
 
-        setupActionBar(navController, mAppBarConfiguration)
+        setupActionBarWithNavController(navController, mAppBarConfiguration)
+
         setupBottomNavMenu(navController)
-
-        setupBroadcastReceiver()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(mBroadcastReceiver)
-    }
-
-    // region SET UP VIEWS AND NAVIGATION
-
-    /**
-     * Setup the action bar.
-     * @param navController A navigation controller
-     * @param appBarconfig The configuration for the appBar
-     */
-    private fun setupActionBar(navController: NavController, appBarconfig: AppBarConfiguration) {
-        setupActionBarWithNavController(navController, appBarconfig)
-    }
 
     /**
      * Setup the bottom navigation menu
      * @param navController A navigation controller
      */
     private fun setupBottomNavMenu(navController: NavController) {
-        val bottomNav: BottomNavigationView =
-            findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-        bottomNav?.setupWithNavController(navController)
+        val bottomNav: BottomNavigationView = findViewById(R.id.bottom_nav_view)
+        bottomNav.setupWithNavController(navController)
     }
 
     /**
@@ -129,23 +138,5 @@ public class MainActivity : AppCompatActivity() {
     }
 
     //endregion
-
-    // region INITIALIZE BROADCAST RECEIVER(S)
-    /**
-     * Setup our BroadcastReceiver and registers all filter it should listen on.
-     */
-    private fun setupBroadcastReceiver() {
-        val filter = IntentFilter()
-        filter.addAction(Constants.ACTION_STATE_CONNECTING)
-        filter.addAction(Constants.ACTION_STATE_CONNECTED)
-        filter.addAction(Constants.ACTION_STATE_LISTEN)
-        filter.addAction(Constants.ACTION_STATE_NONE)
-        filter.addAction(Constants.ACTION_MSG_RECEIVED)
-        filter.addAction(Constants.ACTION_ALERT)
-
-        registerReceiver(mBroadcastReceiver, filter)
-    }
-
-    // endregion
 
 }
