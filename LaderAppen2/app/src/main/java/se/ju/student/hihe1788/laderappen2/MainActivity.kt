@@ -1,7 +1,6 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -12,7 +11,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 
@@ -21,7 +19,7 @@ val REQUEST_ENABLE_BT = 1
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        lateinit var mAppContext: Context
+        lateinit var mActivity: MainActivity
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
@@ -32,13 +30,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
-        mAppContext = applicationContext
-        mBTStateReceiver = BTStateReceiver(mAppContext)
-        mBLEHandler = BLEHandler(mAppContext)
+        mActivity = this
+        mBTStateReceiver = BTStateReceiver(mActivity)
+        mBLEHandler = BLEHandler(mActivity)
 
         if (!mBLEHandler.isSupportingBLE())
         {
             /** Inform the user that the device isn't supporting BLE */
+        }
+
+        if (!mBLEHandler.isBluetoothEnabled())
+        {
+            mBLEHandler.requestBluetooth()
         }
 
         setupNavigationComponents()

@@ -1,18 +1,21 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Message
-import java.util.logging.Handler
 
 private const val SCAN_PERIOD: Long = 10000
 
-class BLEHandler (private val mContext: Context) {
+class BLEHandler (private val mMainActivity: MainActivity) {
 
+    private var mBluetoothManager: BluetoothManager = mMainActivity.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    /*private val mBluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
+        mBluetoothManager = mContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        mBluetoothManager.adapter
+    }*/
     private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private var mScanning: Boolean = false
     private lateinit var mDevice: BluetoothDevice
@@ -20,7 +23,7 @@ class BLEHandler (private val mContext: Context) {
 
     fun isSupportingBLE() : Boolean
     {
-        if ( mContext.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) )
+        if ( mMainActivity.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) )
             return true
         return false
     }
@@ -40,8 +43,8 @@ class BLEHandler (private val mContext: Context) {
      */
     fun toggleBluetooth() {
         if (BluetoothHandler.mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(mContext, mContext.getString(R.string.Bluetooth),
-                mContext.getString(R.string.btNotSupported))
+            AlertDialog.createSimpleDialog(mMainActivity, mMainActivity.getString(R.string.Bluetooth),
+                mMainActivity.getString(R.string.btNotSupported))
             return
         }
 
@@ -53,7 +56,8 @@ class BLEHandler (private val mContext: Context) {
     }
 
     fun requestBluetooth() {
-
+        val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+        mMainActivity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
     }
 
     fun connectTo(device: BLEDevice) {

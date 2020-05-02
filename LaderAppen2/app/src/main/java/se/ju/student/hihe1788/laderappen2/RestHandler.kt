@@ -24,7 +24,7 @@ object RestHandler {
                 println("ERROR: ${error.toString()}")
             })
 
-        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mActivity).addToRequestQueue(jsonObjectRequest)
     }
 
     fun postRoute() {
@@ -40,7 +40,7 @@ object RestHandler {
             }
         )
 
-        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mActivity).addToRequestQueue(jsonObjectRequest)
     }
 
     fun deleteRouteById(id: Int) {
@@ -55,6 +55,6 @@ object RestHandler {
             }
         )
 
-        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mActivity).addToRequestQueue(jsonObjectRequest)
     }
 }

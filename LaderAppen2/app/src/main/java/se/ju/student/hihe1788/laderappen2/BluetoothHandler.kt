@@ -66,7 +66,7 @@ object BluetoothHandler {
 
                 }
             }
-            MainActivity.mAppContext.sendBroadcast(intent)
+            MainActivity.mActivity.sendBroadcast(intent)
 
         }
     }
@@ -88,8 +88,8 @@ object BluetoothHandler {
      */
     fun toggleBluetooth() {
         if (mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(MainActivity.mAppContext, MainActivity.mAppContext.getString(R.string.Bluetooth),
-                MainActivity.mAppContext.getString(R.string.btNotSupported))
+            AlertDialog.createSimpleDialog(MainActivity.mActivity, MainActivity.mActivity.getString(R.string.Bluetooth),
+                MainActivity.mActivity.getString(R.string.btNotSupported))
         }
 
         if (mBluetoothAdapter?.isEnabled == false) {

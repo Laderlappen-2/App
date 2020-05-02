@@ -168,7 +168,7 @@ class BluetoothService(var mHandler: Handler) {
                         println("Unable to close ConnectSocket. Msg: $e2")
                     }
 
-                    connectionFail(MainActivity.mAppContext.getString(R.string.unableToConnect))
+                    connectionFail(MainActivity.mActivity.getString(R.string.unableToConnect))
                     return
                 }
                 connected(socket)
@@ -228,7 +228,7 @@ class BluetoothService(var mHandler: Handler) {
                         .sendToTarget()
                 } catch (e: IOException) {
                     println("Unable to read from stream. Msg: $e")
-                    connectionFail(MainActivity.mAppContext.getString(R.string.connectionLost))
+                    connectionFail(MainActivity.mActivity.getString(R.string.connectionLost))
                     break
                 }
             }

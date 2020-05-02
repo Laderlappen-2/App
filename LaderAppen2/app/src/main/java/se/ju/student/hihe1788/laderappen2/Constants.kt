@@ -31,4 +31,7 @@ object Constants {
     val LIGHT_ACK = "L"
     val POS_EVENT_ACK = "0"
     val COLL_EVENT_ACK = "1"
+
+    val BLUETOOTH_SCAN_PERIOD = 10000
+    val BLUETOOTH_SIGNAL_STRENGTH = -75
 }
