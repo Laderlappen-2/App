@@ -6,10 +6,6 @@ import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Handler
 import android.os.Message
-import java.util.*
-import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 /**
  * An object that handles all Bluetooth stuff.
@@ -136,7 +132,7 @@ object BluetoothHandler {
     private val InstructionsSender : Runnable = Runnable {
         run {
             if (MowerModel.isConnected) {
-                this.sendMsg(DriveInstructionsModel.toMessage())
+                this.sendMsg(DriveInstructionsModel.toByteArray())
             }
             mHandler.postDelayed(InstructionsSender, 1000)
         }
