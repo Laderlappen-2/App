@@ -1,16 +1,23 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothDevice
+import java.util.*
 
-class BLEDevice(private val mBluetoothDevice: BluetoothDevice) {
-    private var mRSSI: Int = 0
+object BLEDevice {
+    private lateinit var mBluetoothDevice: BluetoothDevice
+    private var mUUID: UUID = UUID.randomUUID()
+    val autoConnect: Boolean = false
+
+    fun setDevice(device: BluetoothDevice) { mBluetoothDevice = device }
+
+    fun getDevice() : BluetoothDevice { return mBluetoothDevice }
 
     fun getAddress() : String { return mBluetoothDevice.address }
 
     fun getName() : String { return mBluetoothDevice.name }
 
-    fun setRSSI(rssi: Int) { mRSSI = rssi }
+    fun setUUID(uuid: UUID) { mUUID = uuid }
 
-    fun getRSSI() : Int { return mRSSI }
+    fun getUUID() : UUID { return mUUID }
 
 }

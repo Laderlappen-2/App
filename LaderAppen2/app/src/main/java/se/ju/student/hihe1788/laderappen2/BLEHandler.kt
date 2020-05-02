@@ -2,6 +2,7 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -17,6 +18,7 @@ class BLEHandler (private val mMainActivity: MainActivity) {
         mBluetoothManager.adapter
     }*/
     private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    private lateinit var mBluetoothGatt: BluetoothGatt
     private var mScanning: Boolean = false
     private lateinit var mDevice: BluetoothDevice
 
@@ -61,7 +63,7 @@ class BLEHandler (private val mMainActivity: MainActivity) {
     }
 
     fun connectTo(device: BLEDevice) {
-
+        //mBluetoothGatt = device.getDevice().connectGatt(mMainActivity, device.autoConnect, )
     }
 
     //private var mHandler: Handler = Handler() {}
