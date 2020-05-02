@@ -48,15 +48,16 @@ class DriveFragment: Fragment() {
         mBtnAuto = requireView().findViewById(R.id.btn_drive_auto)
 
         mBtnLight.setOnClickListener {
-            if (MowerModel.hasLightOn) {
-                //BluetoothHandler.sendMsg("@L,0,1$".toByteArray())
-            } else {
-                //BluetoothHandler.sendMsg("@L,1,1$".toByteArray())
+            if (!mBtnLight.isActivated) {
+                mBtnLight.isActivated
+                DriveInstructionsModel.setLightOn()
             }
+            mBtnLight.isEnabled
+            DriveInstructionsModel.setLightOff()
         }
 
         mBtnHonk.setOnClickListener {
-            //BluetoothHandler.sendMsg("@H,1,0$".toByteArray())
+            DriveInstructionsModel.setHonkOn()
         }
 
         mBtnBack.setOnClickListener {
@@ -68,10 +69,15 @@ class DriveFragment: Fragment() {
         }
 
         mBtnAuto.setOnClickListener {
-            if (MowerModel.isAutonomous) {
-                BluetoothHandler.sendMsg("@M,1$".toByteArray())
-            } else {
-                BluetoothHandler.sendMsg("@A,1$".toByteArray())
+
+            if (!mBtnAuto.isActivated && !MowerModel.isAutonomous)
+            {
+                mBtnAuto.isActivated
+                DriveInstructionsModel.setAutoOn()
+            } else if (mBtnAuto.isActivated && MowerModel.isAutonomous)
+            {
+                mBtnAuto.isEnabled
+                DriveInstructionsModel.setAutoOff()
             }
         }
 
