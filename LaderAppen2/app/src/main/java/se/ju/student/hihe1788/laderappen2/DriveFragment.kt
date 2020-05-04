@@ -30,12 +30,13 @@ class DriveFragment: Fragment() {
         super.onResume()
         //or here :D
 
-        /*
-        RestHandler.postDriveSession({
-            val id = DataHandler.getCurrentRoute().id
-            println(id)
+
+        /*RestHandler.postDriveSession({
+            // här borde vi egentligen ta emot driving sessionen som skapades, istället för att den ska läggas i datahandler.
+            println(DataHandler.getCurrentRoute().id.toString())
         }, {
-            println(it?.message)
+            println("Vi är i error callback, antingen network error eller felmeddelande från restapi")
+            println(it?.statusCode)
         })*/
 
         /*
@@ -50,11 +51,5 @@ class DriveFragment: Fragment() {
         }, {
             println(it?.message)
         })*/
-
-        RestHandler.test({
-            println("SUCCESS")
-        }, {
-            println(it?.message)
-        })
     }
 }
