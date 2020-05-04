@@ -16,7 +16,8 @@ import java.util.UUID
  */
 class BluetoothService(var mHandler: Handler) {
 
-    private val MY_UUID = UUID.fromString("d42ac549-9825-4b1d-b586-80757bed9788")
+    //private val MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+    private val MY_UUID = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66")
     private var mState = Constants.STATE_NONE
     private lateinit var mConnectThread: ConnectThread
     private lateinit var mConnectedThread: ConnectedThread
@@ -29,6 +30,7 @@ class BluetoothService(var mHandler: Handler) {
      */
     @Synchronized
     fun getState(): Int {
+        println("BluetoothService.getState() called")
         return mState
     }
 
@@ -38,8 +40,9 @@ class BluetoothService(var mHandler: Handler) {
      */
     @Synchronized
     private fun setState(state: Int) {
+        println("BluetoothService.setState() called")
         mState = state
-        mHandler.obtainMessage(mState)
+        mHandler.obtainMessage(Constants.MESSAGE_STATE_CHANGE, mState, -1)
             .sendToTarget()
     }
 
@@ -49,7 +52,7 @@ class BluetoothService(var mHandler: Handler) {
      */
     @Synchronized
     fun connect(device: BluetoothDevice) {
-
+        println("BluetoothService.connect($device) called")
         if (mState == Constants.STATE_CONNECTING) {
             if (mIsConnectThreadExisting) {
                 mConnectThread.cancel()
@@ -63,6 +66,7 @@ class BluetoothService(var mHandler: Handler) {
 
         mConnectThread = ConnectThread(device)
         mConnectThread.start()
+        setState(Constants.STATE_CONNECTING)
     }
 
     /**
@@ -71,7 +75,7 @@ class BluetoothService(var mHandler: Handler) {
      */
     @Synchronized
     fun connected(socket: BluetoothSocket) {
-
+        println("BluetoothService.connected($socket) called")
         if (mIsConnectThreadExisting) {
             mConnectThread.cancel()
             mIsConnectThreadExisting = false
@@ -84,6 +88,7 @@ class BluetoothService(var mHandler: Handler) {
 
         mConnectedThread = ConnectedThread(socket)
         mConnectedThread.start()
+        setState(Constants.STATE_CONNECTED)
     }
 
     /**
@@ -91,6 +96,7 @@ class BluetoothService(var mHandler: Handler) {
      */
     @Synchronized
     fun stop() {
+        println("BluetoothService.stop() called")
         if (mIsConnectThreadExisting) {
             mConnectThread.cancel()
             mIsConnectThreadExisting = false
@@ -109,6 +115,7 @@ class BluetoothService(var mHandler: Handler) {
      * @param out The bytes to write
      */
     fun write(out: ByteArray) {
+        println("BluetoothService.write($out) called")
         val r: ConnectedThread // temporary object
 
         synchronized(this) {
@@ -125,11 +132,9 @@ class BluetoothService(var mHandler: Handler) {
      * @param failMsg A message that indicates if it was lost or failed.
      */
     private fun connectionFail(failMsg: String) {
-        val msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST)
-        val bundle = Bundle()
-        bundle.putString(Constants.TOAST, failMsg)
-        msg.data = bundle
-        mHandler.sendMessage(msg)
+        println("BluetoothService.connectionFail($failMsg) called")
+        mHandler.obtainMessage(Constants.MESSAGE_TOAST, failMsg)
+            .sendToTarget()
 
         setState(Constants.STATE_NONE)
     }
@@ -143,19 +148,21 @@ class BluetoothService(var mHandler: Handler) {
         val mmDevice: BluetoothDevice
         init {
             mIsConnectThreadExisting = true
-            setState(Constants.STATE_CONNECTING)
             mmDevice = device
         }
 
         private val mmSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            mmDevice.createRfcommSocketToServiceRecord(MY_UUID)
+            device.createInsecureRfcommSocketToServiceRecord(MY_UUID)
         }
 
         /**
          * Represent the lifetime of this thread.
          */
         public override fun run() {
-            BluetoothHandler.mBluetoothAdapter?.cancelDiscovery()
+            println("BluetoothService.ConnectThread.run() called")
+            if (BluetoothHandler.mBluetoothAdapter.isDiscovering) {
+                BluetoothHandler.mBluetoothAdapter?.cancelDiscovery()
+            }
 
 
             mmSocket?.use { socket ->
@@ -164,6 +171,7 @@ class BluetoothService(var mHandler: Handler) {
                 } catch (e: IOException) {
                     try {
                         socket.close()
+                        println("Socket close. Msg: $e")
                     } catch (e2: IOException) {
                         println("Unable to close ConnectSocket. Msg: $e2")
                     }
@@ -180,6 +188,7 @@ class BluetoothService(var mHandler: Handler) {
          * @throws IOException
          */
         fun cancel() {
+            println("BluetoothService.ConnectThread.cancel() called")
             try {
                 mmSocket?.close()
             } catch (e: IOException) {
@@ -211,13 +220,13 @@ class BluetoothService(var mHandler: Handler) {
                 println("ConnectedThreadSockets not created. Msg: $e")
             }
 
-            setState(Constants.STATE_CONNECTED)
         }
 
         /**
          * Represent the lifetime of this thread.
          */
         override fun run() {
+            println("BluetoothService.ConnectedThread.run() called")
             val buffer = ByteArray(1024)
             var numBytes: Int // Amount of bytes returned from read()
 
@@ -239,6 +248,7 @@ class BluetoothService(var mHandler: Handler) {
          * @param bytes The bytes to write
          */
         fun write(bytes: ByteArray) {
+            println("BluetoothService.ConnectedThread.write($bytes) called")
             try {
                 mmOutStream.write(bytes)
 
@@ -254,6 +264,7 @@ class BluetoothService(var mHandler: Handler) {
          * @throws IOException
          */
         fun cancel() {
+            println("BluetoothService.ConnectedThread.cancel() called")
             try {
                 mmSocket.close()
             } catch (e: IOException) {

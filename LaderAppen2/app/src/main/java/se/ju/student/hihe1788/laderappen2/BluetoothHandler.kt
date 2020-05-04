@@ -56,15 +56,15 @@ object BluetoothHandler {
                     println("msg sent to mower")
                 }
                 Constants.MESSAGE_READ -> {
-                    /* Received a message from Mower */
                     println("We have a received a message")
-                    val data = msg.obj as ByteArray
+
+                    val data = if (msg.arg1 > 0) msg.obj as ByteArray else return
                     intent.action = Constants.ACTION_MSG_RECEIVED
                     intent.putExtra("message", data)
                 }
                 Constants.MESSAGE_TOAST -> {
                     /* Receives e.g Connection failed/lost. */
-                    val m = msg.data.getString(Constants.TOAST)
+                    val m = msg.obj as String
                     intent.action = Constants.ACTION_ALERT
                     intent.putExtra("message", m)
 

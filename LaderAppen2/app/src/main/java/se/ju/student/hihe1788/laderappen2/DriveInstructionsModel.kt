@@ -60,7 +60,7 @@ object DriveInstructionsModel {
      * @return ByteArray consisting of the new instruction(s)
      */
     fun toMessage(): ByteArray {
-        return "@$mTurn,$mThrust$".toByteArray()
+        return "@D,$mThrust;$mTurn$".toByteArray()
     }
 
     /**

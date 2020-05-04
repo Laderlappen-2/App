@@ -59,8 +59,11 @@ public class MainActivity : AppCompatActivity() {
                     // save to activeRoute( when a route is finished driveFragment sends to backend)
                 }
                 Constants.ACTION_ALERT -> {
-                    AlertDialog.createSimpleDialog(mAppContext, intent.getStringExtra("message"),
+                    println("MainActivity.BroadCastReceiver.Constants.ACTION_ALERT reached.")
+                    /*
+                    AlertDialog.createSimpleDialog(mAppContext, intent.getStringExtra("message")!!,
                         "${intent.getStringExtra("message")}. ${MainActivity.mAppContext.getString(R.string.tryAgain)}")
+                     */
                 }
             }
         }
