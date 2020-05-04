@@ -17,4 +17,6 @@
     <string name="Bluetooth">Bluetooth</string>
     <string name="connectionLost">Connection lost</string>
     <string name="tryAgain">Try again</string>
+    <string name="auto">Auto</string>
+    <string name="drive">Drive</string>
 </resources>

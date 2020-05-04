@@ -36,7 +36,7 @@
         android:id="@+id/btnAutoDrive"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:text="AUTO"
+        android:text="@string/auto"
         android:textSize="28sp"
         android:textColor="@color/colorWhite"
         android:background="@drawable/button_auto_selector_drive"
