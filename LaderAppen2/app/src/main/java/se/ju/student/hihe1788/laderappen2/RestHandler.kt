@@ -6,6 +6,7 @@ import com.android.volley.toolbox.HttpHeaderParser
 import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import se.ju.student.hihe1788.laderappen2.models.RoutePagination
 import java.nio.charset.Charset
 
 object RestHandler {
@@ -18,8 +19,14 @@ object RestHandler {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
         val jsonObjectRequest = CustomRestRequest(RestMethodEnum.GET, url, null,
-            Response.Listener {
-                successCallback()
+            Response.Listener {jsonStringRes ->
+                parseStringResponse<RoutePagination>(jsonStringRes) { pagination ->
+                    pagination?.let {
+                        // TODO Do not use DataHandler, instead return result in "successCallback()"
+                        DataHandler.setRoutes(it.results)
+                    }
+                    successCallback()
+                }
             },
             Response.ErrorListener { error ->
                 parseErrorResponse(error, errorCallback)
@@ -106,7 +113,9 @@ object RestHandler {
         }catch(ex: Exception) {
             // Any exception would be catched here, and then returned to the calling function
             val restError = RestErrorModel(0, ex.message.orEmpty(), ex.localizedMessage.orEmpty())
-            restError.statusCode = error.networkResponse.statusCode
+            error.networkResponse?.let {
+                restError.statusCode = error.networkResponse.statusCode
+            }
             done(restError)
         }
     }

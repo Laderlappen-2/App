@@ -1,15 +1,17 @@
 package se.ju.student.hihe1788.laderappen2
 
+import se.ju.student.hihe1788.laderappen2.models.RoutePagination
+
 object DataHandler {
-    private lateinit var pagination: PaginationModel
+    private lateinit var routes: ArrayList<RouteModel>
     private lateinit var currentRoute: RouteModel
 
-    fun getPagination(): PaginationModel {
-        return pagination
+    fun getRoutes(): ArrayList<RouteModel> {
+        return routes
     }
 
-    fun setPagination(newPagination: PaginationModel) {
-        pagination = newPagination
+    fun setRoutes(routes: ArrayList<RouteModel>) {
+        this.routes = routes
     }
 
     fun getCurrentRoute(): RouteModel {
