@@ -1,14 +1,15 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.os.Build
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
-import android.graphics.Color
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import androidx.annotation.RequiresApi
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -35,8 +36,8 @@ class DriveFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mJoystickThrust = getView()!!.findViewById(R.id.joystick_left)
-        mJoystickTurn = getView()!!.findViewById(R.id.joystick_right)
+        mJoystickThrust = requireView().findViewById(R.id.joystick_left)
+        mJoystickTurn = requireView().findViewById(R.id.joystick_right)
         mJoystickThrust.setToThrust(true)
 
         // Backbutton
