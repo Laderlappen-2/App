@@ -11,12 +11,12 @@ import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 
 class CustomRestRequest (
-    method: Int,
+    method: RestMethodEnum,
     url: String,
     private val jsonString: String?,
     listener: Response.Listener<String>,
     errorListener: Response.ErrorListener
-): StringRequest(method, url, listener, errorListener) {
+): StringRequest(method.value, url, listener, errorListener) {
 
     override fun getBody(): ByteArray {
         jsonString?.let {
