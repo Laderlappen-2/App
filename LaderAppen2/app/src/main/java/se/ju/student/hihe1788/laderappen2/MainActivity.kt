@@ -76,6 +76,7 @@ public class MainActivity : AppCompatActivity() {
         setupBroadcastReceiver()
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(mBroadcastReceiver)

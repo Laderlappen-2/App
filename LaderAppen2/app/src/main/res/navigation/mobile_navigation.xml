@@ -26,4 +26,10 @@
         android:name="se.ju.student.hihe1788.laderappen2.DriveFragment"
         android:label="DriveFragment"
         tools:layout="@layout/drive_fragment"/>
+    <fragment
+        android:id="@+id/routeItemFragment"
+        android:name="se.ju.student.hihe1788.laderappen2.RouteItemFragment"
+        android:label="RouteItemFragment"
+        tools:layout="@layout/route_item_fragement"/>
+
 </navigation>
