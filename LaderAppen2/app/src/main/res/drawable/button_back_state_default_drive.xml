@@ -8,6 +8,7 @@
         </shape>
     </item>
 
-    <item android:drawable="@drawable/ic_arrow_back_black_75dp"/>
+    <item android:drawable="@drawable/ic_arrow_back_black_75dp">
+    </item>
 
 </layer-list>

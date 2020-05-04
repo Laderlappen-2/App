@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
