@@ -30,7 +30,7 @@ object RestHandler {
             Response.ErrorListener { error ->
                 parseErrorResponse(error, errorCallback)
             })
-        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
     }
 
     fun postDriveSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
@@ -50,7 +50,7 @@ object RestHandler {
                 parseErrorResponse(error, errorCallback)
             }
         )
-        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
     }
 
     fun postRoute(route: RouteModel, id: String, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
@@ -72,7 +72,7 @@ object RestHandler {
                 parseErrorResponse(error, errorCallback)
             })
 
-        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonArrayRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonArrayRequest)
     }
 
     fun deleteRouteById(id: Int, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
@@ -87,7 +87,7 @@ object RestHandler {
             }
         )
 
-        RequestQueueSingleton.getInstance(MainActivity.appContext).addToRequestQueue(jsonObjectRequest)
+        RequestQueueSingleton.getInstance(MainActivity.mAppContext).addToRequestQueue(jsonObjectRequest)
     }
 
     private inline fun<reified T> parseStringResponse(jsonString: String, done: (T?) -> Unit) {
@@ -115,9 +115,5 @@ object RestHandler {
             restError.statusCode = error.networkResponse.statusCode
             done(restError)
         }
-    }
-
-    private fun getRestError(error: VolleyError): RestErrorModel{
-        return RestErrorModel(0, error.message.orEmpty(), error.localizedMessage.orEmpty())
     }
 }

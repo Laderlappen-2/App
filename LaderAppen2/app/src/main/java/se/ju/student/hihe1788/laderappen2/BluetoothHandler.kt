@@ -7,6 +7,9 @@ import android.content.Intent
 import android.os.Handler
 import android.os.Message
 
+/**
+ * An object that handles all Bluetooth stuff.
+ */
 object BluetoothHandler {
     val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var mBluetoothService: BluetoothService
@@ -15,6 +18,11 @@ object BluetoothHandler {
     private var mHandler = @SuppressLint("HandlerLeak")
     object: Handler() {
 
+        /**
+         * Receives messages from BluetoothService and creates intents so
+         * that the BroadcastReceiver can pick them up.
+         * @param msg A Message that consists of what the message is about and some data.
+         */
         override fun handleMessage(msg: Message) {
             val intent = Intent()
             when(msg.what) {
@@ -58,13 +66,15 @@ object BluetoothHandler {
 
                 }
             }
-            MainActivity.appContext.sendBroadcast(intent)
+            MainActivity.mAppContext.sendBroadcast(intent)
 
         }
     }
 
-    // all the functions, ya know: connect to bt, enable bt osv
-
+    /**
+     * Checks if Bluetooth is enabled.
+     * @return returns true if Bluetooth is enabled
+     */
     fun isBluetoothEnabled(): Boolean {
         if (mBluetoothAdapter?.isEnabled == false) {
             return false
@@ -72,10 +82,14 @@ object BluetoothHandler {
         return true
     }
 
+    /**
+     * Toggles Bluetooth on or off. If the device do not support
+     * Bluetooth it creates a @see AlertDialog.
+     */
     fun toggleBluetooth() {
         if (mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(MainActivity.appContext, MainActivity.appContext.getString(R.string.Bluetooth),
-                MainActivity.appContext.getString(R.string.btNotSupported))
+            AlertDialog.createSimpleDialog(MainActivity.mAppContext, MainActivity.mAppContext.getString(R.string.Bluetooth),
+                MainActivity.mAppContext.getString(R.string.btNotSupported))
         }
 
         if (mBluetoothAdapter?.isEnabled == false) {
@@ -85,6 +99,10 @@ object BluetoothHandler {
         }
     }
 
+    /**
+     * Initiate BluetoothService.ConnectThread and tries to
+     * connect to @see MowerModel.
+     */
     fun connectDevice() {
         mDevice = mBluetoothAdapter.getRemoteDevice(MowerModel.address)
         mBluetoothService = BluetoothService(mHandler)
@@ -92,10 +110,17 @@ object BluetoothHandler {
         mBluetoothService.connect(mDevice)
     }
 
+    /**
+     * Disconnect the connected device.
+     */
     fun disconnectDevice() {
         mBluetoothService.stop()
     }
 
+    /**
+     * Send a given message to the connected device.
+     * @param bytes: A bytearray of what you would like to send.
+     */
     fun sendMsg(bytes: ByteArray) {
         mBluetoothService.write(bytes)
     }

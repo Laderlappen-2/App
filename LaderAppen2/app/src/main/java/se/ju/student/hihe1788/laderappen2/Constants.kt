@@ -1,5 +1,8 @@
 package se.ju.student.hihe1788.laderappen2
 
+/**
+ * A place store all constants.
+ */
 object Constants {
     val STATE_NONE = 0         // we're doing nothing
     val STATE_LISTEN = 1      // now listening for incoming connectings

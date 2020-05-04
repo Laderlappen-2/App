@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 
+/**
+ * Start view for the LäderAppen
+ */
 class HomeFragment: Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,

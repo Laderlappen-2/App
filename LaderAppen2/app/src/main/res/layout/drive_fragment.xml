@@ -5,19 +5,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp"
-        android:text="@string/drive_text"
-        android:textAlignment="center"
-        android:textSize="52sp"
+    <se.ju.student.hihe1788.laderappen2.JoystickView
+        android:id="@+id/joystick_left"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_joystick_left"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"/>
+        app:layout_constraintEnd_toStartOf="@id/guide_vert_50"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_vert_50"
+        app:layout_constraintGuide_percent="0.5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <se.ju.student.hihe1788.laderappen2.JoystickView
+        android:id="@+id/joystick_right"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_joystick_right"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guide_vert_50"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/btn_drive_auto"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="AUTO"
+        android:textSize="30sp"
+        android:background="@drawable/button_auto_selector_drive"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/btn_drive_bt"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_bluetooth_selector_drive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btn_drive_back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_back_selector_drive"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/btn_drive_light"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_light_selector_drive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

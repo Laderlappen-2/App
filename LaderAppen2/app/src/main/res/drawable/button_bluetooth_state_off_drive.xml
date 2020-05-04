@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/design_default_color_error"/>
+            <corners android:radius="0dp"/>
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/ic_bluetooth_disabled_white_24dp"/>
+
+</layer-list>
