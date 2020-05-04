@@ -20,7 +20,7 @@ class CustomRestRequest (
 
     override fun getBody(): ByteArray {
         jsonString?.let {
-            return (jsonString + "").toByteArray(Charset.forName("utf-8"))
+            return it.toByteArray(Charset.forName("utf-8"))
         }
         return ByteArray(0)
     }
