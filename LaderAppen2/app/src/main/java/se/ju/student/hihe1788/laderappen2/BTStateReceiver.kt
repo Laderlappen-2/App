@@ -1,6 +1,9 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothGattDescriptor
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,6 +11,7 @@ import android.content.Intent
 class BTStateReceiver (private val mContext: Context) : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        println("BTStateReceiver: onReceive()")
         val action = intent?.action
 
         if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED))
@@ -69,6 +73,35 @@ class BTStateReceiver (private val mContext: Context) : BroadcastReceiver() {
             }
 
         }
+        else if ( action.equals(ACTION_GATT_CONNECTED) )
+        {
+            println("BTStateReceiver: onReceive(): ACTION_GATT_CONNECTED")
+        }
+        else if ( action.equals(ACTION_GATT_SERVICES_DISCOVERED) )
+        {
+            println("BTStateReceiver: onReceive(): ACTION_GATT_SERVICES_DISCOVERED")
 
+            MainActivity.mBLEHandler.getSupportedGattServices().forEach { service ->
+                if (service.uuid.equals(MOWER_SERVICE_UUID))
+                {
+                    val characteristic = service.getCharacteristic(MOWER_READ_CHARACTERISTIC_UUID)
+
+                    /*
+                    characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG).apply {
+                        value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                        value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+                    }
+                     */
+
+                    characteristic.descriptors.forEach { descriptor ->
+                        descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                        descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+                        MainActivity.mBLEHandler.getBluetoothGatt().writeDescriptor(descriptor)
+                    }
+                    MainActivity.mBLEHandler.getBluetoothGatt().setCharacteristicNotification(characteristic, true)
+                }
+
+            }
+        }
     }
 }

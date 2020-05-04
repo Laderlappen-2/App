@@ -1,6 +1,8 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -19,20 +21,22 @@ val REQUEST_ENABLE_BT = 1
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        lateinit var mActivity: MainActivity
+        lateinit var mContext: Context
+        lateinit var mBLEHandler: BLEHandler
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
     private lateinit var mBTStateReceiver: BTStateReceiver
-    private lateinit var mBLEHandler: BLEHandler
+    private lateinit var mBLEDeviceScanner: BLEDeviceScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
-        mActivity = this
-        mBTStateReceiver = BTStateReceiver(mActivity)
-        mBLEHandler = BLEHandler(mActivity)
+        mContext = applicationContext
+        mBTStateReceiver = BTStateReceiver(mContext)
+        mBLEHandler = BLEHandler(mContext)
+        mBLEDeviceScanner = BLEDeviceScanner()
 
         if (!mBLEHandler.isSupportingBLE())
         {
@@ -49,7 +53,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(mBTStateReceiver, IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED))
+        setupBroadcastReceiver()
+        //mBLEDeviceScanner.start()
+        //mBLEHandler.connectTo(BLEDevice)
     }
 
     /** onStop */
@@ -141,5 +147,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     //endregion
+
+    private fun setupBroadcastReceiver() {
+        val filter = IntentFilter()
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+        filter.addAction(ACTION_GATT_CONNECTED)
+        filter.addAction(ACTION_GATT_SERVICES_DISCOVERED)
+
+        registerReceiver(mBTStateReceiver, filter)
+    }
 
 }

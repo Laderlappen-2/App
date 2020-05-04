@@ -26,47 +26,47 @@ object BluetoothHandler {
         override fun handleMessage(msg: Message) {
             val intent = Intent()
             when(msg.what) {
-                Constants.MESSAGE_STATE_CHANGE -> {
+                MESSAGE_STATE_CHANGE -> {
                     /* Send to Broadcast Receiver */
                     println("State changed")
                     when (msg.arg1) {
-                        Constants.STATE_CONNECTED -> {
-                            intent.action = Constants.ACTION_STATE_CONNECTED
+                        STATE_CONNECTED -> {
+                            intent.action = ACTION_STATE_CONNECTED
                             println("State = CONNECTED")
                         }
-                        Constants.STATE_CONNECTING -> {
-                            intent.action = Constants.ACTION_STATE_CONNECTING
+                        STATE_CONNECTING -> {
+                            intent.action = ACTION_STATE_CONNECTING
                             println("State = CONNECTING")
                         }
-                        Constants.STATE_LISTEN -> {
-                            intent.action = Constants.ACTION_STATE_LISTEN
+                        STATE_LISTEN -> {
+                            intent.action = ACTION_STATE_LISTEN
                             println("State = LISTEN")
                         }
-                        Constants.STATE_NONE -> {
-                            intent.action = Constants.ACTION_STATE_NONE
+                        STATE_NONE -> {
+                            intent.action = ACTION_STATE_NONE
                             println("State = NONE")
                         }
                     }
                 }
-                Constants.MESSAGE_WRITE -> {
+                MESSAGE_WRITE -> {
                     println("msg sent to mower")
                 }
-                Constants.MESSAGE_READ -> {
+                MESSAGE_READ -> {
                     /* Received a message from Mower */
                     println("We have a received a message")
                     val data = msg.obj as ByteArray
-                    intent.action = Constants.ACTION_MSG_RECEIVED
+                    intent.action = ACTION_MSG_RECEIVED
                     intent.putExtra("message", data)
                 }
-                Constants.MESSAGE_TOAST -> {
+                MESSAGE_TOAST -> {
                     /* Receives e.g Connection failed/lost. */
-                    val m = msg.data.getString(Constants.TOAST)
-                    intent.action = Constants.ACTION_ALERT
+                    val m = msg.data.getString(TOAST)
+                    intent.action = ACTION_ALERT
                     intent.putExtra("message", m)
 
                 }
             }
-            MainActivity.mActivity.sendBroadcast(intent)
+            MainActivity.mContext.sendBroadcast(intent)
 
         }
     }
@@ -88,8 +88,8 @@ object BluetoothHandler {
      */
     fun toggleBluetooth() {
         if (mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(MainActivity.mActivity, MainActivity.mActivity.getString(R.string.Bluetooth),
-                MainActivity.mActivity.getString(R.string.btNotSupported))
+            AlertDialog.createSimpleDialog(MainActivity.mContext, MainActivity.mContext.getString(R.string.Bluetooth),
+                MainActivity.mContext.getString(R.string.btNotSupported))
         }
 
         if (mBluetoothAdapter?.isEnabled == false) {

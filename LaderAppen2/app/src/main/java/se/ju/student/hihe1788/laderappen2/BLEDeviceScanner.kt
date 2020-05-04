@@ -2,17 +2,11 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothClass
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.content.Context
 import android.content.Intent
-import android.os.Looper
 import android.os.Message
-import java.util.*
-import java.util.logging.Handler
 
 class BLEDeviceScanner {
 
@@ -39,7 +33,7 @@ class BLEDeviceScanner {
                         }
                         STATE_CONNECTING -> {
                             intent.action = ACTION_STATE_CONNECTING
-                            println("State = CONNECTING")
+                            println("BLEDeviceScanner -> Handler -> State = CONNECTING")
                         }
                         STATE_LISTEN -> {
                             intent.action = ACTION_STATE_LISTEN
@@ -69,7 +63,7 @@ class BLEDeviceScanner {
 
                 }
             }
-            MainActivity.mActivity.sendBroadcast(intent)
+            MainActivity.mContext.sendBroadcast(intent)
 
         }
     }
@@ -81,6 +75,7 @@ class BLEDeviceScanner {
 
     fun start()
     {
+        println("BLEDeviceScanner onStart()")
         scanBLEDevice(true)
     }
 
@@ -94,6 +89,7 @@ class BLEDeviceScanner {
         when(enable && !mIsScanning)
         {
             true -> {
+                println("scanBLEDevice enable and not scanning == true")
                 mHandler.postDelayed({
                     mIsScanning = false
                     mBluetoothScanner.stopScan(scanCallback)
@@ -152,10 +148,18 @@ class BLEDeviceScanner {
             val name = result?.device?.name
             val uuids = result?.device?.uuids
 
+            println("scanCallback: onScanResult: address")
+
             when(type)
             {
-                BluetoothDevice.DEVICE_TYPE_LE -> {
-
+                BluetoothDevice.DEVICE_TYPE_LE ->
+                {
+                    if (address == MowerModel.address) {
+                        mHandler.obtainMessage(STATE_CONNECTING).sendToTarget()
+                        val intent = Intent()
+                        intent.action = ACTION_READY_TO_CONNECT
+                        MainActivity.mContext.sendBroadcast(intent)
+                    }
                 }
                 else -> {
 

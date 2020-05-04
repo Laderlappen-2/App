@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
  */
 class HomeFragment: Fragment() {
 
+    private lateinit var mBLEHandler: BLEHandler
+
     /** Fragment has been attached to an activity.
      * context is hosting this fragment
      **/
@@ -36,9 +38,12 @@ class HomeFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mBLEHandler = BLEHandler(MainActivity.mContext)
+
         view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener {
             // TODO ask if user wants to enable bluetooth with AlertDialog if yes navigate to drive
-            findNavController().navigate(R.id.driveFragment, null)
+            //findNavController().navigate(R.id.driveFragment, null)
+            MainActivity.mBLEHandler.connectTo(BLEDevice)
         }
     }
 

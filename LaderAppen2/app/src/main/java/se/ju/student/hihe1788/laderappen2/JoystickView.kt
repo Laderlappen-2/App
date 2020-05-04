@@ -129,7 +129,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
                         }
 
                         val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
-                        DriveInstructionsModel.setInstructions(force, mIsThrust)
+                        //DriveInstructionsModel.setInstructions(force, mIsThrust)
                     }
                     invalidate()
                 }

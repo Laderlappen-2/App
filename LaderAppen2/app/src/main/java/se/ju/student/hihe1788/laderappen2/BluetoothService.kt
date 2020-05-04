@@ -17,7 +17,7 @@ import java.util.UUID
 class BluetoothService(var mHandler: Handler) {
 
     private val MY_UUID = UUID.fromString("d42ac549-9825-4b1d-b586-80757bed9788")
-    private var mState = Constants.STATE_NONE
+    private var mState = STATE_NONE
     private lateinit var mConnectThread: ConnectThread
     private lateinit var mConnectedThread: ConnectedThread
     private var mIsConnectThreadExisting = false
@@ -50,7 +50,7 @@ class BluetoothService(var mHandler: Handler) {
     @Synchronized
     fun connect(device: BluetoothDevice) {
 
-        if (mState == Constants.STATE_CONNECTING) {
+        if (mState == STATE_CONNECTING) {
             if (mIsConnectThreadExisting) {
                 mConnectThread.cancel()
                 mIsConnectThreadExisting = false
@@ -101,7 +101,7 @@ class BluetoothService(var mHandler: Handler) {
             mIsConnectedThreadExisting = false
         }
 
-        setState(Constants.STATE_NONE)
+        setState(STATE_NONE)
     }
 
     /**
@@ -112,7 +112,7 @@ class BluetoothService(var mHandler: Handler) {
         val r: ConnectedThread // temporary object
 
         synchronized(this) {
-            if (mState != Constants.STATE_CONNECTED) return
+            if (mState != STATE_CONNECTED) return
             r = mConnectedThread
         }
         r.write(out) // write unsynchronized
@@ -125,13 +125,13 @@ class BluetoothService(var mHandler: Handler) {
      * @param failMsg A message that indicates if it was lost or failed.
      */
     private fun connectionFail(failMsg: String) {
-        val msg = mHandler.obtainMessage(Constants.MESSAGE_TOAST)
+        val msg = mHandler.obtainMessage(MESSAGE_TOAST)
         val bundle = Bundle()
-        bundle.putString(Constants.TOAST, failMsg)
+        bundle.putString(TOAST, failMsg)
         msg.data = bundle
         mHandler.sendMessage(msg)
 
-        setState(Constants.STATE_NONE)
+        setState(STATE_NONE)
     }
 
     /**
@@ -143,7 +143,7 @@ class BluetoothService(var mHandler: Handler) {
         val mmDevice: BluetoothDevice
         init {
             mIsConnectThreadExisting = true
-            setState(Constants.STATE_CONNECTING)
+            setState(STATE_CONNECTING)
             mmDevice = device
         }
 
@@ -168,7 +168,7 @@ class BluetoothService(var mHandler: Handler) {
                         println("Unable to close ConnectSocket. Msg: $e2")
                     }
 
-                    connectionFail(MainActivity.mActivity.getString(R.string.unableToConnect))
+                    connectionFail(MainActivity.mContext.getString(R.string.unableToConnect))
                     return
                 }
                 connected(socket)
@@ -211,7 +211,7 @@ class BluetoothService(var mHandler: Handler) {
                 println("ConnectedThreadSockets not created. Msg: $e")
             }
 
-            setState(Constants.STATE_CONNECTED)
+            setState(STATE_CONNECTED)
         }
 
         /**
@@ -221,14 +221,14 @@ class BluetoothService(var mHandler: Handler) {
             val buffer = ByteArray(1024)
             var numBytes: Int // Amount of bytes returned from read()
 
-            while(mState == Constants.STATE_CONNECTED) {
+            while(mState == STATE_CONNECTED) {
                 try {
                     numBytes = mmInStream.read(buffer)
-                    mHandler.obtainMessage(Constants.MESSAGE_READ, numBytes, -1, buffer)
+                    mHandler.obtainMessage(MESSAGE_READ, numBytes, -1, buffer)
                         .sendToTarget()
                 } catch (e: IOException) {
                     println("Unable to read from stream. Msg: $e")
-                    connectionFail(MainActivity.mActivity.getString(R.string.connectionLost))
+                    connectionFail(MainActivity.mContext.getString(R.string.connectionLost))
                     break
                 }
             }
@@ -242,7 +242,7 @@ class BluetoothService(var mHandler: Handler) {
             try {
                 mmOutStream.write(bytes)
 
-                mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, bytes)
+                mHandler.obtainMessage(MESSAGE_WRITE, -1, -1, bytes)
                     .sendToTarget()
             } catch (e: IOException) {
                 println("Error occurred when sending data. Msg: $e")
