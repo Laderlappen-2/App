@@ -3,15 +3,12 @@ package se.ju.student.hihe1788.laderappen2
 import android.os.Build
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
-import java.util.*
-import kotlin.collections.ArrayList
-import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -38,8 +35,8 @@ class DriveFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mJoystickThrust = getView()!!.findViewById(R.id.joystick_left)
-        mJoystickTurn = getView()!!.findViewById(R.id.joystick_right)
+        mJoystickThrust = requireView().findViewById(R.id.joystick_left)
+        mJoystickTurn = requireView().findViewById(R.id.joystick_right)
         mJoystickThrust.setToThrust(true)
 
         // Backbutton
@@ -49,34 +46,6 @@ class DriveFragment: Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onResume() {
-        super.onResume()
-        //or here :D
-
-
-        /*RestHandler.postDriveSession({
-            // här borde vi egentligen ta emot driving sessionen som skapades, istället för att den ska läggas i datahandler.
-            println(DataHandler.getCurrentRoute().id.toString())
-        }, {
-            println("Vi är i error callback, antingen network error eller felmeddelande från restapi")
-            println(it?.statusCode)
-        })*/
-
-        /*
-        val point = PointModel(eventTypeId = 5, positionX =  0, positionY =  0, dateCreated =  Date())
-
-        val positions = ArrayList<PointModel>()
-        positions.add(point)
-
-        val route = RouteModel(1, positions)
-        RestHandler.postRoute(route, route.id.toString(), {
-            println("SUCCESS")
-        }, {
-            println(it?.message)
-        })*/
-    }
-  
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onResume() {
         super.onResume()
