@@ -2,10 +2,10 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothGatt
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -16,37 +16,35 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 
-val REQUEST_ENABLE_BT = 1
+private val TAG = MainActivity::class.java.simpleName
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var mContext: Context
-        lateinit var mBLEHandler: BLEHandler
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
-    private lateinit var mBTStateReceiver: BTStateReceiver
-    private lateinit var mBLEDeviceScanner: BLEDeviceScanner
-
+    //private lateinit var mBTStateReceiver: BTStateReceiver
+    private var mBLEService: BLEService? = null
+    private var mIsBound = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
         mContext = applicationContext
-        mBTStateReceiver = BTStateReceiver(mContext)
-        mBLEHandler = BLEHandler
-        mBLEDeviceScanner = BLEDeviceScanner()
+        //mBTStateReceiver = BTStateReceiver(mContext)
 
-        if (!mBLEHandler.isSupportingBLE())
-        {
+        if (!BLEHandler.isSupportingBLE()) {
             println("MOBILE DON'T SUPPORT BLE")
             /** Inform the user that the device isn't supporting BLE */
         }
 
-        if (!mBLEHandler.isBluetoothEnabled())
-        {
-            mBLEHandler.requestBluetooth()
+        if (!BLEHandler.isBluetoothEnabled()) {
+            BLEHandler.requestBluetooth()
+        }
+        else {
+            startBLEService()
         }
 
         setupNavigationComponents()
@@ -55,8 +53,6 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         setupBroadcastReceiver()
-        //mBLEDeviceScanner.start()
-        //mBLEHandler.connectTo(BLEDevice)
     }
 
     /** onStop */
@@ -80,26 +76,32 @@ class MainActivity : AppCompatActivity() {
     /** The Activity is no longer visible */
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(mBTStateReceiver)
+        unregisterReceiver(gattUpdateReceiver)
     }
 
     /** The Activity is finishing or being destroyed by the system */
     override fun onDestroy() {
         super.onDestroy()
+
+        if (mBLEService != null)
+            stopBLEService()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Check which request is responded to
-        if (requestCode == REQUEST_ENABLE_BT)
+        if (requestCode == BLUETOOTH_REQUEST_ENABLE)
         {
             // Make sure the request was successful
             if (resultCode == RESULT_OK)
             {
                 // Thank you for turning on Bluetooth
+                startBLEService()
             } else if (resultCode == RESULT_CANCELED)
             {
+                if (mBLEService != null)
+                    stopBLEService()
                 // Please turn on Bluetooth
             }
         }
@@ -155,7 +157,155 @@ class MainActivity : AppCompatActivity() {
         filter.addAction(ACTION_GATT_CONNECTED)
         filter.addAction(ACTION_GATT_SERVICES_DISCOVERED)
 
-        registerReceiver(mBTStateReceiver, filter)
+        registerReceiver(gattUpdateReceiver, filter)
     }
 
+    fun startBLEService() {
+        //Initiate Service, start it and then bind to it.
+        val serviceClass = BLEService::class.java
+        val intent = Intent(applicationContext, serviceClass)
+        startService(intent)
+        bindService(intent, myConnection, Context.BIND_AUTO_CREATE )
+    }
+
+    fun stopBLEService() {
+        //Initiate Service, start it and then bind to it.
+        val serviceClass = BLEService::class.java
+        val intent = Intent(applicationContext, serviceClass)
+        stopService(intent)
+    }
+
+    //Returns an object used to access public methods of the bluetooth service
+    private val myConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            className: ComponentName,
+            service: IBinder
+        ) {
+            val binder = service as BLEService.MyLocalBinder
+            mBLEService = binder.getService()
+            mIsBound = true
+            Log.i(TAG, "Bind connected")
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            Log.i(TAG, "Bind disconnected")
+            mIsBound = false
+        }
+    }
+
+    private val gattUpdateReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+            println("BTStateReceiver: onReceive()")
+            val action = intent?.action
+            val data = intent?.data
+
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED))
+            {
+                val state = intent?.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+
+                when (state)
+                {
+                    BluetoothAdapter.STATE_TURNING_OFF -> {
+                        /**
+                         * BLUETOOTH IS TURNING OFF
+                         * - Automatically switch back on
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_OFF -> {
+                        /**
+                         * BLUETOOTH IS OFF
+                         * - Inform user
+                         * - Give opportunity to switch on
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_TURNING_ON -> {
+                        /**
+                         * BLUETOOTH IS TURNING ON
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_ON -> {
+                        /**
+                         * BLUETOOTH IS ON
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_CONNECTING -> {
+                        /**
+                         * IS IN CONNECTING STATE
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_CONNECTED -> {
+                        /**
+                         * IS IN CONNECTED STATE
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_DISCONNECTING -> {
+                        /**
+                         * IS IN DISCONNECTING STATE
+                         */
+                    }
+
+                    BluetoothAdapter.STATE_DISCONNECTED -> {
+                        /**
+                         * IS IN DISCONNECTED STATE
+                         */
+                    }
+                }
+
+            }
+            else if ( action.equals(ACTION_GATT_CONNECTED) )
+            {
+                println("BTStateReceiver: onReceive(): ACTION_GATT_CONNECTED")
+            }
+            else if ( action.equals(ACTION_GATT_DISCONNECTED) )
+            {
+                println("BTStateReceiver: onReceive(): ACTION_GATT_DISCONNECTED")
+            }
+            else if ( action.equals(ACTION_GATT_SERVICES_DISCOVERED) )
+            {
+                println("BTStateReceiver: onReceive(): ACTION_GATT_SERVICES_DISCOVERED")
+                /*
+                BLEHandler.getSupportedGattServices().forEach { service ->
+                    if (service.uuid.equals(MOWER_SERVICE_UUID))
+                    {
+                        val characteristic = service.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID)
+                        /*
+                        characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG).apply {
+                            value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+                        }
+                         */
+
+                        characteristic.descriptors.forEach { descriptor ->
+                            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
+                            BLEHandler.getBluetoothGatt().writeDescriptor(descriptor)
+                        }
+                        BLEHandler.getBluetoothGatt().setCharacteristicNotification(characteristic, true)
+                    }
+
+                }*/
+            }
+            else if ( action.equals(ACTION_DATA_WRITTEN) )
+            {
+                println("BTStateReceiver: onReceive(): ACTION_DATA_WRITTEN")
+
+                if (data != null)
+                {
+                    // PROCESS DATA
+                }
+            }
+            else if ( action.equals(ACTION_GATT_REGISTER_CHARACTERISTIC_READ) )
+            {
+                Log.i(TAG, "ACTION_GATT_REGISTER_CHARACTERISTIC_READ")
+                mBLEService!!.readChar()
+            }
+        }
+    }
 }

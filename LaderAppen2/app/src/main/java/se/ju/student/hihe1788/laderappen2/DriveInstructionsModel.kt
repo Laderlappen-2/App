@@ -84,7 +84,7 @@ object DriveInstructionsModel {
      * @return ByteArray consisting of the new instruction(s)
      */
     fun toByteArray(): ByteArray {
-        val bArr = "@$mTurn;$mThrust;$mLight;$mHonk$".toByteArray()
+        val bArr = "@$mTurn;$mThrust;$mLight;$mHonk;$mAuto$".toByteArray()
         mHonk = 0
         return bArr
     }
