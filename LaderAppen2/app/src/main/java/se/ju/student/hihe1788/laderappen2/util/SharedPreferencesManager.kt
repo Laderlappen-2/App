@@ -34,4 +34,10 @@ class SharedPreferencesManager(context: Context) {
         devices.add(device)
         this.setDevices(devices)
     }
+
+    fun removeDevice(device: String) {
+        val devices = this.getDevices()
+        devices.remove(device)
+        this.setDevices(devices)
+    }
 }
