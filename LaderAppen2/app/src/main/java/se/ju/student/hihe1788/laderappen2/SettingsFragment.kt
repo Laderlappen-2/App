@@ -1,5 +1,8 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import se.ju.student.hihe1788.laderappen2.util.SharedPreferencesManager
+import se.ju.student.hihe1788.laderappen2.util.SteeringModeEnum
 
 /**
  * Shows the settings view and its awesome customization features.
@@ -20,29 +25,52 @@ class SettingsFragment : Fragment() {
         return inflater.inflate(R.layout.settings_fragment, container, false)
     }
 
+    lateinit var settings: SharedPreferencesManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        settings = SharedPreferencesManager(view.context)
+
         setUI()
 
         view.findViewById<ImageButton>(R.id.bluetooth_btn)?.setOnClickListener {
-
             it.isSelected = !BluetoothHandler.isBluetoothEnabled()
             BluetoothHandler.toggleBluetooth()
-
         }
 
         view.findViewById<ImageButton>(R.id.device_connected)?.setOnClickListener {
-
-        if (!MowerModel.isConnected && BluetoothHandler.isBluetoothEnabled()) {
-            BluetoothHandler.connectDevice()
-            it.isSelected = true
-        } else {
-            BluetoothHandler.disconnectDevice()
-            it.isSelected = false
+            if (!MowerModel.isConnected && BluetoothHandler.isBluetoothEnabled()) {
+                BluetoothHandler.connectDevice()
+                it.isSelected = true
+            } else {
+                BluetoothHandler.disconnectDevice()
+                it.isSelected = false
+            }
+            Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
         }
 
-        Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
+        view.findViewById<ImageButton>(R.id.steering_btn_left)?.setOnClickListener {
+            setSteeringMode(SteeringModeEnum.LEFT_HANDED, it)
         }
+        view.findViewById<ImageButton>(R.id.steering_btn_right)?.setOnClickListener {
+            setSteeringMode(SteeringModeEnum.RIGHT_HANDED, it)
+        }
+        view.findViewById<ImageButton>(R.id.steering_btn_one)?.setOnClickListener {
+            setSteeringMode(SteeringModeEnum.TWO_HANDED, it)
+        }
+    }
+
+    fun setSteeringMode(steeringMode: SteeringModeEnum, button: View) {
+        settings.setSteeringMode(steeringMode)
+        resetSteeringButtons()
+        button.isSelected = true
+    }
+
+    fun resetSteeringButtons() {
+        view?.findViewById<ImageButton>(R.id.steering_btn_one)?.isSelected = false
+        view?.findViewById<ImageButton>(R.id.steering_btn_right)?.isSelected = false
+        view?.findViewById<ImageButton>(R.id.steering_btn_left)?.isSelected = false
     }
 
     override fun onResume() {
@@ -54,9 +82,24 @@ class SettingsFragment : Fragment() {
      * Setups the UI based on states in the application.
      */
     private fun setUI() {
+        // Device connection
         if (MowerModel.isConnected) {
             view?.findViewById<ImageButton>(R.id.device_connected)?.isSelected = true
         }
+        // Bluetooth connection
         view?.findViewById<ImageButton>(R.id.bluetooth_btn)?.isSelected = BluetoothHandler.isBluetoothEnabled()
+
+        // Steering mode
+        when(settings.getSteeringMode()) {
+            SteeringModeEnum.LEFT_HANDED -> {
+                view?.findViewById<ImageButton>(R.id.steering_btn_left)?.isSelected = true
+            }
+            SteeringModeEnum.RIGHT_HANDED -> {
+                view?.findViewById<ImageButton>(R.id.steering_btn_right)?.isSelected = true
+            }
+            SteeringModeEnum.TWO_HANDED -> {
+                view?.findViewById<ImageButton>(R.id.steering_btn_one)?.isSelected = true
+            }
+        }
     }
 }
