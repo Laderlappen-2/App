@@ -22,16 +22,19 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var mContext: Context
+        var mBLEService: BLEService? = null
+        var mActivity: MainActivity? = null
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
-    private var mBLEService: BLEService? = null
     private var mIsBound = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
 
         mContext = applicationContext
+        mActivity = this
 
         if (!BLEHandler.isSupportingBLE()) {
             println("MOBILE DON'T SUPPORT BLE")
@@ -40,9 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         if (!BLEHandler.isBluetoothEnabled()) {
             BLEHandler.requestBluetooth()
-        }
-        else {
-            startBLEService()
         }
 
         setupNavigationComponents()
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        if (mBLEService != null)
+        if (mIsBound)
             stopBLEService()
     }
 
@@ -95,10 +95,9 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == RESULT_OK)
             {
                 // Thank you for turning on Bluetooth
-                startBLEService()
             } else if (resultCode == RESULT_CANCELED)
             {
-                if (mBLEService != null)
+                if (mIsBound)
                     stopBLEService()
                 // Please turn on Bluetooth
             }
@@ -151,9 +150,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBroadcastReceiver() {
         val filter = IntentFilter()
+
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
         filter.addAction(ACTION_GATT_CONNECTED)
+        filter.addAction(ACTION_GATT_DISCONNECTED)
         filter.addAction(ACTION_GATT_SERVICES_DISCOVERED)
+        filter.addAction(ACTION_DATA_WRITTEN)
+        filter.addAction(ACTION_GATT_REGISTER_CHARACTERISTIC_READ)
 
         registerReceiver(gattUpdateReceiver, filter)
     }
@@ -268,27 +271,6 @@ class MainActivity : AppCompatActivity() {
             else if ( action.equals(ACTION_GATT_SERVICES_DISCOVERED) )
             {
                 println("BTStateReceiver: onReceive(): ACTION_GATT_SERVICES_DISCOVERED")
-                /*
-                BLEHandler.getSupportedGattServices().forEach { service ->
-                    if (service.uuid.equals(MOWER_SERVICE_UUID))
-                    {
-                        val characteristic = service.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID)
-                        /*
-                        characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG).apply {
-                            value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-                        }
-                         */
-
-                        characteristic.descriptors.forEach { descriptor ->
-                            descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                            descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-                            BLEHandler.getBluetoothGatt().writeDescriptor(descriptor)
-                        }
-                        BLEHandler.getBluetoothGatt().setCharacteristicNotification(characteristic, true)
-                    }
-
-                }*/
             }
             else if ( action.equals(ACTION_DATA_WRITTEN) )
             {

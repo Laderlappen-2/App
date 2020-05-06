@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothDevice
 import java.util.*
 
 object BLEDevice {
-    private lateinit var mBluetoothDevice: BluetoothDevice
+    private var mBluetoothDevice: BluetoothDevice
     private var mUUID: UUID = UUID.randomUUID()
     val autoConnect: Boolean = true
     val address = "00:1B:10:65:FC:81"

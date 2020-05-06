@@ -20,16 +20,9 @@ class BLEService : Service() {
     private lateinit var mRunnable: Runnable
     private val mBinder = MyLocalBinder()
 
-    //High level manager used to obtain an instance of an BluetoothAdapter and to conduct overall Bluetooth Management.
-    var mBluetoothManager: BluetoothManager? = null;
-
-    //There's one Bluetooth adapter for the entire system, and your application can interact with it using this object.
+    var mBluetoothManager: BluetoothManager? = null
     var mBluetoothAdapter: BluetoothAdapter? = null
-
-    //MAC Address of the connected BLE device
     var mDeviceAddress: String? = null
-
-    //Used to conduct GATT client operations
     var mGatt: BluetoothGatt? = null
     var mGattService: BluetoothGattService? = null
     var mGattCharacteristicWrite: BluetoothGattCharacteristic? = null
@@ -55,10 +48,7 @@ class BLEService : Service() {
                 init()
             }
         }
-
-        val success = mHandler.postDelayed(mRunnable, 2000)
-        //Line 38 needs to be recalled as soon as the previous call has been finished
-        //This is going to be the function that will loop and check for new data in the bluetooth stream
+        mHandler.postDelayed(mRunnable, 2000)
 
         return START_STICKY
     }
@@ -68,61 +58,51 @@ class BLEService : Service() {
         return super.stopService(name)
     }
 
-    private fun isConnected () : Boolean {
-        return mIsConnected;
+    override fun onDestroy() {
+        super.onDestroy()
+        mHandler.removeCallbacks(mRunnable)
+        disconnect()
     }
 
-    // Initialize BluetoothAdapter from BLuetoothManager
+    private fun isConnected () : Boolean {
+        return mIsConnected
+    }
+
     private fun init() : Boolean
     {
-        Log.i(TAG, "init()")
         if(mBluetoothManager == null) {
             mBluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
             if(mBluetoothManager == null) {
-                Log.e(TAG, "Unable to initialize BLuetoothManager" )
+                Log.e(TAG, "UNABLE TO INITIALIZE BLUETOOTHMANAGER" )
                 return false
             }
         }
 
         mBluetoothAdapter = mBluetoothManager!!.adapter
         if(mBluetoothAdapter == null) {
-            Log.e(TAG, "Unable to get initialize BluetoothAdapter")
+            Log.e(TAG, "UNABLE TO INITIALIZE BLUETOOTHADAPTER")
             return false
         }
-        connect(MOWER_MAC_ADDRESS)
+        connect()
         return true
     }
 
-    private fun isEnabled(): Boolean {
-        return this.mBluetoothAdapter!!.isEnabled
-    }
-
-    private fun connect(deviceAddress: String?) : Boolean {
-        val device = mBluetoothAdapter!!.getRemoteDevice(deviceAddress)
+    private fun connect() : Boolean {
+        val device = mBluetoothAdapter!!.getRemoteDevice(MOWER_MAC_ADDRESS)
 
         if(device == null || mBluetoothAdapter == null) {
-            Log.e(TAG, "Cannot connect to device")
+            Log.e(TAG, "CANNOT CONNECT TO DEVICE")
             return false
         }
 
-        Log.i(TAG,"Device object: " + device.toString())
-
-        mDeviceAddress = deviceAddress;
+        mDeviceAddress = device.address
         mGatt = device.connectGatt(this, false, gattCallback)
 
-        Log.i(TAG,"GATT_SUCCES code : " +BluetoothGatt.GATT_SUCCESS.toString());
-
-
-        if(mGatt != null) {
-            Log.i(TAG,"Services in connect: " + mGatt!!.services)
-        }
-
         mIsConnected = true;
-        Log.i(TAG, "We are connnected to Gatt server on Doris")
+        Log.i(TAG,"CONNECTED TO DEVICE: "+device.address)
         return true
     }
 
-    //Used to deliver results to the client, such as connection status, as well as any further GATT client operations.
     private val gattCallback = object : BluetoothGattCallback()
     {
         override fun onConnectionStateChange(
@@ -134,69 +114,46 @@ class BLEService : Service() {
 
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
+                    Log.i(TAG, "onConnectionStateChange(): status == GATT_SUCCESS")
 
                     when (newState) {
                         BluetoothProfile.STATE_CONNECTED-> {
-                            //broadcastUpdate(ACTION_GATT_CONNECTED)
-                            mGatt?.discoverServices()
+                            broadcastUpdate(ACTION_GATT_CONNECTED)
+                            gatt.discoverServices()
                         }
                         BluetoothProfile.STATE_DISCONNECTED -> {
                             broadcastUpdate(ACTION_GATT_DISCONNECTED)
                         }
                     }
-
+                }
+                else -> {
+                    Log.i(TAG, "onConnectionStateChange(): status == GATT_FAIL")
                 }
             }
         }
 
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int)
-        {
+        override fun onServicesDiscovered(
+            gatt: BluetoothGatt?,
+            status: Int
+        ) {
             super.onServicesDiscovered(gatt, status)
+
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
-
-                    // Get the counter characteristic
-                    val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
+                    Log.i(TAG, "onServicesDiscovered(): status == GATT_SUCCESS")
+                    val readCharacteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
                         MOWER_CHARACTERISTIC_READ_UUID)
 
                     // Enable notifications for this characteristic locally
-                    gatt?.setCharacteristicNotification(characteristic, true)
+                    gatt?.setCharacteristicNotification(readCharacteristic, true)
 
                     // Write on the config descriptor to be notified when the value changes
-                    val descriptor = characteristic?.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG)
-                    descriptor?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    gatt?.writeDescriptor(descriptor);
-
-
-                    /*
-                    mGattService = gatt?.getService(MOWER_SERVICE_UUID)
-                    Log.i(TAG, mGattService.toString())
-
-                    val writeCharacteristic = findCharacteristicsFromDevice(MOWER_MAC_ADDRESS, MOWER_CHARACTERISTIC_WRITE_UUID)
-                    if(writeCharacteristic == null)
-                    {
-                        Log.e(TAG, "$writeCharacteristic is null")
-                    } else {
-                        Log.i(TAG, "THis is characteristic:  $writeCharacteristic")
-                        mGattCharacteristicWrite = writeCharacteristic
-                    }
-
-                    val readCharacteristic = findCharacteristicsFromDevice(MOWER_MAC_ADDRESS, MOWER_CHARACTERISTIC_READ_UUID)
-                    if(readCharacteristic == null)
-                    {
-                        Log.e(TAG, "$readCharacteristic is null")
-                        return
-                    }
-                    mGattCharacteristicRead = readCharacteristic
-
-                    gatt?.setCharacteristicNotification(readCharacteristic, true)
-                    val descriptor = readCharacteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG)
-                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
-                    val success = gatt?.writeDescriptor(descriptor)
-                    */
+                    val descriptor = readCharacteristic?.getDescriptor(DESCRIPTOR_UUID)
+                    descriptor?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+                    gatt?.writeDescriptor(descriptor)
                 }
                 else -> {
-                    Log.w(TAG, "onServicesdiscovered: " + status)
+                    Log.i(TAG, "onServicesDiscovered(): status == GATT_FAIL")
                 }
             }
         }
@@ -211,13 +168,16 @@ class BLEService : Service() {
             //read data from characteristic.value
             when(status) {
                 BluetoothGatt.GATT_SUCCESS -> {
-
+                    Log.i(TAG, "onCharacteristicRead(): status == GATT_SUCCESS")
                     if (MOWER_CHARACTERISTIC_READ_UUID.equals(characteristic.uuid))
                     {
                         val data = characteristic.value
                         val value = data.toString()
                         Log.i(TAG, "Successfully read from characteristics: $characteristic"+ "value: " + value)
                     }
+                }
+                else -> {
+                    Log.i(TAG, "onCharacteristicRead(): status == GATT_FAIL")
                 }
             }
         }
@@ -231,14 +191,14 @@ class BLEService : Service() {
 
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
-                    //TODO say we have written data
-                    Log.i(TAG, "Data written $characteristic")
+                    Log.i(TAG, "onCharacteristicWrite(): status == GATT_SUCCESS")
+
                     Thread.sleep(1000)
-                    //TODO broadcast intent that says we have written data
+
                     broadcastUpdate(ACTION_DATA_WRITTEN, characteristic)
                 }
                 else -> {
-                    Log.i(TAG, "onCharacteristicWrite: FAIL")
+                    Log.i(TAG, "onCharacteristicWrite(): status == GATT_FAIL")
                 }
             }
         }
@@ -264,13 +224,43 @@ class BLEService : Service() {
             status: Int
         ) {
             super.onDescriptorWrite(gatt, descriptor, status)
-            if (CLIENT_CHARACTERISTIC_CONFIG.equals(descriptor?.uuid)) {
-                val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID);
-                gatt?.readCharacteristic(characteristic)
 
-                Log.i(TAG, "onDescriptorWrite()")
+            when (status) {
+                BluetoothGatt.GATT_SUCCESS -> {
+                    Log.i(TAG, "onDescriptorWrite(): status == GATT_SUCCESS")
+                    if (DESCRIPTOR_UUID.equals(descriptor?.uuid)) {
+                        val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID);
+                        gatt?.readCharacteristic(characteristic)
+                    }
+                }
+                else -> {
+                    Log.i(TAG, "onDescriptorWrite(): status == GATT_FAIL")
+                }
             }
+
         }
+    }
+
+    fun disconnect() {
+        mGatt?.disconnect()
+    }
+
+    fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic?) {
+        val intent = Intent(action)
+        //TODO format the characteristics and send a intent
+        val data: ByteArray? = characteristic!!.value
+        intent.putExtra(GATT_EXTRA_DATA, "$data")
+
+        sendBroadcast(intent)
+    }
+
+    fun broadcastUpdate(action: String) {
+        val intent = Intent(action)
+        sendBroadcast(intent)
+    }
+
+    fun send(instructions: DriveInstructionsModel) {
+
     }
 
     fun getCharThenWrite(command: Int) {
@@ -306,69 +296,12 @@ class BLEService : Service() {
         //TODO(write to char here?)
     }
 
-    fun findCharacteristicsFromDevice(Mac_address: String, characteristicUUID: UUID) : BluetoothGattCharacteristic? {
-        Log.i(TAG, "I AM IN FIND CHAR")
-
-        if(mGatt == null) {
-            Log.e(TAG, "BLuetoothgatt is null")
-            return null;
-        }
-
-        Log.i(TAG, mGatt!!.services.toString())
-
-        for(service in mGatt!!.services) {
-            val characteristic : BluetoothGattCharacteristic? = service!!.getCharacteristic(characteristicUUID)
-            if(characteristic != null) {
-                Log.i(TAG, "CHARACTERISTIC : " + characteristic.toString())
-                return characteristic
-            }
-        }
-        return null;
-
-    }
-
-    fun broadcastUpdate(action: String, characteristic: BluetoothGattCharacteristic?) {
-        val intent = Intent(action)
-        //TODO format the characteristics and send a intent
-        val data: ByteArray? = characteristic!!.value
-        intent.putExtra(GATT_EXTRA_DATA, "$data")
-
-        sendBroadcast(intent)
-    }
-
-    fun broadcastUpdate(action: String) {
-        val intent = Intent(action)
-        sendBroadcast(intent)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mHandler.removeCallbacks(mRunnable)
-    }
-
     fun getDescriptorUUID(bluetoothGattCharacteristic: BluetoothGattCharacteristic) {
         val descriptors = bluetoothGattCharacteristic.descriptors
         for (descriptor in descriptors)
         {
             Log.i(TAG, "Descriptors in given characteristic: " + descriptor.uuid.toString())
         }
-    }
-
-
-    //Test functions to check if the service correctly receives and sends data
-    fun testInData(data: String){
-        //toast("received: $data")
-    }
-
-    fun testOutData(): String {
-        return("Hej från service")
-    }
-
-    fun sendCommand(input: String) {
-
-    }
-    fun disconnect() {
-
     }
 
     inner class MyLocalBinder : Binder() {
