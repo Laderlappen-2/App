@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -30,14 +31,17 @@ class RoutesFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (mRoutes.size == 0) {
-            //TODO: get array from Data handler?
-            val pList = ArrayList<PointModel>()
-            val cList = ArrayList<PointModel>()
-            mRoutes.add(RouteModel(1, pList, cList))
-            mRoutes.add(RouteModel(2, pList, cList))
+        // TODO Inte köra den varje gång man "backar" in i viewen, utan endast när man kommer in i den från menyknappen, antar jag
+        RestHandler.getAllRoutes({
+            mRoutes.clear()
+            mRoutes.addAll(DataHandler.getRoutes())
+            // TODO Ta bort efter progress bar har lagts till
+            Toast.makeText(context, "Done", Toast.LENGTH_LONG).show()
             updateRecycleView()
-        }
+        }, { error ->
+            // TODO Bättre felmeddelande
+            Toast.makeText(context, "Error: " + error?.message, Toast.LENGTH_LONG).show()
+        })
     }
 
     fun updateRecycleView() {
