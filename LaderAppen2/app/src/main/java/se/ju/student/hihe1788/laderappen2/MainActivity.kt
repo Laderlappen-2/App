@@ -35,11 +35,12 @@ class MainActivity : AppCompatActivity() {
 
         mContext = applicationContext
         mBTStateReceiver = BTStateReceiver(mContext)
-        mBLEHandler = BLEHandler(mContext)
+        mBLEHandler = BLEHandler
         mBLEDeviceScanner = BLEDeviceScanner()
 
         if (!mBLEHandler.isSupportingBLE())
         {
+            println("MOBILE DON'T SUPPORT BLE")
             /** Inform the user that the device isn't supporting BLE */
         }
 

@@ -81,11 +81,10 @@ class BTStateReceiver (private val mContext: Context) : BroadcastReceiver() {
         {
             println("BTStateReceiver: onReceive(): ACTION_GATT_SERVICES_DISCOVERED")
 
-            MainActivity.mBLEHandler.getSupportedGattServices().forEach { service ->
+            BLEHandler.getSupportedGattServices().forEach { service ->
                 if (service.uuid.equals(MOWER_SERVICE_UUID))
                 {
                     val characteristic = service.getCharacteristic(MOWER_READ_CHARACTERISTIC_UUID)
-
                     /*
                     characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG).apply {
                         value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
@@ -96,9 +95,9 @@ class BTStateReceiver (private val mContext: Context) : BroadcastReceiver() {
                     characteristic.descriptors.forEach { descriptor ->
                         descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
                         descriptor.value = BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
-                        MainActivity.mBLEHandler.getBluetoothGatt().writeDescriptor(descriptor)
+                        BLEHandler.getBluetoothGatt().writeDescriptor(descriptor)
                     }
-                    MainActivity.mBLEHandler.getBluetoothGatt().setCharacteristicNotification(characteristic, true)
+                    BLEHandler.getBluetoothGatt().setCharacteristicNotification(characteristic, true)
                 }
 
             }

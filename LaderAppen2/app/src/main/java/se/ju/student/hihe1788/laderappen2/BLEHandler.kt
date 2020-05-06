@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 private const val SCAN_PERIOD: Long = 10000
 
@@ -23,15 +20,16 @@ const val ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABL
 const val EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA"
 //val UUID_HEART_RATE_MEASUREMENT = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT)
 
-class BLEHandler (private val mContext: Context) {
+object BLEHandler {
 
+    private val mContext = MainActivity.mContext
     private var mBluetoothManager: BluetoothManager = mContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     /*private val mBluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
         mBluetoothManager = mContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         mBluetoothManager.adapter
     }*/
     private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
-    private lateinit var mBluetoothGatt: BluetoothGatt
+    private lateinit var mGatt: BluetoothGatt
     private var mScanning: Boolean = false
     private lateinit var mDevice: BluetoothDevice
     private var mGattCharacteristics: MutableList<BluetoothGattCharacteristic> = mutableListOf()
@@ -80,8 +78,18 @@ class BLEHandler (private val mContext: Context) {
     }
 
     fun connectTo(device: BLEDevice) {
-        mBluetoothGatt = device.getDevice().connectGatt(mContext, device.autoConnect, gattCallback)
+        mGatt = device.getDevice().connectGatt(mContext, device.autoConnect, gattCallback)
         println("WE HAVE A GATT")
+    }
+
+    fun send() {
+        val msg = "1000".toByteArray()
+        mGattCharacteristicWrite?.value = msg
+        mGatt?.writeCharacteristic(mGattCharacteristicWrite)
+    }
+
+    fun read() {
+        mGatt.readCharacteristic(mGattCharacteristicRead)
     }
 
     //private var mHandler: Handler = Handler() {}
@@ -101,9 +109,11 @@ class BLEHandler (private val mContext: Context) {
                     intentAction = ACTION_GATT_CONNECTED
                     connectionState = STATE_CONNECTED
                     println("BLEHandler: gattCallback: onConnectionStateChange: newState == STATE_CONNECTED")
-                    mBluetoothGatt.discoverServices()
+                    broadcastUpdate(intentAction)
 
-                    //broadcastUpdate(intentAction)
+                    mGatt.discoverServices()
+
+
 
                     //Log.i(TAG, "Connected to GATT server.")
                     //Log.i(TAG, "Attempting to start service discovery: " + bluetoothGatt?.discoverServices())
@@ -120,11 +130,15 @@ class BLEHandler (private val mContext: Context) {
 
         // New services discovered
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            println("BLEHandler: gattCallback: onServicesDiscovered: GATT_SUCCESS")
 
-            when (status) {
+            when (status)
+            {
                 BluetoothGatt.GATT_SUCCESS -> {
                     broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
+                    mGattCharacteristicRead = gatt.getService(MOWER_SERVICE_UUID).getCharacteristic(
+                        MOWER_READ_CHARACTERISTIC_UUID)
+                    mGattCharacteristicWrite = gatt.getService(MOWER_SERVICE_UUID).getCharacteristic(
+                        MOWER_WRITE_CHARACTERISTIC_UUID)
                 }
                 else -> {
                     Log.w(TAG, "onServicesDiscovered received: $status")
@@ -203,7 +217,16 @@ class BLEHandler (private val mContext: Context) {
             status: Int
         ) {
             super.onCharacteristicWrite(gatt, characteristic, status)
-            println("BLEHandler: gattCallback: onCharacteristicWrite()")
+
+            when (status)
+            {
+                BluetoothGatt.GATT_SUCCESS -> {
+                    println("BLEHandler: gattCallback: onCharacteristicWrite(): ON SUCCESS")
+                }
+            }
+
+
+
         }
 
         override fun onDescriptorRead(
@@ -212,13 +235,22 @@ class BLEHandler (private val mContext: Context) {
             status: Int
         ) {
             super.onDescriptorRead(gatt, descriptor, status)
-            println("BLEHandler: gattCallback: onDescriptorRead()")
 
-            val success = gatt?.readCharacteristic(mGattCharacteristicRead)
-            if(success!!)
-                println("gatt?.readCharacteristic(characteristic): SUCCEEDED")
-            else
-                println("gatt?.readCharacteristic(characteristic): NOT SUCCESS!!!!")
+            when (status)
+            {
+                BluetoothGatt.GATT_SUCCESS -> {
+                    println("BLEHandler: gattCallback: onDescriptorRead(): ON SUCCESS")
+
+                    val success = gatt?.readCharacteristic(mGattCharacteristicRead)
+                    if(success!!)
+                        println("gatt?.readCharacteristic(characteristic): SUCCEEDED")
+                    else
+                        println("gatt?.readCharacteristic(characteristic): NOT SUCCESS!!!!")
+                }
+                else -> {
+                    println("BLEHandler: gattCallback: onDescriptorRead(): FAIL")
+                }
+            }
         }
 
         override fun onDescriptorWrite(
@@ -227,23 +259,30 @@ class BLEHandler (private val mContext: Context) {
             status: Int
         ) {
             super.onDescriptorWrite(gatt, descriptor, status)
-            println("BLEHandler: gattCallback: onDescriptorWrite()")
 
-            //val bArr = byteArrayOf(1,1)
-            //mGattCharacteristicWrite.value = bArr
-            //gatt?.writeCharacteristic(mGattCharacteristicWrite)
+            when(status)
+            {
+                BluetoothGatt.GATT_SUCCESS -> {
+                    println("BLEHandler: gattCallback: onDescriptorWrite(): ON SUCESS")
+                    mGattCharacteristicWrite = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
+                        MOWER_WRITE_CHARACTERISTIC_UUID)!!
+                }
+                else -> {
+                    println("BLEHandler: gattCallback: onDescriptorWrite(): FAIL")
+                }
+            }
         }
 
     }
 
     fun getSupportedGattServices() : List<BluetoothGattService>
     {
-        return mBluetoothGatt.services
+        return mGatt.services
     }
 
     fun getBluetoothGatt() : BluetoothGatt
     {
-        return mBluetoothGatt
+        return mGatt
     }
 
     private fun broadcastUpdate(action: String) {
