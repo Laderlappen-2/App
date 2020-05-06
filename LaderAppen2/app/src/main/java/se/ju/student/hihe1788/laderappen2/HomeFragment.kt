@@ -13,9 +13,6 @@ private val TAG = HomeFragment::class.java.simpleName
 
 class HomeFragment: Fragment() {
 
-    private var isConnected = false
-    private var hasWritten = false
-
     /** Fragment has been attached to an activity.
      * context is hosting this fragment
      **/
@@ -43,24 +40,8 @@ class HomeFragment: Fragment() {
         view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener {
             // TODO ask if user wants to enable bluetooth with AlertDialog if yes navigate to drive
             //findNavController().navigate(R.id.driveFragment, null)
-            if (!isConnected)
-            {
-                isConnected = true
-                broadcastUpdate(ACTION_GATT_REGISTER_CHARACTERISTIC_READ)
-                Log.i(TAG,"DRIVE BUTTON PUSHED")
-            }
-            else if (!hasWritten)
-            {
-                //BLEHandler.send()
-                hasWritten = true
-            }
         }
 
-    }
-
-    fun broadcastUpdate(action: String) {
-        val intent = Intent(action)
-        (activity as MainActivity).sendBroadcast(intent)
     }
 
     /** This will be called after onCreate() and onCreateView(),

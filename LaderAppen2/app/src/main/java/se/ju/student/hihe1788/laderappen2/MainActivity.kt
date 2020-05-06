@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
-    //private lateinit var mBTStateReceiver: BTStateReceiver
     private var mBLEService: BLEService? = null
     private var mIsBound = false
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.navigation_activity)
 
         mContext = applicationContext
-        //mBTStateReceiver = BTStateReceiver(mContext)
 
         if (!BLEHandler.isSupportingBLE()) {
             println("MOBILE DON'T SUPPORT BLE")
