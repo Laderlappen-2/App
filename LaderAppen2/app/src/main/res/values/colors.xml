@@ -14,7 +14,6 @@
     <color name="colorPrimaryText">#FFFFFF</color>
     <color name="colorSecondaryText">#000000</color>
 
-
     <!-- POSSIBLE ACCENT COLORS (BASED ON MATERIAL DESIGN)-->
     <!-- OBS IF USED MAYBE THE YELLOW ONES SHOULD GO-->
     <!--
@@ -47,6 +46,8 @@
 
     <color name="transparent">#00000000</color>
 
+    <color name="colorCollision">#FF5555</color>
+
     <color name="colorBlackOpa05">#0D000000</color>
     <color name="colorBlackOpa10">#1A000000</color>
     <color name="colorBlackOpa15">#26000000</color>
@@ -70,6 +71,4 @@
     <color name="colorWhiteOpa70">#B3FFFFFF</color>
     <color name="colorWhiteOpa80">#CCFFFFFF</color>
     <color name="colorWhiteOpa90">#E6FFFFFF</color>
-
->>>>>>> layout/home
 </resources>
