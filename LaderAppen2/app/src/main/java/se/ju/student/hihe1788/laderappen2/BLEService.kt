@@ -39,18 +39,28 @@ class BLEService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
-        // Do a periodic task
-        mHandler = Handler()
-        mRunnable = Runnable {
+        startSendingInstructions()
+
+        return START_STICKY
+    }
+
+    private fun sendMsg(bytes: ByteArray) {
+        // TODO Send here
+    }
+
+    private fun startSendingInstructions() {
+        mHandler.post(InstructionsSender)
+    }
+
+    private val InstructionsSender : Runnable = Runnable {
+        run {
             if(isConnected()) {
-                // DO STUFF HERE
+                this.sendMsg(DriveInstructionsModel.toByteArray())
             } else {
                 init()
             }
+            mHandler.postDelayed(InstructionsSender, 1000)
         }
-        mHandler.postDelayed(mRunnable, 2000)
-
-        return START_STICKY
     }
 
     // MainActivity.stopService(intent)
