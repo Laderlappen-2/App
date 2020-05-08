@@ -21,8 +21,6 @@ class RouteItemFragment : Fragment() {
 
         val safeArgs: RouteItemFragmentArgs by navArgs()
         mRoute = safeArgs.routeArgs
-
-        println(mRoute.createdAt)
 /*
         val pList = arrayListOf(
             PointModel(-1, 5, 30, -40, Date()),

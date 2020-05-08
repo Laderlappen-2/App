@@ -80,11 +80,7 @@ object RestHandler {
     fun postRoute(route: RouteModel, id: String, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id$URI_EVENTS"
 
-        val temPoints = ArrayList<PointModel>()
-        temPoints.addAll(route.positionEvents)
-        temPoints.addAll(route.collisionAvoidanceEvents)
-
-        val jsonString = Klaxon().toJsonString(temPoints)
+        val jsonString = Klaxon().toJsonString(route.events)
 
         val jsonArrayRequest =
             CustomRestRequest(

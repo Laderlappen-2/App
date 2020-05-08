@@ -47,17 +47,24 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     private val mStartPositionPaint = Paint().apply { color = mDrawStartColor }
     private val mStopPositionPaint = Paint().apply { color = mDrawStopColor }
 
+
+    /*eventTypeId: 3 = collisionAvoidance, 5 = position */
     fun updatePoints(route: RouteModel) {
-        mPositionPoints = route.positionEvents
-        mCollisionAvoidancePoints = route.collisionAvoidanceEvents
+
+        route.events.sortBy { it.id }
+
+        for (event in route.events) {
+            when (event.eventTypeId) {
+                3 -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
+                5 -> mPositionPoints.add(event.positionEvent)
+            }
+        }
         setup()
     }
 
     fun setup() {
-
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
-        mSortedPoints.sortBy { it.dateCreated }
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHieght: Int) {
@@ -68,7 +75,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         mExtraCanvas.drawColor(mBackgroundColor)
 
         mOrigin = PointF((width/2).toFloat(), (height/2).toFloat())
-        //setup()
+        setup()
 
         mScaleDetector = ScaleGestureDetector(context, object : OnScaleGestureListener {
             override fun onScaleEnd(detector: ScaleGestureDetector) {}
