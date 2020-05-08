@@ -34,6 +34,7 @@ class BLEService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -45,19 +46,21 @@ class BLEService : Service() {
     }
 
     private fun sendMsg(bytes: ByteArray) {
-        // TODO Send here
+        Log.i(TAG, "InstructionsSender(): sendMSG == SUCCESS")
     }
 
     private fun startSendingInstructions() {
+        mHandler = Handler()
         mHandler.post(InstructionsSender)
     }
 
     private val InstructionsSender : Runnable = Runnable {
         run {
             if(isConnected()) {
-                this.sendMsg(DriveInstructionsModel.toByteArray())
+                this.send()
             } else {
                 init()
+                Log.i(TAG, "InstructionsSender(): init() == SUCCESS")
             }
             mHandler.postDelayed(InstructionsSender, 1000)
         }
@@ -128,11 +131,11 @@ class BLEService : Service() {
 
                     when (newState) {
                         BluetoothProfile.STATE_CONNECTED-> {
-                            broadcastUpdate(ACTION_GATT_CONNECTED)
+                            //broadcastUpdate(ACTION_GATT_CONNECTED)
                             gatt.discoverServices()
                         }
                         BluetoothProfile.STATE_DISCONNECTED -> {
-                            broadcastUpdate(ACTION_GATT_DISCONNECTED)
+                            //broadcastUpdate(ACTION_GATT_DISCONNECTED)
                         }
                     }
                 }
@@ -140,6 +143,11 @@ class BLEService : Service() {
                     Log.i(TAG, "onConnectionStateChange(): status == GATT_FAIL")
                 }
             }
+        }
+
+        override fun onReadRemoteRssi(gatt: BluetoothGatt?, rssi: Int, status: Int) {
+            super.onReadRemoteRssi(gatt, rssi, status)
+            Log.i(TAG, "Remote RSSI = $rssi")
         }
 
         override fun onServicesDiscovered(
@@ -151,14 +159,17 @@ class BLEService : Service() {
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
                     Log.i(TAG, "onServicesDiscovered(): status == GATT_SUCCESS")
-                    val readCharacteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
+                    mGattCharacteristicRead = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
                         MOWER_CHARACTERISTIC_READ_UUID)
 
+                    mGattCharacteristicWrite = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(
+                        MOWER_CHARACTERISTIC_WRITE_UUID)
+
                     // Enable notifications for this characteristic locally
-                    gatt?.setCharacteristicNotification(readCharacteristic, true)
+                    gatt?.setCharacteristicNotification(mGattCharacteristicRead, true)
 
                     // Write on the config descriptor to be notified when the value changes
-                    val descriptor = readCharacteristic?.getDescriptor(DESCRIPTOR_UUID)
+                    val descriptor = mGattCharacteristicRead?.getDescriptor(DESCRIPTOR_UUID)
                     descriptor?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
                     gatt?.writeDescriptor(descriptor)
                 }
@@ -202,10 +213,10 @@ class BLEService : Service() {
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
                     Log.i(TAG, "onCharacteristicWrite(): status == GATT_SUCCESS")
+                    Log.i(TAG, "onCharacteristicWrite(): value: " + characteristic.value.toString(Charsets.UTF_8))
+                    //Thread.sleep(1000)
 
-                    Thread.sleep(1000)
-
-                    broadcastUpdate(ACTION_DATA_WRITTEN, characteristic)
+                    //broadcastUpdate(ACTION_DATA_WRITTEN, characteristic)
                 }
                 else -> {
                     Log.i(TAG, "onCharacteristicWrite(): status == GATT_FAIL")
@@ -225,7 +236,7 @@ class BLEService : Service() {
                 val value = data.toString()
             }
 
-            Log.i(TAG, "WE ARE in charactersistici channnnnnnngeeeed:  " + "Value read: " + characteristic!!.value.toString())
+            Log.i(TAG, "onCharacteristicChanged():  " + "Value read: " + characteristic!!.value.toString())
         }
 
         override fun onDescriptorWrite(
@@ -239,8 +250,12 @@ class BLEService : Service() {
                 BluetoothGatt.GATT_SUCCESS -> {
                     Log.i(TAG, "onDescriptorWrite(): status == GATT_SUCCESS")
                     if (DESCRIPTOR_UUID.equals(descriptor?.uuid)) {
-                        val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID);
-                        gatt?.readCharacteristic(characteristic)
+                        val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID)
+                        val successCheck = gatt!!.readCharacteristic(characteristic)
+                        if (successCheck)
+                            Log.i(TAG, "readCharacteristic(characteristic): SUCCESS")
+                        else
+                            Log.i(TAG, "readCharacteristic(characteristic): FAIL")
                     }
                 }
                 else -> {
@@ -269,8 +284,19 @@ class BLEService : Service() {
         sendBroadcast(intent)
     }
 
-    fun send(instructions: DriveInstructionsModel) {
+    fun send() {
+        //check we access to BT radio
+        if(mBluetoothAdapter == null || mGatt == null) {
+            return
+        }
+        val bArr = DriveInstructionsModel.toByteArray()
+        mGattCharacteristicWrite?.value = bArr
 
+        Log.i(TAG, "send(): " + "bytArray: " + mGattCharacteristicWrite?.value?.toString(Charsets.UTF_8) +" Properties: "+ mGattCharacteristicWrite?.properties?.toInt() +" charValue: " + mGattCharacteristicWrite?.value)
+
+        mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
+
+        //TODO(write to char here?)
     }
 
     fun getCharThenWrite(command: Int) {

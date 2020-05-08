@@ -1,5 +1,8 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.util.Log
+
+private val TAG = DriveInstructionsModel::class.java.simpleName
 /**
  * Represent the mowers current state
  */
@@ -84,7 +87,8 @@ object DriveInstructionsModel {
      * @return ByteArray consisting of the new instruction(s)
      */
     fun toByteArray(): ByteArray {
-        val bArr = "@$mTurn;$mThrust;$mLight;$mHonk;$mAuto$".toByteArray()
+        //val bArr = "@$mTurn;$mThrust;$mLight;$mHonk;$mAuto$".toByteArray()
+        val bArr = "@255;3001;0;0;0$".toByteArray()
         mHonk = 0
         return bArr
     }

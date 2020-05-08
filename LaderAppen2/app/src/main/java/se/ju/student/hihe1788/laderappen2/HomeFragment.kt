@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayout
 
 private val TAG = HomeFragment::class.java.simpleName
@@ -39,9 +40,9 @@ class HomeFragment: Fragment() {
 
         view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener {
             // TODO ask if user wants to enable bluetooth with AlertDialog if yes navigate to drive
-            //findNavController().navigate(R.id.driveFragment, null)
-
             MainActivity.mActivity?.startBLEService()
+
+            //findNavController().navigate(R.id.driveFragment, null)
         }
 
     }

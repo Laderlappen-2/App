@@ -22,12 +22,12 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         lateinit var mContext: Context
-        var mBLEService: BLEService? = null
         var mActivity: MainActivity? = null
     }
 
     private lateinit var mAppBarConfiguration: AppBarConfiguration
     private var mIsBound = false
+    private lateinit var mBLEService: BLEService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
