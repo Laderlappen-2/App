@@ -80,7 +80,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
                 if(detector.scaleFactor > 1)
                     mScale += detector.scaleFactor
                 else
-                    mScale -= detector.scaleFactor * 5f
+                    mScale -= detector.scaleFactor
 
                 if(mScale < 1) mScale = 1f
 
@@ -145,7 +145,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
 
             when (index) {
                 0 -> { canvas?.drawCircle(position.x, position.y, 35f, mStartPositionPaint) }
-                (mPositionPoints.size -1 ) -> { canvas?.drawCircle(position.x, position.y, 35f, mStopPositionPaint) }
+                (mPositionPoints.size - 1) -> { canvas?.drawCircle(position.x, position.y, 35f, mStopPositionPaint) }
                 else -> { canvas?.drawCircle(position.x, position.y, 20f, mPositionPaint) }
             }
         }
