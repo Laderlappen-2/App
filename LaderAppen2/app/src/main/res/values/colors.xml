@@ -15,9 +15,6 @@
     <color name="colorSecondaryText">#000000</color>
 
 
-    <!-- POSSIBLE ACCENT COLORS (BASED ON MATERIAL DESIGN)-->
-    <!-- OBS IF USED MAYBE THE YELLOW ONES SHOULD GO-->
-    <!--
     COMPLEMENTARY:
     <color name="colorBrown">#604d27</color>
     <color name="colorBrownLight">#d8cbb5</color>
@@ -33,7 +30,7 @@
     <color name="colorPurpleLight">#dec1dc</color>
     <color name="colorPinkDark">#60273a</color>
     <color name="colorPink">#ecbac6</color>
-     -->
+
 
     <color name="colorYellow">#FCDA30</color>
     <color name="colorYellowLight">#FFE66A</color>
@@ -46,6 +43,8 @@
     <color name="colorWhite">#ffffff</color>
 
     <color name="transparent">#00000000</color>
+
+    <color name="colorRed">#AD1111</color>
 
     <color name="colorBlackOpa05">#0D000000</color>
     <color name="colorBlackOpa10">#1A000000</color>
@@ -70,6 +69,4 @@
     <color name="colorWhiteOpa70">#B3FFFFFF</color>
     <color name="colorWhiteOpa80">#CCFFFFFF</color>
     <color name="colorWhiteOpa90">#E6FFFFFF</color>
-
->>>>>>> layout/home
 </resources>
