@@ -233,10 +233,9 @@ class BLEService : Service() {
             if (MOWER_CHARACTERISTIC_READ_UUID.equals(characteristic?.uuid))
             {
                 val data = characteristic?.value
-                val value = data.toString()
+                val value = data?.toString(Charsets.UTF_8)
+                Log.i(TAG, "onCharacteristicChanged():  " + "Value read: " + value)
             }
-
-            Log.i(TAG, "onCharacteristicChanged():  " + "Value read: " + characteristic!!.value.toString())
         }
 
         override fun onDescriptorWrite(
