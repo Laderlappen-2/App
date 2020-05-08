@@ -1,13 +1,8 @@
-package se.ju.student.hihe1788.laderappen2
+package se.ju.student.hihe1788.laderappen2.util
 
 import com.android.volley.*
-import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonSyntaxException
-import java.io.UnsupportedEncodingException
+import se.ju.student.hihe1788.laderappen2.RestMethodEnum
 import java.nio.charset.Charset
 
 class CustomRestRequest (
