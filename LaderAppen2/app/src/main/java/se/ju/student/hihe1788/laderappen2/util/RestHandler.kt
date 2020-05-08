@@ -64,20 +64,6 @@ object RestHandler {
                             DataHandler.setCurrentRoute(parsedResponse)
                         }
                     }
-                    /*
-                    parseStringResponse<JsonObject>(
-                        response
-                    ) { parsedResponse ->
-                        val routeId = parsedResponse?.get("id")?.asInt
-                        routeId?.let {
-                            DataHandler.setCurrentRoute(
-                                RouteModel(
-                                    routeId
-                                )
-                            )
-                            successCallback()
-                        }
-                    }*/
                 },
                 Response.ErrorListener { error ->
                     parseErrorResponse(

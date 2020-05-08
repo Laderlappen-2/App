@@ -50,11 +50,11 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     fun updatePoints(route: RouteModel) {
         mPositionPoints = route.positionEvents
         mCollisionAvoidancePoints = route.collisionAvoidanceEvents
-
         setup()
     }
 
     fun setup() {
+
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
         mSortedPoints.sortBy { it.dateCreated }
@@ -68,7 +68,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         mExtraCanvas.drawColor(mBackgroundColor)
 
         mOrigin = PointF((width/2).toFloat(), (height/2).toFloat())
-        setup()
+        //setup()
 
         mScaleDetector = ScaleGestureDetector(context, object : OnScaleGestureListener {
             override fun onScaleEnd(detector: ScaleGestureDetector) {}

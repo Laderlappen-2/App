@@ -22,6 +22,8 @@ class RouteItemFragment : Fragment() {
         val safeArgs: RouteItemFragmentArgs by navArgs()
         mRoute = safeArgs.routeArgs
 
+        println(mRoute.createdAt)
+/*
         val pList = arrayListOf(
             PointModel(-1, 5, 30, -40, Date()),
             PointModel(-1, 5, -5, -10, Date()),
@@ -37,7 +39,9 @@ class RouteItemFragment : Fragment() {
 
         //TODO: use mRoute instead of route
         val route = RouteModel(-1337, Date(), pList, cList)
-        view.findViewById<RouteCanvasView>(R.id.canvas_view)?.updatePoints(route)
+
+*/
+        view.findViewById<RouteCanvasView>(R.id.canvas_view)?.updatePoints(mRoute)
         return view
     }
 }
