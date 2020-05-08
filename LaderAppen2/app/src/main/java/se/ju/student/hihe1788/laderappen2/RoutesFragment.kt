@@ -33,7 +33,8 @@ class RoutesFragment : Fragment() {
 
         // Progress bar
         progressBarView = view.findViewById(R.id.routesFragmentProgress)
-        progressBar = progressBarView.findViewById<ProgressBar>(R.id.progressBar)
+        progressBar = progressBarView.findViewById(R.id.progressBar)
+        progressBar.isEnabled = true
         return view
     }
 
@@ -41,11 +42,9 @@ class RoutesFragment : Fragment() {
         super.onStart()
         // TODO Inte köra den varje gång man "backar" in i viewen, utan endast när man kommer in i den från menyknappen, antar jag
         progressBarView.visibility = View.VISIBLE
-        progressBar.isEnabled = true
         RestHandler.getAllRoutes({
             mRoutes.clear()
             mRoutes.addAll(DataHandler.getRoutes())
-            // TODO Ta bort efter progress bar har lagts till
             Toast.makeText(context, "Done", Toast.LENGTH_LONG).show()
             updateRecycleView()
             progressBarView.visibility = View.GONE
