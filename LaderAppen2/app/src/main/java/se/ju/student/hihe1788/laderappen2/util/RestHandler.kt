@@ -57,6 +57,14 @@ object RestHandler {
                 url,
                 null,
                 Response.Listener() { response ->
+                    parseStringResponse<RouteModel>(
+                        response
+                    ) { parsedResponse ->
+                        parsedResponse?.let {
+                            DataHandler.setCurrentRoute(parsedResponse)
+                        }
+                    }
+                    /*
                     parseStringResponse<JsonObject>(
                         response
                     ) { parsedResponse ->
@@ -69,7 +77,7 @@ object RestHandler {
                             )
                             successCallback()
                         }
-                    }
+                    }*/
                 },
                 Response.ErrorListener { error ->
                     parseErrorResponse(

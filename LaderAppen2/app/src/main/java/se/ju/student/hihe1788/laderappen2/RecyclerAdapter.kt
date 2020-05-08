@@ -2,10 +2,10 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
+
 
 class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView.Adapter<RecyclerAdapter.RouteHolder>() {
 
@@ -34,20 +34,20 @@ class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView
         }
 
         override fun onClick(v: View?) {
-            //TODO: send in RouteModel as arg
             if (v?.findNavController()?.currentDestination?.id == R.id.routes_dest) {
-                v.findNavController().navigate(R.id.routeItemFragment, null)
+                val action = RoutesFragmentDirections.nextAction(mRoute!!)
+                v.findNavController().navigate(action)
             }
         }
 
         fun bindRoute(route: RouteModel) {
             this.mRoute = route
-            mView.routeTitle.text = "${mRoute?.id}"
+            val text = MainActivity.mAppContext.getString(R.string.route_date,"${mRoute?.createdAt}.".substringBefore("G"))
+            mView.routeTitle.text = text
         }
 
         companion object {
             private val ROUTE_KEY = "ROUTE"
         }
     }
-
 }
