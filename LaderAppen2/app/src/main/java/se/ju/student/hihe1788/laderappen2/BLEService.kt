@@ -234,7 +234,7 @@ class BLEService : Service() {
             {
                 val data = characteristic?.value
                 val value = data?.toString(Charsets.UTF_8)
-                Log.i(TAG, "onCharacteristicChanged():  " + "Value read: " + value)
+                Log.i(TAG, "onCharacteristicChanged(): " + "Value read: " + value)
             }
         }
 
@@ -291,7 +291,7 @@ class BLEService : Service() {
         val bArr = DriveInstructionsModel.toByteArray()
         mGattCharacteristicWrite?.value = bArr
 
-        Log.i(TAG, "send(): " + "bytArray: " + mGattCharacteristicWrite?.value?.toString(Charsets.UTF_8) +" Properties: "+ mGattCharacteristicWrite?.properties?.toInt() +" charValue: " + mGattCharacteristicWrite?.value)
+        //Log.i(TAG, "send(): " + "bytArray: " + mGattCharacteristicWrite?.value?.toString(Charsets.UTF_8))
 
         mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
 

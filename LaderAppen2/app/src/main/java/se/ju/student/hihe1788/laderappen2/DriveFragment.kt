@@ -17,8 +17,8 @@ import androidx.fragment.app.Fragment
  */
 class DriveFragment: Fragment() {
 
-    private lateinit var mJoystickThrust: JoystickView
-    private lateinit var mJoystickTurn: JoystickView
+    private lateinit var mJoystickLeft: JoystickView
+    private lateinit var mJoystickRight: JoystickView
     private lateinit var mBtnLight: ImageButton
     private lateinit var mBtnHonk: ImageButton
     private lateinit var mBtnBack: ImageButton
@@ -37,9 +37,9 @@ class DriveFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mJoystickThrust = requireView().findViewById(R.id.joystick_left)
-        mJoystickTurn = requireView().findViewById(R.id.joystick_right)
-        mJoystickThrust.setToThrust(true)
+        mJoystickLeft = requireView().findViewById(R.id.joystick_left)
+        mJoystickRight = requireView().findViewById(R.id.joystick_right)
+        mJoystickLeft.setToThrust(true)
 
         mBtnLight = requireView().findViewById(R.id.btn_drive_light)
         mBtnHonk = requireView().findViewById(R.id.btn_drive_honk)
@@ -51,13 +51,15 @@ class DriveFragment: Fragment() {
             if (!mBtnLight.isActivated) {
                 mBtnLight.isActivated
                 DriveInstructionsModel.setLightOn()
+            } else {
+                mBtnLight.isEnabled
+                DriveInstructionsModel.setLightOff()
             }
-            mBtnLight.isEnabled
-            DriveInstructionsModel.setLightOff()
         }
 
         mBtnHonk.setOnClickListener {
             DriveInstructionsModel.setHonkOn()
+            MainActivity.mActivity?.stopBLEService()
         }
 
         mBtnBack.setOnClickListener {
@@ -66,22 +68,23 @@ class DriveFragment: Fragment() {
 
         mBtnBluetooth.setOnClickListener {
             println("IT WORX")
+            MainActivity.mActivity?.startBLEService()
         }
 
         mBtnAuto.setOnClickListener {
 
-            if (!mBtnAuto.isActivated && !MowerModel.isAutonomous)
+            if (!mBtnAuto.isActivated)
             {
                 mBtnAuto.isActivated
                 DriveInstructionsModel.setAutoOn()
-            } else if (mBtnAuto.isActivated && MowerModel.isAutonomous)
+            } else if (mBtnAuto.isActivated)
             {
                 mBtnAuto.isEnabled
                 DriveInstructionsModel.setAutoOff()
             }
         }
 
-        BluetoothHandler.startSendingDriveInstructions()
+        //BluetoothHandler.startSendingDriveInstructions()
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

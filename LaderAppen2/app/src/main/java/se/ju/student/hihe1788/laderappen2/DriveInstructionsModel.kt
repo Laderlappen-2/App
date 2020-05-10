@@ -7,24 +7,24 @@ private val TAG = DriveInstructionsModel::class.java.simpleName
  * Represent the mowers current state
  */
 object DriveInstructionsModel {
-    private val MIN_THRUST = 0f
-    private val MAX_THRUST = 200f
+    private val MIN_THRUST = -100f
+    private val MAX_THRUST = 100f
     private val NEUTRAL_THRUST= (MAX_THRUST - MIN_THRUST) / 2f
-    private val MIN_TURN = 0f
-    private val MAX_TURN = 200f
+    private val MIN_TURN = -100f
+    private val MAX_TURN = 100f
     private val NEUTRAL_TURN = (MAX_TURN - MIN_TURN) / 2f
 
-    var mThrust: Int = 0
-    var mTurn: Int = 0
-    var mLight: Int = 0
-    var mHonk: Int = 0
-    var mAuto: Int = 0
+    private var mThrust: Int = 0
+    private var mTurn: Int = 0
+    private var mLight: Int = 0
+    private var mHonk: Int = 0
+    private var mAuto: Int = 0
 
     /**
      * @param thrust sets a new thrust
      */
-    private fun setThrust(percent: Float) {
-        val value = NEUTRAL_THRUST * percent
+    fun setThrust(percent: Float) {
+        val value = MAX_THRUST * percent
         val newThrust = (NEUTRAL_THRUST + value)
 
         if (newThrust < MIN_THRUST)
@@ -38,8 +38,8 @@ object DriveInstructionsModel {
     /**
      * @param turn sets a new turn
      */
-    private fun setTurn(percent: Float) {
-        val value = NEUTRAL_TURN * percent
+    fun setTurn(percent: Float) {
+        val value = MAX_TURN * percent
         val newTurn = (NEUTRAL_TURN + value)
 
         if (newTurn < MIN_TURN)
@@ -60,10 +60,6 @@ object DriveInstructionsModel {
 
     fun setHonkOn() {
         mHonk = 1
-    }
-
-    fun setHonkOff() {
-        mHonk = 0
     }
 
     fun setAutoOn() {
@@ -87,8 +83,7 @@ object DriveInstructionsModel {
      * @return ByteArray consisting of the new instruction(s)
      */
     fun toByteArray(): ByteArray {
-        //val bArr = "@$mTurn;$mThrust;$mLight;$mHonk;$mAuto$".toByteArray()
-        val bArr = "@255;3001;0;0;0$".toByteArray()
+        val bArr = "@$mThrust;$mTurn;$mLight;$mHonk;$mAuto$".toByteArray()
         mHonk = 0
         return bArr
     }

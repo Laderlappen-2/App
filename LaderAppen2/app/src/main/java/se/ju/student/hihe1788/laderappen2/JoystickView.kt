@@ -6,10 +6,12 @@ import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.sqrt
 
+private val TAG = JoystickView::class.java.simpleName
 /**
  * Represent a joystick so we can move the mower.
  * @param mContext Application context
@@ -102,7 +104,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         }
 
 
-        when(event?.action) {
+        when(event.action) {
 
             MotionEvent.ACTION_DOWN -> {
                 if (distToTopHatCenter <= mTopHatRadius) { 
@@ -112,9 +114,18 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
             }
 
             MotionEvent.ACTION_UP -> {
+                Log.i(TAG, "ACTION_UP")
                 mIsInsideTopHat = false
                 mTopHatCenter.clone(mCanvasCenter)
                 invalidate()
+                if (mIsThrust) {
+                    Log.i(TAG, "ACTION_UP: isThrust")
+                    DriveInstructionsModel.setThrust(0f)
+                }
+                else {
+                    DriveInstructionsModel.setTurn(0f)
+                    Log.i(TAG, "ACTION_UP: isTurn")
+                }
                 return true
             }
 
@@ -122,14 +133,15 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
                 if (mIsInsideTopHat) {
                     if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
 
+                        val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
+
                         if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
+                            DriveInstructionsModel.setThrust(force)
                         } else {
                             mTopHatCenter.x = currentPixel.x
+                            DriveInstructionsModel.setTurn(force)
                         }
-
-                        val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
-                        //DriveInstructionsModel.setInstructions(force, mIsThrust)
                     }
                     invalidate()
                 }

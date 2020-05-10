@@ -40,11 +40,9 @@ class HomeFragment: Fragment() {
 
         view.findViewById<Button>(R.id.bntDrive)?.setOnClickListener {
             // TODO ask if user wants to enable bluetooth with AlertDialog if yes navigate to drive
-            MainActivity.mActivity?.startBLEService()
 
-            //findNavController().navigate(R.id.driveFragment, null)
+            findNavController().navigate(R.id.driveFragment, null)
         }
-
     }
 
     /** This will be called after onCreate() and onCreateView(),
