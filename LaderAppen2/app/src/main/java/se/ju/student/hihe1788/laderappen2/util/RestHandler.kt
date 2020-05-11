@@ -48,7 +48,7 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun postDriveSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+    fun createDrivingSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
         val jsonObjectRequest =
@@ -83,8 +83,8 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
-    fun postRoute(route: RouteModel, id: String, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
-        val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id$URI_EVENTS"
+    fun createBatchEvents(route: RouteModel, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$BASE_URL$URI_DRIVINGSESSIONS/${route.id}$URI_EVENTS"
 
         val temPoints = ArrayList<PointModel>()
         temPoints.addAll(route.positionEvents)
