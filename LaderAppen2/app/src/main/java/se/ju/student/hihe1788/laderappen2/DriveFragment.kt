@@ -141,19 +141,26 @@ class DriveFragment: Fragment() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_DATA_RECEIVED_FROM_MOWER -> {
-                    val data = intent.getStringExtra("data")
+                    val data = intent.getByteArrayExtra("data")
                     Log.i(TAG, "mBroadcastReceiver - Data received from mower")
                     Log.i(TAG, "DATA = $data")
+                    /* decodeIncomingMsg(data) */
                 }
             }
         }
 
     }
 
-    private fun decodeIncomingMsg(data: String) {
+    /**
+     * TODO - Sort out the regex split and set it to a appropriate type. (MowerModel perhaps?)
+     * Also in need of some sanity checks in case we get some "slaskvärden".
+     * Don't forget to send back an ACK via [MainActivity.commandsToMowerReceiver] in case it's needed.
+     */
+    private fun decodeIncomingMsg(data: ByteArray) {
         try {
+            val s = data.toString()
             val pattern = Regex("[0-9]+")
-            val matches = pattern.findAll(data)
+            val matches = pattern.findAll(s)
             println("decodeIncomingMsg, this should be a 1/0 = "+matches.elementAt(1))
         } catch (e: IOException) {
             Log.i(TAG, "Could not decode incoming message. Msg: $e")

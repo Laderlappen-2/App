@@ -203,6 +203,10 @@ class MainActivity : AppCompatActivity() {
             mIsBound = false
         }
     }
+
+    /**
+     * Receives actions from [DriveFragment] and sends them to the [BLEService]
+     */
     private val commandsToMowerReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -211,6 +215,13 @@ class MainActivity : AppCompatActivity() {
                 }
                 ACTION_SEND_HONK -> {
                     mBLEService.send(DriveInstructionsModel.getHonkAsByteArray())
+                }
+                ACTION_SEND_MANUAL,
+                ACTION_SEND_AUTO -> {
+                    mBLEService.send(DriveInstructionsModel.getAutonomousModeAsByteArray())
+                }
+                ACTION_SEND_QUIT -> {
+                    mBLEService.send(DriveInstructionsModel.getTurnOffCmdAsByteArray())
                 }
             }
         }

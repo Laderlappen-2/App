@@ -192,12 +192,10 @@ class BLEService : Service() {
             //read data from characteristic.value
             when(status) {
                 BluetoothGatt.GATT_SUCCESS -> {
-                    Log.i(TAG, "onCharacteristicRead(): status == GATT_SUCCESS")
-                    if (MOWER_CHARACTERISTIC_READ_UUID == characteristic.uuid)
-                    {
+
+                    if (MOWER_CHARACTERISTIC_READ_UUID == characteristic.uuid) {
                         val data = characteristic.value
                         val value = data.toString()
-                        Log.i(TAG, "Successfully read from characteristics: $characteristic"+ "value: " + value)
                     }
                 }
                 else -> {
@@ -242,7 +240,6 @@ class BLEService : Service() {
                 intent.action = ACTION_DATA_RECEIVED_FROM_MOWER
                 intent.putExtra("data", data)
 
-                Log.i(TAG, "onCharacteristicChanged(): Data read: $data as string")
                 MainActivity.mContext.sendBroadcast(intent)
             }
         }
