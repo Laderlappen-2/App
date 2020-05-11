@@ -1,20 +1,12 @@
 package se.ju.student.hihe1788.laderappen2
 
+import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 
-class RouteModel(val id: Int, val positionEvents: ArrayList<PointModel> = ArrayList(), val collisionAvoidanceEvents: ArrayList<PointModel> = ArrayList()) {
+class RouteModel(val id: Int, val createdAt: Date, val events: ArrayList<EventModel>) :Serializable
 
-    fun getPositions(): ArrayList<PointModel> {
-        return positionEvents
-    }
+/*eventTypeId: 3 = collisionAvoidance, 5 = position */
+class EventModel(val id: Int, val eventTypeId: Int, val dateCreated: Date, val positionEvent: PointModel, val collisionAvoidanceEvent: PointModel)
 
-    fun getCollisonAvoidances(): ArrayList<PointModel> {
-        return collisionAvoidanceEvents
-    }
-}
-
-
-class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Int, val positionY: Int, val dateCreated: Date) {
-    /*3 collison 5 posision*/
-}
+class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Float, val positionY: Float)

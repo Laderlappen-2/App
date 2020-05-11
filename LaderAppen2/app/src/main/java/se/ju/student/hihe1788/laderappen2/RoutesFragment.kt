@@ -45,7 +45,6 @@ class RoutesFragment : Fragment() {
         RestHandler.getAllRoutes({
             mRoutes.clear()
             mRoutes.addAll(DataHandler.getRoutes())
-            Toast.makeText(context, "Done", Toast.LENGTH_LONG).show()
             updateRecycleView()
             progressBarView.visibility = View.GONE
         }, { error ->
