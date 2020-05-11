@@ -63,11 +63,10 @@ class DriveFragment: Fragment() {
         }
 
         mBtnBack.setOnClickListener {
-            println("IT WORX")
+
         }
 
         mBtnBluetooth.setOnClickListener {
-            println("IT WORX")
             MainActivity.mActivity?.startBLEService()
         }
 

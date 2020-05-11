@@ -8,7 +8,7 @@ import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import java.util.*
+import java.io.IOException
 
 private val TAG = BLEService::class.java.simpleName
 
@@ -57,6 +57,7 @@ class BLEService : Service() {
     private val InstructionsSender : Runnable = Runnable {
         run {
             if(isConnected()) {
+                Log.i(TAG, "InstructionsSender - isConnected: ${isConnected()} - SENDING...")
                 this.send()
             } else {
                 init()
@@ -104,15 +105,15 @@ class BLEService : Service() {
         val device = mBluetoothAdapter!!.getRemoteDevice(MOWER_MAC_ADDRESS)
 
         if(device == null || mBluetoothAdapter == null) {
-            Log.e(TAG, "CANNOT CONNECT TO DEVICE")
+            Log.e(TAG, "connect() - CANNOT CONNECT TO DEVICE")
             return false
         }
 
         mDeviceAddress = device.address
         mGatt = device.connectGatt(this, false, gattCallback)
 
-        mIsConnected = true;
-        Log.i(TAG,"CONNECTED TO DEVICE: "+device.address)
+        mIsConnected = true
+        Log.i(TAG,"CONNECTED TO DEVICE: ${device.address}")
         return true
     }
 
@@ -124,6 +125,8 @@ class BLEService : Service() {
             newState: Int
         ) {
             super.onConnectionStateChange(gatt, status, newState)
+
+            Log.i(TAG, "gattCallback - gatt:  $gatt, status: $status, newState: $newState")
 
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
@@ -170,7 +173,7 @@ class BLEService : Service() {
 
                     // Write on the config descriptor to be notified when the value changes
                     val descriptor = mGattCharacteristicRead?.getDescriptor(DESCRIPTOR_UUID)
-                    descriptor?.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE)
+                    descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
                     gatt?.writeDescriptor(descriptor)
                 }
                 else -> {
@@ -190,7 +193,7 @@ class BLEService : Service() {
             when(status) {
                 BluetoothGatt.GATT_SUCCESS -> {
                     Log.i(TAG, "onCharacteristicRead(): status == GATT_SUCCESS")
-                    if (MOWER_CHARACTERISTIC_READ_UUID.equals(characteristic.uuid))
+                    if (MOWER_CHARACTERISTIC_READ_UUID == characteristic.uuid)
                     {
                         val data = characteristic.value
                         val value = data.toString()
@@ -230,11 +233,11 @@ class BLEService : Service() {
         ) {
             super.onCharacteristicChanged(gatt, characteristic)
 
-            if (MOWER_CHARACTERISTIC_READ_UUID.equals(characteristic?.uuid))
+            if (MOWER_CHARACTERISTIC_READ_UUID == characteristic?.uuid)
             {
                 val data = characteristic?.value
                 val value = data?.toString(Charsets.UTF_8)
-                Log.i(TAG, "onCharacteristicChanged(): " + "Value read: " + value)
+                Log.i(TAG, "onCharacteristicChanged(): Value read: $value")
             }
         }
 
@@ -248,7 +251,7 @@ class BLEService : Service() {
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
                     Log.i(TAG, "onDescriptorWrite(): status == GATT_SUCCESS")
-                    if (DESCRIPTOR_UUID.equals(descriptor?.uuid)) {
+                    if (DESCRIPTOR_UUID == descriptor?.uuid) {
                         val characteristic = gatt?.getService(MOWER_SERVICE_UUID)?.getCharacteristic(MOWER_CHARACTERISTIC_READ_UUID)
                         val successCheck = gatt!!.readCharacteristic(characteristic)
                         if (successCheck)
@@ -285,15 +288,18 @@ class BLEService : Service() {
 
     fun send() {
         //check we access to BT radio
-        if(mBluetoothAdapter == null || mGatt == null) {
-            return
+        if(mBluetoothAdapter == null || mGatt == null || mGattCharacteristicWrite == null) { return }
+
+        try {
+            val bArr = DriveInstructionsModel.toByteArray()
+            mGattCharacteristicWrite?.value = bArr
+
+            mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
+        } catch (e: IOException) {
+            Log.i(TAG,"send(): $e")
         }
-        val bArr = DriveInstructionsModel.toByteArray()
-        mGattCharacteristicWrite?.value = bArr
 
-        //Log.i(TAG, "send(): " + "bytArray: " + mGattCharacteristicWrite?.value?.toString(Charsets.UTF_8))
 
-        mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
 
         //TODO(write to char here?)
     }
@@ -320,11 +326,11 @@ class BLEService : Service() {
         if(mBluetoothAdapter == null || mGatt == null) {
             return
         }
-        var byteArray:ByteArray? = null
-        byteArray = byteArrayOf(command.toByte())
-        characteristic.value = byteArray
 
-        Log.i(TAG, "I AM IN WRITECHARACTERISTICS: " + "bytaarray: " + byteArray.toString() +"Properties: "+ characteristic.properties.toInt() +" charValue: " + characteristic.value)
+        val bArray: ByteArray = byteArrayOf(command.toByte())
+        characteristic.value = bArray
+
+        Log.i(TAG, "writeCharacteristics: " + "byteArray: $bArray Properties: ${characteristic.properties} charValue: ${characteristic.value}")
 
         mGatt!!.writeCharacteristic(characteristic)
 

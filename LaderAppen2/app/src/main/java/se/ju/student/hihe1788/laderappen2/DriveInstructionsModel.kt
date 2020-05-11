@@ -9,10 +9,10 @@ private val TAG = DriveInstructionsModel::class.java.simpleName
 object DriveInstructionsModel {
     private val MIN_THRUST = -100f
     private val MAX_THRUST = 100f
-    private val NEUTRAL_THRUST= (MAX_THRUST - MIN_THRUST) / 2f
+    private val NEUTRAL_THRUST= 0f
     private val MIN_TURN = -100f
     private val MAX_TURN = 100f
-    private val NEUTRAL_TURN = (MAX_TURN - MIN_TURN) / 2f
+    private val NEUTRAL_TURN = 0f
 
     private var mThrust: Int = 0
     private var mTurn: Int = 0
@@ -24,8 +24,7 @@ object DriveInstructionsModel {
      * @param thrust sets a new thrust
      */
     fun setThrust(percent: Float) {
-        val value = MAX_THRUST * percent
-        val newThrust = (NEUTRAL_THRUST + value)
+        val newThrust = MAX_THRUST * percent
 
         if (newThrust < MIN_THRUST)
             mThrust = MIN_THRUST.toInt()
@@ -33,14 +32,15 @@ object DriveInstructionsModel {
             mThrust = MAX_THRUST.toInt()
         else
             mThrust = newThrust.toInt()
+
+
     }
 
     /**
      * @param turn sets a new turn
      */
     fun setTurn(percent: Float) {
-        val value = MAX_TURN * percent
-        val newTurn = (NEUTRAL_TURN + value)
+        val newTurn = MAX_TURN * percent
 
         if (newTurn < MIN_TURN)
             mTurn = MIN_TURN.toInt()
@@ -48,6 +48,7 @@ object DriveInstructionsModel {
             mTurn = MAX_TURN.toInt()
         else
             mTurn = newTurn.toInt()
+
     }
 
     fun setLightOn() {

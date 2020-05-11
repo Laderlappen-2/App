@@ -17,7 +17,7 @@ private val TAG = JoystickView::class.java.simpleName
  * @param mContext Application context
  * @param attrs bonus info (Consultate Jonna for more info)
  */
-class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
+class JoystickView(private val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
 
     private lateinit var mCanvasCenter: Pixel
     private lateinit var mTopHatCenter: Pixel
@@ -53,16 +53,16 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         mTopHatCenter = Pixel(w/2f, h/2f)
         mTopHatRadius = w/2 * 0.4f    // Arbitrary value
 
-        if (mIsThrust) {
-            mDirectionalRect = Rect((mCanvasCenter.x - 2).toInt(),
-                                    (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.x + 2).toInt(),
-                                    (mCanvasCenter.y + (mBoundsRadius-mTopHatRadius)).toInt())
+        mDirectionalRect = if (mIsThrust) {
+            Rect((mCanvasCenter.x - 2).toInt(),
+                (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.x + 2).toInt(),
+                (mCanvasCenter.y + (mBoundsRadius-mTopHatRadius)).toInt())
         } else {
-            mDirectionalRect = Rect((mCanvasCenter.x - (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.y - 2).toInt(),
-                                    (mCanvasCenter.x + (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.y + 2).toInt())
+            Rect((mCanvasCenter.x - (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.y - 2).toInt(),
+                (mCanvasCenter.x + (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.y + 2).toInt())
         }
 
 
@@ -86,7 +86,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
      * Handles all user-input and take action
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var value = super.onTouchEvent(event)
+        super.onTouchEvent(event)
 
         val currentPixel = Pixel(event.x, event.y)
         var distanceInAxis = 0f
@@ -97,10 +97,10 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         // To know if inside topHat
         val distToTopHatCenter = mTopHatCenter.getDistanceTo(currentPixel)
 
-        if (mIsThrust) {
-            distanceInAxis = mCanvasCenter.y - currentPixel.y
+        distanceInAxis = if (mIsThrust) {
+            mCanvasCenter.y - currentPixel.y
         } else {
-            distanceInAxis = currentPixel.x - mCanvasCenter.x
+            currentPixel.x - mCanvasCenter.x
         }
 
 
@@ -137,9 +137,11 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
 
                         if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
+                            Log.i(TAG, "MotionEvent.ACTION_MOVE - Thrust: $mIsThrust, Force: $force")
                             DriveInstructionsModel.setThrust(force)
                         } else {
                             mTopHatCenter.x = currentPixel.x
+                            Log.i(TAG, "MotionEvent.ACTION_MOVE - Thrust: $mIsThrust, Force: $force")
                             DriveInstructionsModel.setTurn(force)
                         }
                     }

@@ -284,7 +284,7 @@ class MainActivity : AppCompatActivity() {
             else if ( action.equals(ACTION_GATT_REGISTER_CHARACTERISTIC_READ) )
             {
                 Log.i(TAG, "ACTION_GATT_REGISTER_CHARACTERISTIC_READ")
-                mBLEService!!.readChar()
+                mBLEService.readChar()
             }
         }
     }
