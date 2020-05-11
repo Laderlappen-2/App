@@ -20,4 +20,13 @@
     <string name="auto">Auto</string>
     <string name="drive">Drive</string>
     <string name="loadingDotDotDot">Loading...</string>
+    <string name="route_date">%1$s</string>
+    <string name="start_position">Start</string>
+    <string name="end_position">End</string>
+    <string name="position_point">Position</string>
+    <string name="ca_position">Collision avoidance</string>
+    <string name="y_circle">Yellow circle</string>
+    <string name="b_circle">blue circle</string>
+    <string name="r_circle">red circle</string>
+    <string name="g_circle">green circle</string>
 </resources>

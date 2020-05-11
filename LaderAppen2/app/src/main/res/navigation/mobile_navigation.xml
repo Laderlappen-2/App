@@ -15,7 +15,11 @@
         android:id="@+id/routes_dest"
         android:name="se.ju.student.hihe1788.laderappen2.RoutesFragment"
         android:label="RoutesFragment"
-        tools:layout="@layout/routes_fragment"/>
+        tools:layout="@layout/routes_fragment">
+        <action
+            android:id="@+id/next_action"
+            app:destination="@id/routeItemFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settings_dest"
         android:name="se.ju.student.hihe1788.laderappen2.SettingsFragment"
@@ -30,6 +34,10 @@
         android:id="@+id/routeItemFragment"
         android:name="se.ju.student.hihe1788.laderappen2.RouteItemFragment"
         android:label="RouteItemFragment"
-        tools:layout="@layout/route_item_fragement"/>
+        tools:layout="@layout/route_item_fragement">
+        <argument
+            android:name="routeArgs"
+            app:argType="se.ju.student.hihe1788.laderappen2.RouteModel" />
+    </fragment>
 
 </navigation>

@@ -48,6 +48,34 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    fun getAllEventsForRouteWithId(id: Int, successCallback: (route: RouteModel) -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id"
+        val jsonObjectRequest =
+            CustomRestRequest(
+                RestMethodEnum.GET,
+                url,
+                null,
+                Response.Listener { jsonStringRes ->
+                    parseStringResponse<RouteModel>(
+                        jsonStringRes
+                    ) { route ->
+                        route?.let {
+                            successCallback(it)
+                        }
+                    }
+                },
+                Response.ErrorListener { error ->
+                    parseErrorResponse(
+                        error,
+                        errorCallback
+                    )
+                }
+            )
+        RequestQueueSingleton.getInstance(
+            MainActivity.mAppContext
+        ).addToRequestQueue(jsonObjectRequest)
+    }
+
     fun createDrivingSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
@@ -57,17 +85,11 @@ object RestHandler {
                 url,
                 null,
                 Response.Listener() { response ->
-                    parseStringResponse<JsonObject>(
+                    parseStringResponse<RouteModel>(
                         response
                     ) { parsedResponse ->
-                        val routeId = parsedResponse?.get("id")?.asInt
-                        routeId?.let {
-                            DataHandler.setCurrentRoute(
-                                RouteModel(
-                                    routeId
-                                )
-                            )
-                            successCallback()
+                        parsedResponse?.let {
+                            DataHandler.setCurrentRoute(parsedResponse)
                         }
                     }
                 },
@@ -86,11 +108,7 @@ object RestHandler {
     fun createBatchEvents(route: RouteModel, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/${route.id}$URI_EVENTS"
 
-        val temPoints = ArrayList<PointModel>()
-        temPoints.addAll(route.positionEvents)
-        temPoints.addAll(route.collisionAvoidanceEvents)
-
-        val jsonString = Klaxon().toJsonString(temPoints)
+        val jsonString = Klaxon().toJsonString(route.events)
 
         val jsonArrayRequest =
             CustomRestRequest(

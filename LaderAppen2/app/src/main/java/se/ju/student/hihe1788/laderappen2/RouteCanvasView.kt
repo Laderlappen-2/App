@@ -11,6 +11,9 @@ import android.view.ScaleGestureDetector.OnScaleGestureListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.plus
 
+const val COLLISION_AVOIDANCE_POINT = 3
+const val POSITION_POINT = 5
+
 class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attrs) {
     private var mScaleDetector: ScaleGestureDetector? = null
     private var mSortedPoints = ArrayList<PointModel>()
@@ -48,16 +51,21 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     private val mStopPositionPaint = Paint().apply { color = mDrawStopColor }
 
     fun updatePoints(route: RouteModel) {
-        mPositionPoints = route.positionEvents
-        mCollisionAvoidancePoints = route.collisionAvoidanceEvents
 
+        route.events.sortBy { it.id }
+
+        for (event in route.events) {
+            when (event.eventTypeId) {
+                COLLISION_AVOIDANCE_POINT -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
+                POSITION_POINT -> mPositionPoints.add(event.positionEvent)
+            }
+        }
         setup()
     }
 
     fun setup() {
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
-        mSortedPoints.sortBy { it.dateCreated }
     }
 
     override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHieght: Int) {
