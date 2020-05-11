@@ -10,6 +10,12 @@ import androidx.navigation.fragment.findNavController
  * Start view for the LäderAppen
  */
 class HomeFragment: Fragment() {
+
+    /**
+     * Override function that returns the view for HomeFragment.
+     * @see R.layout.fragment_home
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -19,6 +25,11 @@ class HomeFragment: Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    /**
+     * Override function that sets an on click listener to drive button.
+     * @see R.layout.fragment_home
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -28,6 +39,11 @@ class HomeFragment: Fragment() {
         }
     }
 
+    /**
+     * Override function that creates the menu that is displayed in the action bar.
+     * @see R.menu.main_menu
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
     }

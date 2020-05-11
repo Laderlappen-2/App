@@ -1,5 +1,8 @@
 package se.ju.student.hihe1788.laderappen2
 
+/**
+ * A class that holds enums for http requests.
+ */
 enum class RestMethodEnum(val value: Int) {
     DEPRECATED_GET_OR_POST(-1),
     GET(0),

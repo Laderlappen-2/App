@@ -3,6 +3,9 @@ package se.ju.student.hihe1788.laderappen2.models
 import se.ju.student.hihe1788.laderappen2.RouteModel
 import se.ju.student.hihe1788.laderappen2.models.interfaces.PaginationInterface
 
+/**
+ * A model for a route pagination.
+ */
 class RoutePagination(
     override val from: Int?,
     override val next: Int?,

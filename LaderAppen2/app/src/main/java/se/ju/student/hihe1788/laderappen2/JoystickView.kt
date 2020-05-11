@@ -24,23 +24,20 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     private var mTopHatRadius = 0.0f
     private var mIsInsideTopHat = false
     private var mIsThrust = false
-
     private val mDirectionRectPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.colorBlackOpa50)
     }
-
-
     private val mTopHatPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.colorNavyDarkOpa50)
     }
-
     private val mBoundsPaint = Paint(ANTI_ALIAS_FLAG).apply {
         this.color = mContext.getColor(R.color.transparent)
     }
 
     /**
-     * Is called when the view is painted to the screen.
+     * Override function that is called when the view is painted to the screen.
      * Sets dimensions on all paints objects.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -67,7 +64,8 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     }
 
     /**
-     * Is called each time the objects are changed.
+     * Override function that is called each time the objects are changed.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
@@ -81,7 +79,8 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
     }
 
     /**
-     * Handles all user-input and take action
+     * Override function that handles all user-input and take action
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         var value = super.onTouchEvent(event)

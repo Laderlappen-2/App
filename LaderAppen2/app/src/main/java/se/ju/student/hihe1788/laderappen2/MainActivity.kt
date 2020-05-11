@@ -15,6 +15,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 
+/**
+ * MainActivity
+ */
 public class MainActivity : AppCompatActivity() {
 
     companion object {
@@ -54,6 +57,14 @@ public class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Override function that sets up host fragment, app navigation and calls setupActionBar(), setupBottomNavMenu()
+     * and setupBroadcastReceiver().
+     * @see R.id.my_nav_host_fragment
+     * @see setupActionBar
+     * @see setupBottomNavMenu
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.navigation_activity)
@@ -76,7 +87,10 @@ public class MainActivity : AppCompatActivity() {
         setupBroadcastReceiver()
     }
 
-
+    /**
+     *  Override function that unregisters broadcast receivers on destroy.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(mBroadcastReceiver)
@@ -104,15 +118,21 @@ public class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Navigates to the chosen view from the bottom navigation
+     * Override function that navigates to the chosen view from the bottom navigation
      * @param item The item you clicked
      * @return True or false if you could navigate there.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return item.onNavDestinationSelected(findNavController(R.id.my_nav_host_fragment))
                 || super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Override function that handles navigation.
+     * @return True or false if you could navigate there.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.my_nav_host_fragment).navigateUp(mAppBarConfiguration)
     }

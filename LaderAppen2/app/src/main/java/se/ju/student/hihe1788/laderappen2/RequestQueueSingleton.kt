@@ -5,7 +5,10 @@ import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-
+/**
+ * A class that creates a volley request que.
+ * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+ */
 class RequestQueueSingleton constructor(context: Context) {
     companion object {
         @Volatile
@@ -25,6 +28,7 @@ class RequestQueueSingleton constructor(context: Context) {
     fun <T> addToRequestQueue(req: Request<T>) {
         requestQueue.add(req)
     }
+
     fun addToRequestQueue(req: StringRequest) {
         requestQueue.add(req)
     }
