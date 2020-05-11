@@ -1,10 +1,13 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.provider.ContactsContract
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
+import se.ju.student.hihe1788.laderappen2.util.RestHandler
 
 
 class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView.Adapter<RecyclerAdapter.RouteHolder>() {
@@ -35,8 +38,18 @@ class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView
 
         override fun onClick(v: View?) {
             if (v?.findNavController()?.currentDestination?.id == R.id.routes_dest) {
-                val action = RoutesFragmentDirections.nextAction(mRoute!!)
-                v.findNavController().navigate(action)
+
+                if (mRoute != null) {
+                    RestHandler.getAllEventsForRouteWithId(mRoute!!.id, { route->
+                        mRoute = route
+                        val action = RoutesFragmentDirections.nextAction(mRoute!!)
+                        v.findNavController().navigate(action)
+                    }, { error ->
+                        // TODO Bättre felmeddelande
+                        println("ERROR: ${error?.message}")
+                        Toast.makeText(MainActivity.mAppContext, "Error: " + error?.message, Toast.LENGTH_LONG).show()
+                    })
+                }
             }
         }
 

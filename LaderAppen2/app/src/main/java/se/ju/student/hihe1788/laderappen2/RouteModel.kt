@@ -9,4 +9,4 @@ class RouteModel(val id: Int, val createdAt: Date, val events: ArrayList<EventMo
 /*eventTypeId: 3 = collisionAvoidance, 5 = position */
 class EventModel(val id: Int, val eventTypeId: Int, val dateCreated: Date, val positionEvent: PointModel, val collisionAvoidanceEvent: PointModel)
 
-class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Int, val positionY: Int)
+class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Float, val positionY: Float)

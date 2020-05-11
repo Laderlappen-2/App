@@ -48,6 +48,34 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    fun getAllEventsForRouteWithId(id: Int, successCallback: (route: RouteModel) -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
+        val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id"
+        val jsonObjectRequest =
+            CustomRestRequest(
+                RestMethodEnum.GET,
+                url,
+                null,
+                Response.Listener { jsonStringRes ->
+                    parseStringResponse<RouteModel>(
+                        jsonStringRes
+                    ) { route ->
+                        route?.let {
+                            successCallback(it)
+                        }
+                    }
+                },
+                Response.ErrorListener { error ->
+                    parseErrorResponse(
+                        error,
+                        errorCallback
+                    )
+                }
+            )
+        RequestQueueSingleton.getInstance(
+            MainActivity.mAppContext
+        ).addToRequestQueue(jsonObjectRequest)
+    }
+
     fun postDriveSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
