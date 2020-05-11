@@ -1,8 +1,13 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +15,9 @@ import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import java.io.IOException
+
+private val TAG = DriveFragment::class.java.simpleName
 
 /**
  * This fragment controls the connected mower via
@@ -92,6 +100,8 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).findViewById<View>(R.id.bottom_nav_view).visibility = View.GONE
         (activity as AppCompatActivity).supportActionBar?.hide()
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        setupBroadcastReceiverFilter()
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -101,4 +111,41 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).supportActionBar?.show()
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.unregisterReceiver(mBroadcastReceiver)
+    }
+
+    private fun setupBroadcastReceiverFilter() {
+        val filter = IntentFilter()
+        filter.addAction(ACTION_DATA_RECEIVED_FROM_MOWER)
+        activity?.registerReceiver(mBroadcastReceiver, filter)
+    }
+
+
+    private val mBroadcastReceiver = object: BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_DATA_RECEIVED_FROM_MOWER -> {
+                    val data = intent.getStringExtra("data")
+                    Log.i(TAG, "mBroadcastReceiver - Data received from mower")
+                    Log.i(TAG, "DATA = $data")
+                }
+            }
+        }
+
+    }
+
+    private fun decodeIncomingMsg(data: String) {
+        try {
+            val pattern = Regex("[0-9]+")
+            val matches = pattern.findAll(data)
+            println("decodeIncomingMsg, this should be a 1/0 = "+matches.elementAt(1))
+        } catch (e: IOException) {
+            Log.i(TAG, "Could not decode incoming message. Msg: $e")
+        }
+    }
+
+
 }

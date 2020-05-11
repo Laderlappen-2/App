@@ -57,13 +57,11 @@ class BLEService : Service() {
     private val InstructionsSender : Runnable = Runnable {
         run {
             if(isConnected()) {
-                Log.i(TAG, "InstructionsSender - isConnected: ${isConnected()} - SENDING...")
                 this.send()
             } else {
                 init()
-                Log.i(TAG, "InstructionsSender(): init() == SUCCESS")
             }
-            mHandler.postDelayed(InstructionsSender, 1000)
+            mHandler.postDelayed(InstructionsSender, 250)
         }
     }
 
@@ -233,11 +231,17 @@ class BLEService : Service() {
         ) {
             super.onCharacteristicChanged(gatt, characteristic)
 
-            if (MOWER_CHARACTERISTIC_READ_UUID == characteristic?.uuid)
-            {
-                val data = characteristic?.value
-                val value = data?.toString(Charsets.UTF_8)
-                Log.i(TAG, "onCharacteristicChanged(): Value read: $value")
+            if (MOWER_CHARACTERISTIC_READ_UUID == characteristic?.uuid) {
+                /* We have received a message from the Mower */
+                val intent = Intent()
+                val data = characteristic?.value?.toString(Charsets.UTF_8)
+
+                // TODO - Send data to BroadCastReceiver to DriveFragment
+                intent.action = ACTION_DATA_RECEIVED_FROM_MOWER
+                intent.putExtra("data", data)
+
+                Log.i(TAG, "onCharacteristicChanged(): Data read: $data as string")
+                MainActivity.mContext.sendBroadcast(intent)
             }
         }
 
@@ -286,17 +290,16 @@ class BLEService : Service() {
         sendBroadcast(intent)
     }
 
-    fun send() {
+    private fun send(input: ByteArray = DriveInstructionsModel.toByteArray()) {
         //check we access to BT radio
         if(mBluetoothAdapter == null || mGatt == null || mGattCharacteristicWrite == null) { return }
 
         try {
-            val bArr = DriveInstructionsModel.toByteArray()
-            mGattCharacteristicWrite?.value = bArr
+            mGattCharacteristicWrite?.value = input
 
             mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
         } catch (e: IOException) {
-            Log.i(TAG,"send(): $e")
+            Log.i(TAG,"Error in send(): $e")
         }
 
 

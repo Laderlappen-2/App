@@ -114,17 +114,14 @@ class JoystickView(private val mContext: Context, attrs: AttributeSet) : View(mC
             }
 
             MotionEvent.ACTION_UP -> {
-                Log.i(TAG, "ACTION_UP")
                 mIsInsideTopHat = false
                 mTopHatCenter.clone(mCanvasCenter)
                 invalidate()
                 if (mIsThrust) {
-                    Log.i(TAG, "ACTION_UP: isThrust")
                     DriveInstructionsModel.setThrust(0f)
                 }
                 else {
                     DriveInstructionsModel.setTurn(0f)
-                    Log.i(TAG, "ACTION_UP: isTurn")
                 }
                 return true
             }
@@ -137,11 +134,9 @@ class JoystickView(private val mContext: Context, attrs: AttributeSet) : View(mC
 
                         if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
-                            Log.i(TAG, "MotionEvent.ACTION_MOVE - Thrust: $mIsThrust, Force: $force")
                             DriveInstructionsModel.setThrust(force)
                         } else {
                             mTopHatCenter.x = currentPixel.x
-                            Log.i(TAG, "MotionEvent.ACTION_MOVE - Thrust: $mIsThrust, Force: $force")
                             DriveInstructionsModel.setTurn(force)
                         }
                     }
