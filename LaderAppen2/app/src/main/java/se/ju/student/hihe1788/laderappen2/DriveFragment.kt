@@ -79,7 +79,10 @@ class DriveFragment: Fragment() {
 
     private fun backButtonAction() {
         // TODO: Stop autonomous mode if running?
-        saveCurrentDrivingSession()
+        if(hasActiveDrivingSession)
+            saveCurrentDrivingSession()
+        else
+            findNavController().popBackStack()
     }
 
     private fun saveCurrentDrivingSession() {
