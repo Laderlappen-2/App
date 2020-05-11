@@ -1,5 +1,6 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.app.IntentService
 import android.app.Service
 import android.bluetooth.*
 import android.content.Context
@@ -47,6 +48,7 @@ class BLEService : Service() {
 
     private fun sendMsg(bytes: ByteArray) {
         Log.i(TAG, "InstructionsSender(): sendMSG == SUCCESS")
+
     }
 
     private fun startSendingInstructions() {
@@ -290,9 +292,10 @@ class BLEService : Service() {
         sendBroadcast(intent)
     }
 
-    private fun send(input: ByteArray = DriveInstructionsModel.toByteArray()) {
+    fun send(input: ByteArray = DriveInstructionsModel.toByteArray()) {
         //check we access to BT radio
-        if(mBluetoothAdapter == null || mGatt == null || mGattCharacteristicWrite == null) { return }
+        if(mBluetoothAdapter == null || mGatt == null || mGattCharacteristicWrite == null)
+            return
 
         try {
             mGattCharacteristicWrite?.value = input

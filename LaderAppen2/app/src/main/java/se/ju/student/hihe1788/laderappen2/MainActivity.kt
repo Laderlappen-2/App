@@ -1,7 +1,6 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothGatt
 import android.content.*
 import android.os.Bundle
 import android.os.IBinder
@@ -149,16 +148,27 @@ class MainActivity : AppCompatActivity() {
     //endregion
 
     private fun setupBroadcastReceiver() {
-        val filter = IntentFilter()
+        val filter1 = IntentFilter()
 
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-        filter.addAction(ACTION_GATT_CONNECTED)
-        filter.addAction(ACTION_GATT_DISCONNECTED)
-        filter.addAction(ACTION_GATT_SERVICES_DISCOVERED)
-        filter.addAction(ACTION_DATA_WRITTEN)
-        filter.addAction(ACTION_GATT_REGISTER_CHARACTERISTIC_READ)
+        filter1.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+        filter1.addAction(ACTION_GATT_CONNECTED)
+        filter1.addAction(ACTION_GATT_DISCONNECTED)
+        filter1.addAction(ACTION_GATT_SERVICES_DISCOVERED)
+        filter1.addAction(ACTION_DATA_WRITTEN)
+        filter1.addAction(ACTION_GATT_REGISTER_CHARACTERISTIC_READ)
 
-        registerReceiver(gattUpdateReceiver, filter)
+        registerReceiver(gattUpdateReceiver, filter1)
+
+        val filter2 = IntentFilter()
+
+        filter2.addAction(ACTION_SEND_HONK)
+        filter2.addAction(ACTION_SEND_LIGHTS)
+        filter2.addAction(ACTION_SEND_QUIT)
+        filter2.addAction(ACTION_SEND_AUTO)
+        filter2.addAction(ACTION_SEND_MANUAL)
+
+        registerReceiver(commandsToMowerReceiver, filter2)
+
     }
 
     fun startBLEService() {
@@ -192,6 +202,19 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG, "Bind disconnected")
             mIsBound = false
         }
+    }
+    private val commandsToMowerReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                ACTION_SEND_LIGHTS -> {
+                    mBLEService.send(DriveInstructionsModel.getLightAsByteArray())
+                }
+                ACTION_SEND_HONK -> {
+                    mBLEService.send(DriveInstructionsModel.getHonkAsByteArray())
+                }
+            }
+        }
+
     }
 
     private val gattUpdateReceiver = object : BroadcastReceiver() {

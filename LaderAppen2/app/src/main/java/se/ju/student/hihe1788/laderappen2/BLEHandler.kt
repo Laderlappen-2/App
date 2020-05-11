@@ -72,9 +72,9 @@ object BLEHandler {
         println("WE HAVE A GATT")
     }
 
-    fun send() {
+    fun send(input: ByteArray) {
         val msg = "1000".toByteArray()
-        mGattCharacteristicWrite.value = msg
+        mGattCharacteristicWrite.value = input
         mGatt.writeCharacteristic(mGattCharacteristicWrite)
     }
 

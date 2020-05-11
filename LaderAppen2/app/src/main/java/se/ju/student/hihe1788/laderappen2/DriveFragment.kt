@@ -56,6 +56,8 @@ class DriveFragment: Fragment() {
         mBtnAuto = requireView().findViewById(R.id.btn_drive_auto)
 
         mBtnLight.setOnClickListener {
+            val intent = Intent()
+            intent.action = ACTION_SEND_LIGHTS
             if (!mBtnLight.isActivated) {
                 mBtnLight.isActivated
                 DriveInstructionsModel.setLightOn()
@@ -63,10 +65,16 @@ class DriveFragment: Fragment() {
                 mBtnLight.isEnabled
                 DriveInstructionsModel.setLightOff()
             }
+
+            MainActivity.mContext.sendBroadcast(intent)
         }
 
         mBtnHonk.setOnClickListener {
+            val intent = Intent()
+            intent.action = ACTION_SEND_HONK
             DriveInstructionsModel.setHonkOn()
+            MainActivity.mContext.sendBroadcast(intent)
+
             MainActivity.mActivity?.stopBLEService()
         }
 
@@ -79,16 +87,21 @@ class DriveFragment: Fragment() {
         }
 
         mBtnAuto.setOnClickListener {
+            val intent = Intent()
+
 
             if (!mBtnAuto.isActivated)
             {
                 mBtnAuto.isActivated
                 DriveInstructionsModel.setAutoOn()
+                intent.action = ACTION_SEND_AUTO
             } else if (mBtnAuto.isActivated)
             {
                 mBtnAuto.isEnabled
                 DriveInstructionsModel.setAutoOff()
+                intent.action = ACTION_SEND_MANUAL
             }
+            MainActivity.mContext.sendBroadcast(intent)
         }
 
         //BluetoothHandler.startSendingDriveInstructions()
