@@ -56,15 +56,15 @@ object BluetoothHandler {
                     println("msg sent to mower")
                 }
                 Constants.MESSAGE_READ -> {
+                    /* Received a message from Mower */
                     println("We have a received a message")
-
-                    val data = if (msg.arg1 > 0) msg.obj as ByteArray else return
+                    val data = msg.obj as ByteArray
                     intent.action = Constants.ACTION_MSG_RECEIVED
                     intent.putExtra("message", data)
                 }
                 Constants.MESSAGE_TOAST -> {
                     /* Receives e.g Connection failed/lost. */
-                    val m = msg.obj as String
+                    val m = msg.data.getString(Constants.TOAST)
                     intent.action = Constants.ACTION_ALERT
                     intent.putExtra("message", m)
 
@@ -85,61 +85,3 @@ object BluetoothHandler {
         }
         return true
     }
-
-    /**
-     * Toggles Bluetooth on or off. If the device do not support
-     * Bluetooth it creates a @see AlertDialog.
-     */
-    fun toggleBluetooth() {
-        if (mBluetoothAdapter == null) {
-            AlertDialog.createSimpleDialog(MainActivity.mAppContext, MainActivity.mAppContext.getString(R.string.Bluetooth),
-                MainActivity.mAppContext.getString(R.string.btNotSupported))
-        }
-
-        if (mBluetoothAdapter?.isEnabled == false) {
-            mBluetoothAdapter.enable()
-        } else {
-            mBluetoothAdapter?.disable()
-        }
-    }
-
-    /**
-     * Initiate BluetoothService.ConnectThread and tries to
-     * connect to @see MowerModel.
-     */
-    fun connectDevice() {
-        mDevice = mBluetoothAdapter.getRemoteDevice(MowerModel.address)
-        mBluetoothService = BluetoothService(mHandler)
-
-        mBluetoothService.connect(mDevice)
-    }
-
-    /**
-     * Disconnect the connected device.
-     */
-    fun disconnectDevice() {
-        mBluetoothService.stop()
-    }
-
-    /**
-     * Send a given message to the connected device.
-     * @param bytes: A bytearray of what you would like to send.
-     */
-    fun sendMsg(bytes: ByteArray) {
-        mBluetoothService.write(bytes)
-    }
-
-    fun startSendingDriveInstructions() {
-        mHandler.post(InstructionsSender)
-    }
-
-    private val InstructionsSender : Runnable = Runnable {
-        run {
-            if (MowerModel.isConnected) {
-                this.sendMsg(DriveInstructionsModel.toMessage())
-            }
-            mHandler.postDelayed(InstructionsSender, 1000)
-        }
-    }
-
-}

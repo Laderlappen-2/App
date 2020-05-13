@@ -1,8 +1,5 @@
 package se.ju.student.hihe1788.laderappen2
 
-import se.ju.student.hihe1788.laderappen2.Constants.COLL_EVENT_ACK
-import se.ju.student.hihe1788.laderappen2.Constants.LIGHT_ACK
-import se.ju.student.hihe1788.laderappen2.Constants.POS_EVENT_ACK
 import java.util.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime

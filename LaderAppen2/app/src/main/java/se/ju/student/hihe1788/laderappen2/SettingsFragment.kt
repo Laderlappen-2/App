@@ -26,20 +26,14 @@ class SettingsFragment : Fragment() {
 
         view.findViewById<ImageButton>(R.id.bluetooth_btn)?.setOnClickListener {
 
-            it.isSelected = !BluetoothHandler.isBluetoothEnabled()
-            BluetoothHandler.toggleBluetooth()
+            it.isSelected = !BLEHandler.isBluetoothEnabled()
+            BLEHandler.toggleBluetooth()
 
         }
 
         view.findViewById<ImageButton>(R.id.device_connected)?.setOnClickListener {
 
-        if (!MowerModel.isConnected && BluetoothHandler.isBluetoothEnabled()) {
-            BluetoothHandler.connectDevice()
-            it.isSelected = true
-        } else {
-            BluetoothHandler.disconnectDevice()
-            it.isSelected = false
-        }
+        it.isSelected = !MowerModel.isConnected && BLEHandler.isBluetoothEnabled()
 
         Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
         }
@@ -57,6 +51,6 @@ class SettingsFragment : Fragment() {
         if (MowerModel.isConnected) {
             view?.findViewById<ImageButton>(R.id.device_connected)?.isSelected = true
         }
-        view?.findViewById<ImageButton>(R.id.bluetooth_btn)?.isSelected = BluetoothHandler.isBluetoothEnabled()
+        view?.findViewById<ImageButton>(R.id.bluetooth_btn)?.isSelected = BLEHandler.isBluetoothEnabled()
     }
 }

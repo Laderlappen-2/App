@@ -6,16 +6,18 @@ import android.graphics.Paint
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.sqrt
 
+private val TAG = JoystickView::class.java.simpleName
 /**
  * Represent a joystick so we can move the mower.
  * @param mContext Application context
  * @param attrs bonus info (Consultate Jonna for more info)
  */
-class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
+class JoystickView(private val mContext: Context, attrs: AttributeSet) : View(mContext, attrs) {
 
     private lateinit var mCanvasCenter: Pixel
     private lateinit var mTopHatCenter: Pixel
@@ -51,16 +53,16 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         mTopHatCenter = Pixel(w/2f, h/2f)
         mTopHatRadius = w/2 * 0.4f    // Arbitrary value
 
-        if (mIsThrust) {
-            mDirectionalRect = Rect((mCanvasCenter.x - 2).toInt(),
-                                    (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.x + 2).toInt(),
-                                    (mCanvasCenter.y + (mBoundsRadius-mTopHatRadius)).toInt())
+        mDirectionalRect = if (mIsThrust) {
+            Rect((mCanvasCenter.x - 2).toInt(),
+                (mCanvasCenter.y - (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.x + 2).toInt(),
+                (mCanvasCenter.y + (mBoundsRadius-mTopHatRadius)).toInt())
         } else {
-            mDirectionalRect = Rect((mCanvasCenter.x - (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.y - 2).toInt(),
-                                    (mCanvasCenter.x + (mBoundsRadius-mTopHatRadius)).toInt(),
-                                    (mCanvasCenter.y + 2).toInt())
+            Rect((mCanvasCenter.x - (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.y - 2).toInt(),
+                (mCanvasCenter.x + (mBoundsRadius-mTopHatRadius)).toInt(),
+                (mCanvasCenter.y + 2).toInt())
         }
 
 
@@ -84,7 +86,7 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
      * Handles all user-input and take action
      */
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var value = super.onTouchEvent(event)
+        super.onTouchEvent(event)
 
         val currentPixel = Pixel(event.x, event.y)
         var distanceInAxis = 0f
@@ -95,14 +97,14 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
         // To know if inside topHat
         val distToTopHatCenter = mTopHatCenter.getDistanceTo(currentPixel)
 
-        if (mIsThrust) {
-            distanceInAxis = mCanvasCenter.y - currentPixel.y
+        distanceInAxis = if (mIsThrust) {
+            mCanvasCenter.y - currentPixel.y
         } else {
-            distanceInAxis = currentPixel.x - mCanvasCenter.x
+            currentPixel.x - mCanvasCenter.x
         }
 
 
-        when(event?.action) {
+        when(event.action) {
 
             MotionEvent.ACTION_DOWN -> {
                 if (distToTopHatCenter <= mTopHatRadius) { 
@@ -115,6 +117,12 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
                 mIsInsideTopHat = false
                 mTopHatCenter.clone(mCanvasCenter)
                 invalidate()
+                if (mIsThrust) {
+                    DriveInstructionsModel.setThrust(0f)
+                }
+                else {
+                    DriveInstructionsModel.setTurn(0f)
+                }
                 return true
             }
 
@@ -122,14 +130,15 @@ class JoystickView(val mContext: Context, attrs: AttributeSet) : View(mContext, 
                 if (mIsInsideTopHat) {
                     if (distToCanvasCenter <= (mBoundsRadius - mTopHatRadius)) {
 
+                        val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
+
                         if (mIsThrust) {
                             mTopHatCenter.y = currentPixel.y
+                            DriveInstructionsModel.setThrust(force)
                         } else {
                             mTopHatCenter.x = currentPixel.x
+                            DriveInstructionsModel.setTurn(force)
                         }
-
-                        val force = ( distanceInAxis / (mBoundsRadius - mTopHatRadius) )
-                        DriveInstructionsModel.setInstructions(force, mIsThrust)
                     }
                     invalidate()
                 }
