@@ -8,24 +8,17 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.PathParser
 import androidx.fragment.app.Fragment
-import se.ju.student.hihe1788.laderappen2.MainActivity.Companion.mActivity
-import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
-import java.lang.Exception
-import java.time.LocalDateTime.now
-import java.time.LocalTime.now
+import java.io.IOException
 import java.util.*
 import kotlin.time.ExperimentalTime
 
@@ -92,19 +85,17 @@ class DriveFragment: Fragment() {
             intent.action = ACTION_SEND_LIGHTS
             if (!mBtnLight.isActivated) {
                 mBtnLight.isActivated
-                DriveInstructionsModel.setLightOn()
             } else {
                 mBtnLight.isEnabled
-                DriveInstructionsModel.setLightOff()
             }
 
+            DriveInstructionsModel.toggleLight()
             MainActivity.mContext.sendBroadcast(intent)
         }
 
         mBtnHonk.setOnClickListener {
             val intent = Intent()
             intent.action = ACTION_SEND_HONK
-            DriveInstructionsModel.setHonkOn()
             MainActivity.mContext.sendBroadcast(intent)
         }
 
@@ -127,20 +118,18 @@ class DriveFragment: Fragment() {
             val intent = Intent()
 
 
-            if (!mBtnAuto.isActivated)
-            {
+            if (!mBtnAuto.isActivated) {
                 mBtnAuto.isActivated = true
-
-                DriveInstructionsModel.setAutoOn()
                 intent.action = ACTION_SEND_AUTO
-            } else if (mBtnAuto.isActivated)
-            {
+
+            } else if (mBtnAuto.isActivated) {
                 mBtnAuto.isEnabled = true
                 mBtnAuto.isActivated = false
-                DriveInstructionsModel.setAutoOff()
                 intent.action = ACTION_SEND_MANUAL
             }
+
             Log.i(TAG, "mBtnAuto.isActivated = ${mBtnAuto.isActivated}")
+            DriveInstructionsModel.toggleDriveMode()
             MainActivity.mContext.sendBroadcast(intent)
         }
 

@@ -156,7 +156,7 @@ class JoystickView(private val mContext: Context, attrs: AttributeSet) : View(mC
     }
 
     /**
-     * Represent a Pixel in the view.
+     * Represent a [Pixel] in the [JoystickView].
      * @param x The x-coordinate
      * @param y The y-coordinate
      */

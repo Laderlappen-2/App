@@ -240,11 +240,9 @@ class MainActivity : AppCompatActivity() {
                 ACTION_SEND_HONK -> {
                     mBLEService.send(DriveInstructionsModel.getHonkAsByteArray())
                 }
-                ACTION_SEND_MANUAL -> {
-                    mBLEService.send(DriveInstructionsModel.getManualModeAsByteArray())
-                }
+                ACTION_SEND_MANUAL,
                 ACTION_SEND_AUTO -> {
-                    mBLEService.send(DriveInstructionsModel.getManualModeAsByteArray())
+                    mBLEService.send(DriveInstructionsModel.getDriveModeAsByteArray())
                 }
                 ACTION_SEND_QUIT -> {
                     mBLEService.send(DriveInstructionsModel.getTurnOffCmdAsByteArray())

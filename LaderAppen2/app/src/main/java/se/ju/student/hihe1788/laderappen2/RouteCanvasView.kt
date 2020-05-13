@@ -10,6 +10,7 @@ import android.view.*
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.plus
+import kotlin.math.abs
 
 /**
  * Uses a canvas to draw a route.
@@ -70,7 +71,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     }
 
     /**
-     *Puts all position and collision avoidnace points in a combined ArrayList.
+     *Puts all position and collision avoidance points in a combined ArrayList.
      */
     fun setup() {
         mSortedPoints.addAll(mPositionPoints)
@@ -81,9 +82,9 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
      * Override function that is called when the view is painted to the screen.
      * Calculates and sets origin and adds a scaleGestureDetector to the canvas.
      * @param width The new width of the view
-     * @param height The new hight of the view
+     * @param height The new height of the view
      * @param oldWidth The old width of the view
-     * @param oldHeight The old hight of the view
+     * @param oldHeight The old height of the view
      * @see ScaleGestureDetector
      * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
@@ -174,8 +175,8 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
      * Is called when the user moves their finger across the screen and moves the canvas accordingly.
      */
     private fun touchMove() {
-        val dx = Math.abs(motionTouchEventX - currentX)
-        val dy = Math.abs(motionTouchEventY - currentY)
+        val dx = abs(motionTouchEventX - currentX)
+        val dy = abs(motionTouchEventY - currentY)
         if (dx >= touchTolerance || dy >= touchTolerance) {
 
             mOffset.set((dx + currentX).minus(mOrigin.x), (dy + currentY).minus(mOrigin.y))

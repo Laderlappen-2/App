@@ -1,10 +1,12 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.util.Log
-
-private val TAG = DriveInstructionsModel::class.java.simpleName
 /**
  * Represent the mowers current state
+ * @property mThrust: Amount of thrust that the mower shall have
+ * @property mTurn: Amount of turn that the mower shall turn with
+ * @property mLight: If the mowers light shall be on/off
+ * @property mHonk: If the mower shall honk or not
+ * @property mAuto: Sets either autonomous or manual mode
  */
 object DriveInstructionsModel {
     private const val MIN_THRUST = -100f
@@ -13,11 +15,10 @@ object DriveInstructionsModel {
     private const val MIN_TURN = -100f
     private const val MAX_TURN = 100f
 
-
     private var mThrust: Int = 0
     private var mTurn: Int = 0
     private var mLight: Int = 0
-    private var mHonk: Int = 0
+    private var mHonk: Int = 1
     private var mAuto: Int = 0
 
     /**
@@ -31,8 +32,6 @@ object DriveInstructionsModel {
             newThrust > MAX_THRUST -> MAX_THRUST.toInt()
             else -> newThrust.toInt()
         }
-
-
     }
 
     /**
@@ -46,42 +45,41 @@ object DriveInstructionsModel {
             newTurn > MAX_TURN -> MAX_TURN.toInt()
             else -> newTurn.toInt()
         }
-
     }
 
-    fun setLightOn() {
-        mLight = 1
+    /**
+     * Toggle [mLight] between 1 (on) or 0 (off)
+     */
+    fun toggleLight() {
+        mLight = if (mLight == 1) 0 else 1
     }
 
-    fun setLightOff() {
-        mLight = 0
-    }
-
+    /**
+     * @return A command that the mower interpret
+     * as to turn the lights on
+     */
     fun getLightAsByteArray() : ByteArray {
         return "@L,$mLight,0$".toByteArray()
     }
 
-    fun setHonkOn() {
-        mHonk = 1
-    }
-
+    /**
+     * @return A command that the mower interpret to honk
+     */
     fun getHonkAsByteArray() : ByteArray {
         return "@H,$mHonk,0$".toByteArray()
     }
 
-    fun setAutoOn() {
-        mAuto = 1
+    /**
+     * Toggle between autonomous drive mode and manual.
+     */
+    fun toggleDriveMode() {
+        mAuto = if(mAuto == 1) 0 else 1
     }
 
-    fun setAutoOff() {
-        mAuto = 0
-    }
-
-    fun getManualModeAsByteArray() : ByteArray {
-        return "@M,,0$".toByteArray()
-    }
-
-    fun getAutonomousModeAsByteArray() : ByteArray {
+    /**
+     * @return Either autonomous drive mode or manual as ByteArray
+     */
+    fun getDriveModeAsByteArray() : ByteArray {
         return if (mAuto == 1) {
             "@A,,0$".toByteArray()
         } else {
@@ -89,12 +87,17 @@ object DriveInstructionsModel {
         }
     }
 
+    /**
+     * Turn of the Mower
+     * @return A command that the mower interpret to shutdown.
+     */
     fun getTurnOffCmdAsByteArray() : ByteArray {
         return "@Q,,0".toByteArray()
     }
 
     /**
      * Only sends thrust and steer.
+     * @return A command that the mower interpret as drive instruction.
      */
     fun toByteArray(): ByteArray {
         return "@D,$mThrust;$mTurn,0$".toByteArray()
