@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (!BLEHandler.isBluetoothEnabled()) {
-            BLEHandler.requestBluetooth()
+            BLEHandler.toggleBluetooth()
         }
 
         setupNavigationComponents()
@@ -74,6 +74,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         unregisterReceiver(gattUpdateReceiver)
+        unregisterReceiver(commandsToMowerReceiver)
     }
 
     /** The Activity is finishing or being destroyed by the system */
@@ -166,6 +167,7 @@ class MainActivity : AppCompatActivity() {
         filter2.addAction(ACTION_SEND_QUIT)
         filter2.addAction(ACTION_SEND_AUTO)
         filter2.addAction(ACTION_SEND_MANUAL)
+        filter2.addAction(ACTION_CONNECT_TO_MOWER)
 
         registerReceiver(commandsToMowerReceiver, filter2)
 
@@ -184,6 +186,7 @@ class MainActivity : AppCompatActivity() {
         val serviceClass = BLEService::class.java
         val intent = Intent(applicationContext, serviceClass)
         stopService(intent)
+        unbindService(myConnection)
     }
 
     //Returns an object used to access public methods of the bluetooth service
@@ -222,6 +225,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 ACTION_SEND_QUIT -> {
                     mBLEService.send(DriveInstructionsModel.getTurnOffCmdAsByteArray())
+                }
+                ACTION_CONNECT_TO_MOWER -> {
+                    startBLEService()
                 }
             }
         }

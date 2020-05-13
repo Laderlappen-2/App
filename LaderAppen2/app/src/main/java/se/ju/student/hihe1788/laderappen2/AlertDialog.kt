@@ -33,10 +33,9 @@ object AlertDialog {
         MaterialAlertDialogBuilder(context)
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton(MainActivity.mContext.getString(R.string.yes), DialogInterface.OnClickListener { dialog, id ->
-                BluetoothHandler.toggleBluetooth()
-
-            })
+            .setPositiveButton(MainActivity.mContext.getString(R.string.yes)) { _, _ ->
+                BLEHandler.toggleBluetooth()
+            }
             .setNegativeButton(MainActivity.mContext.getText(R.string.no),null)
             .show()
     }

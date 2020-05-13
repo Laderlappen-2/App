@@ -74,8 +74,6 @@ class DriveFragment: Fragment() {
             intent.action = ACTION_SEND_HONK
             DriveInstructionsModel.setHonkOn()
             MainActivity.mContext.sendBroadcast(intent)
-
-            MainActivity.mActivity?.stopBLEService()
         }
 
         mBtnBack.setOnClickListener {
@@ -83,7 +81,14 @@ class DriveFragment: Fragment() {
         }
 
         mBtnBluetooth.setOnClickListener {
-            MainActivity.mActivity?.startBLEService()
+            try {
+                MainActivity.mActivity?.startBLEService()
+                MowerModel.isConnected = true
+            } catch (e: IOException) {
+                Log.i(TAG, "Could not connect to Mower. Msg: $e")
+                MowerModel.isConnected = false
+            }
+
         }
 
         mBtnAuto.setOnClickListener {
@@ -104,7 +109,6 @@ class DriveFragment: Fragment() {
             MainActivity.mContext.sendBroadcast(intent)
         }
 
-        //BluetoothHandler.startSendingDriveInstructions()
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

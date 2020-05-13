@@ -93,7 +93,7 @@ object DriveInstructionsModel {
      * Only sends thrust and steer.
      */
     fun toByteArray(): ByteArray {
-        return "@D,$mThrust;$mTurn,1$".toByteArray()
+        return "@D,$mThrust;$mTurn,0$".toByteArray()
     }
 
     /**

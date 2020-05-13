@@ -1,6 +1,5 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.app.IntentService
 import android.app.Service
 import android.bluetooth.*
 import android.content.Context
@@ -53,17 +52,17 @@ class BLEService : Service() {
 
     private fun startSendingInstructions() {
         mHandler = Handler()
-        mHandler.post(InstructionsSender)
+        mHandler.post(instructionsSender)
     }
 
-    private val InstructionsSender : Runnable = Runnable {
+    private val instructionsSender : Runnable = Runnable {
         run {
             if(isConnected()) {
                 this.send()
             } else {
                 init()
             }
-            mHandler.postDelayed(InstructionsSender, 250)
+            mHandler.postDelayed(instructionsSender, 250)
         }
     }
 
@@ -73,9 +72,11 @@ class BLEService : Service() {
     }
 
     override fun onDestroy() {
+        Log.i(TAG, "onDestroy called")
         super.onDestroy()
-        mHandler.removeCallbacks(mRunnable)
+        mHandler.removeCallbacks(instructionsSender)
         disconnect()
+        stopSelf()
     }
 
     private fun isConnected () : Boolean {
@@ -234,7 +235,7 @@ class BLEService : Service() {
             if (MOWER_CHARACTERISTIC_READ_UUID == characteristic?.uuid) {
                 /* We have received a message from the Mower */
                 val intent = Intent()
-                val data = characteristic?.value?.toString(Charsets.UTF_8)
+                val data = characteristic?.value
 
                 // TODO - Send data to BroadCastReceiver to DriveFragment
                 intent.action = ACTION_DATA_RECEIVED_FROM_MOWER

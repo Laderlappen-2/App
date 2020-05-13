@@ -33,6 +33,7 @@ const val ACTION_SEND_HONK = "102"
 const val ACTION_SEND_QUIT = "103"
 const val ACTION_SEND_AUTO = "104"
 const val ACTION_SEND_MANUAL = "105"
+const val ACTION_CONNECT_TO_MOWER = "106"
 
 const val BLUETOOTH_REQUEST_ENABLE = 1
 
