@@ -28,6 +28,11 @@ class DriveFragment: Fragment() {
     private lateinit var attachedContext: Context
     private var hasActiveDrivingSession: Boolean = false
 
+    /**
+     * Override function that returns the view for DriveFragment.
+     * @see R.layout.drive_fragment
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,11 +42,19 @@ class DriveFragment: Fragment() {
         return inflater.inflate(R.layout.drive_fragment, container, false)
     }
 
+    /**
+     * Override function that sets the context for DriveFragment.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.attachedContext = context
     }
 
+    /**
+     * Override function that sets up the view for DriveFragment, Initiates joysticks and sets onClickListeners.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mJoystickThrust = requireView().findViewById(R.id.joystick_left)
@@ -77,6 +90,11 @@ class DriveFragment: Fragment() {
         }
     }
 
+    /**
+     *  Calls saveCurrentDrivingSession if a drive session is active, else navigates back to HomeFragment.
+     *  @see saveCurrentDrivingSession
+     *  @see HomeFragment
+     */
     private fun backButtonAction() {
         // TODO: Stop autonomous mode if running?
         if(hasActiveDrivingSession)
@@ -85,6 +103,11 @@ class DriveFragment: Fragment() {
             findNavController().popBackStack()
     }
 
+    /**
+     *  Save finished route to database. Then navigates back to HomeFragment.
+     *  @see RestHandler.createBatchEvents
+     *  @see HomeFragment
+     */
     private fun saveCurrentDrivingSession() {
         if(hasActiveDrivingSession) {
             RestHandler.createBatchEvents(DataHandler.getCurrentRoute(), {
@@ -98,6 +121,10 @@ class DriveFragment: Fragment() {
         }
     }
 
+    /**
+     * Override function that hides action bar on resume.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onResume() {
         super.onResume()
@@ -106,6 +133,10 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     }
 
+    /**
+     * Override function that shows action bar on pause.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onPause() {
         super.onPause()

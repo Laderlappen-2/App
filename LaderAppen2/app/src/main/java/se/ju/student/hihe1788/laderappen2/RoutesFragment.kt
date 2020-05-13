@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
 
-
+/**
+ * This fragment displays routes in a RecyclerView which is a type of list.
+ * */
 class RoutesFragment : Fragment() {
     private lateinit var mLinearLayoutManager: LinearLayoutManager
     private lateinit var mRecyclerView: RecyclerView
@@ -20,6 +22,11 @@ class RoutesFragment : Fragment() {
     private lateinit var progressBarView: View
     private lateinit var progressBar: ProgressBar
 
+    /**
+     * Override function that returns the view for RoutesFragment and sets up a RecyclerView with a recycler adapter.
+     * @see R.layout.routes_fragment
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,6 +45,11 @@ class RoutesFragment : Fragment() {
         return view
     }
 
+    /**
+     * Override function that fetches the routes from the database and calls updateRecycleView().
+     * @see updateRecycleView
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onStart() {
         super.onStart()
         // TODO Inte köra den varje gång man "backar" in i viewen, utan endast när man kommer in i den från menyknappen, antar jag
@@ -54,8 +66,10 @@ class RoutesFragment : Fragment() {
         })
     }
 
+    /**
+     * Notifies the connected recycler adapter that changes have been made to the recyclerView.
+     */
     fun updateRecycleView() {
-        //get request to API
         mAdapter.notifyDataSetChanged()
     }
 }

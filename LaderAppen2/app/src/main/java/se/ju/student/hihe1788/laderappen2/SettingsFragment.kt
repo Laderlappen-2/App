@@ -1,8 +1,5 @@
 package se.ju.student.hihe1788.laderappen2
 
-import android.content.SharedPreferences
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +14,13 @@ import se.ju.student.hihe1788.laderappen2.util.SteeringModeEnum
  * Shows the settings view and its awesome customization features.
  */
 class SettingsFragment : Fragment() {
+    lateinit var settings: SharedPreferencesManager
+
+    /**
+     * Override function that returns the view for SettingsFragment.
+     * @see R.layout.settings_fragment
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,8 +29,11 @@ class SettingsFragment : Fragment() {
         return inflater.inflate(R.layout.settings_fragment, container, false)
     }
 
-    lateinit var settings: SharedPreferencesManager
-
+    /**
+     * Override function that calls setUI() and sets on click listeners to the buttons in the view.
+     * @see setUI
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,18 +68,31 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    /**
+     * Sets the steering mode.
+     * @param steeringMode The chosen mode
+     * @param button The button pressed
+     */
     fun setSteeringMode(steeringMode: SteeringModeEnum, button: View) {
         settings.setSteeringMode(steeringMode)
         resetSteeringButtons()
         button.isSelected = true
     }
 
+    /**
+     * Resets the steering mode buttons.
+     */
     fun resetSteeringButtons() {
         view?.findViewById<ImageButton>(R.id.steering_btn_one)?.isSelected = false
         view?.findViewById<ImageButton>(R.id.steering_btn_right)?.isSelected = false
         view?.findViewById<ImageButton>(R.id.steering_btn_left)?.isSelected = false
     }
 
+    /**
+     * Override function that calls setUI()
+     * @see setUI
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onResume() {
         super.onResume()
         setUI()

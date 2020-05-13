@@ -11,10 +11,11 @@ import android.view.ScaleGestureDetector.OnScaleGestureListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.plus
 
-const val COLLISION_AVOIDANCE_POINT = 3
-const val POSITION_POINT = 5
-
+/**
+ * Uses a canvas to draw a route.
+ */
 class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attrs) {
+    // region MEMBERS
     private var mScaleDetector: ScaleGestureDetector? = null
     private var mSortedPoints = ArrayList<PointModel>()
     private var mPositionPoints = ArrayList<PointModel>()
@@ -49,27 +50,45 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     private val mCollisionPaint = Paint().apply { color = mDrawCollisionColor }
     private val mStartPositionPaint = Paint().apply { color = mDrawStartColor }
     private val mStopPositionPaint = Paint().apply { color = mDrawStopColor }
+    //endregion
 
+    /**
+     * Sorts all events in the route and separates them in to position points and collision avoidance points.
+     * Then updates the position and collision avoidance points for the route that is to be drawn. 
+     * @param route The route to be drawn. 
+     */
     fun updatePoints(route: RouteModel) {
-
         route.events.sortBy { it.id }
 
         for (event in route.events) {
             when (event.eventTypeId) {
-                COLLISION_AVOIDANCE_POINT -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
-                POSITION_POINT -> mPositionPoints.add(event.positionEvent)
+                Constants.COLLISION_AVOIDANCE_POINT -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
+                Constants.POSITION_POINT -> mPositionPoints.add(event.positionEvent)
             }
         }
         setup()
     }
 
+    /**
+     *Puts all position and collision avoidnace points in a combined ArrayList.
+     */
     fun setup() {
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
     }
 
-    override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHieght: Int) {
-        super.onSizeChanged(width, height, oldWidth, oldHieght)
+    /**
+     * Override function that is called when the view is painted to the screen.
+     * Calculates and sets origin and adds a scaleGestureDetector to the canvas.
+     * @param width The new width of the view
+     * @param height The new hight of the view
+     * @param oldWidth The old width of the view
+     * @param oldHeight The old hight of the view
+     * @see ScaleGestureDetector
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
+    override fun onSizeChanged(width: Int, height: Int, oldWidth: Int, oldHeight: Int) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight)
         if (::mExtraBitmap.isInitialized) mExtraBitmap.recycle()
         mExtraBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         mExtraCanvas = Canvas(mExtraBitmap)
@@ -78,12 +97,34 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         mOrigin = PointF((width/2).toFloat(), (height/2).toFloat())
         setup()
 
+        /**
+         *  Initiates a scale gesture detector that adds zoom functionality to the canvas based on user input.
+         *  The user input is a pinch gesture.
+         */
         mScaleDetector = ScaleGestureDetector(context, object : OnScaleGestureListener {
+
+            /**
+             * Override function that is called when user input stops.
+             * @param detector The Scale gesture detector
+             * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+             */
             override fun onScaleEnd(detector: ScaleGestureDetector) {}
+
+            /**
+             * Override function that is called when user input starts.
+             * @param detector The Scale gesture detector
+             * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+             * @return Returns true
+             */
             override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
                 return true
             }
 
+            /**
+             * Override function that scales the canvas based on user input.
+             * @param detector The Scale gesture detector
+             * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+             */
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 if(detector.scaleFactor > 1)
                     mScale += detector.scaleFactor
@@ -97,6 +138,15 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         })
     }
 
+    /**
+     * Override function that listens to user input, pinch and one finger touch.
+     * On pinch a scale gesture detector touch event starts.
+     * On one finger touch touchStart() or touchMove() is called.
+     * @see touchStart
+     * @see touchMove
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     * @return Returns true.
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector!!.onTouchEvent(event)
 
@@ -112,11 +162,17 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         return true
     }
 
+    /**
+     * Is called when user input starts, sets current position (x,y) of the used finger on the screen.
+     */
     private fun touchStart() {
         currentX = motionTouchEventX
         currentY = motionTouchEventY
     }
 
+    /**
+     * Is called when the user moves their finger across the screen and moves the canvas accordingly.
+     */
     private fun touchMove() {
         val dx = Math.abs(motionTouchEventX - currentX)
         val dy = Math.abs(motionTouchEventY - currentY)
@@ -130,6 +186,12 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
         invalidate()
     }
 
+    /**
+     * Override function that is called each time the objects are changed.
+     * Draws all position and collision avoidance points in a route on the canvas.
+     * @param canvas The canvas that is displayed in the view.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 

@@ -1,7 +1,7 @@
 package se.ju.student.hihe1788.laderappen2
 
 /**
- * A place store all constants.
+ * An object that handles all constants.
  */
 object Constants {
     val STATE_NONE = 0         // we're doing nothing
@@ -27,4 +27,9 @@ object Constants {
     val ACTION_ALERT = "4"
 
     val ACTION_MSG_RECEIVED = "5"
+
+    const val COLLISION_AVOIDANCE_POINT = 3
+    const val POSITION_POINT = 5
+
+    const val OFFICIAL_DOC_ANDROID_DEVELOPER = "https://developer.android.com/docs"
 }

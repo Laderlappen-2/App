@@ -10,12 +10,21 @@ import se.ju.student.hihe1788.laderappen2.*
 import se.ju.student.hihe1788.laderappen2.models.RoutePagination
 import java.nio.charset.Charset
 
+/**
+ * An object that handles all HTTP requests to the REST API.
+ */
 object RestHandler {
     private const val BASE_URL = "https://laderlappen-2-rest-api.herokuapp.com/v1"
-    private const val URI_DRIVINGSESSIONS = "/drivingsessions"      //?from=1&limit=10"
+    private const val URI_DRIVINGSESSIONS = "/drivingsessions"
     private const val URI_EVENTS = "/events"
     private val gson = Gson()
 
+    /**
+     * Sends a GET request to https://laderlappen-2-rest-api.herokuapp.com/v1/drivingsessions
+     * Fetches all routes.
+     * @param successCallback Callback if request is a success
+     * @param errorCallback Callback if request returns an error
+     */
     fun getAllRoutes(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
@@ -48,6 +57,13 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    /**
+     * Sends a GET request to https://laderlappen-2-rest-api.herokuapp.com/v1/drivingsessions/:id
+     * Fetches all events for the route.
+     * @param id The id for the route the events belong to.
+     * @param successCallback Callback if request is a success
+     * @param errorCallback Callback if request returns an error
+     */
     fun getAllEventsForRouteWithId(id: Int, successCallback: (route: RouteModel) -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id"
         val jsonObjectRequest =
@@ -76,6 +92,12 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    /**
+     * Sends a Post request to https://laderlappen-2-rest-api.herokuapp.com/v1/drivingsessions
+     * Creates a new route and fetches it.
+     * @param successCallback Callback if request is a success
+     * @param errorCallback Callback if request returns an error
+     */
     fun createDrivingSession(successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS"
 
@@ -105,6 +127,13 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    /**
+     * Sends a POST request to https://laderlappen-2-rest-api.herokuapp.com/v1/drivingsessions/:id/events
+     * Posts all events for a route.
+     * @param route The route the events belong to.
+     * @param successCallback Callback if request is a success
+     * @param errorCallback Callback if request returns an error
+     */
     fun createBatchEvents(route: RouteModel, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/${route.id}$URI_EVENTS"
 
@@ -134,6 +163,13 @@ object RestHandler {
         ).addToRequestQueue(jsonArrayRequest)
     }
 
+    /**
+     * Sends a DELETE request to https://laderlappen-2-rest-api.herokuapp.com/v1/drivingsessions/:id
+     * Deletes a route
+     * @param id The id for the route that should be deleted.
+     * @param successCallback Callback if request is a success
+     * @param errorCallback Callback if request returns an error
+     */
     fun deleteRouteById(id: Int, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/$id"
 
@@ -158,6 +194,11 @@ object RestHandler {
         ).addToRequestQueue(jsonObjectRequest)
     }
 
+    /**
+     * Parses the response string.
+     * @param jsonString The response string
+     * @param done callback thata returnes the parsed object
+     */
     private inline fun<reified T> parseStringResponse(jsonString: String, done: (T?) -> Unit) {
         val json = gson.fromJson(jsonString, JsonObject::class.java)
 
@@ -176,6 +217,11 @@ object RestHandler {
         done(responseObj)
     }
 
+    /**
+     * Parses the an error response.
+     * @param error The volley error
+     * @param done callback thata returnes the parsed error message
+     */
     private fun parseErrorResponse(error: VolleyError, done: (RestErrorModel) -> Unit) {
         try {
             val charset = HttpHeaderParser.parseCharset(error.networkResponse.headers)
