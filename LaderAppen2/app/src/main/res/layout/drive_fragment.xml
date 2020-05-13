@@ -69,7 +69,7 @@
         android:layout_height="50dp"
         android:background="@drawable/button_back_selector_drive"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
     <ImageButton
         android:id="@+id/btn_drive_light"

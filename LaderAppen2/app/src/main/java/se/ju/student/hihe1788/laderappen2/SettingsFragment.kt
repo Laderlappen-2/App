@@ -42,19 +42,17 @@ class SettingsFragment : Fragment() {
         setUI()
 
         view.findViewById<ImageButton>(R.id.bluetooth_btn)?.setOnClickListener {
-            it.isSelected = !BluetoothHandler.isBluetoothEnabled()
-            BluetoothHandler.toggleBluetooth()
+
+            it.isSelected = !BLEHandler.isBluetoothEnabled()
+            BLEHandler.toggleBluetooth()
+
         }
 
         view.findViewById<ImageButton>(R.id.device_connected)?.setOnClickListener {
-            if (!MowerModel.isConnected && BluetoothHandler.isBluetoothEnabled()) {
-                BluetoothHandler.connectDevice()
-                it.isSelected = true
-            } else {
-                BluetoothHandler.disconnectDevice()
-                it.isSelected = false
-            }
-            Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
+
+        it.isSelected = !MowerModel.isConnected && BLEHandler.isBluetoothEnabled()
+
+        Toast.makeText(context, "BUTTON CLICKED!", Toast.LENGTH_SHORT).show()
         }
 
         view.findViewById<ImageButton>(R.id.steering_btn_left)?.setOnClickListener {
@@ -102,12 +100,10 @@ class SettingsFragment : Fragment() {
      * Setups the UI based on states in the application.
      */
     private fun setUI() {
-        // Device connection
         if (MowerModel.isConnected) {
             view?.findViewById<ImageButton>(R.id.device_connected)?.isSelected = true
         }
-        // Bluetooth connection
-        view?.findViewById<ImageButton>(R.id.bluetooth_btn)?.isSelected = BluetoothHandler.isBluetoothEnabled()
+        view?.findViewById<ImageButton>(R.id.bluetooth_btn)?.isSelected = BLEHandler.isBluetoothEnabled()
 
         // Steering mode
         when(settings.getSteeringMode()) {

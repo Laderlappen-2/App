@@ -1,14 +1,17 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.tabs.TabLayout
 
-/**
- * Start view for the LäderAppen
- */
+private val TAG = HomeFragment::class.java.simpleName
+
 class HomeFragment: Fragment() {
 
     /**
