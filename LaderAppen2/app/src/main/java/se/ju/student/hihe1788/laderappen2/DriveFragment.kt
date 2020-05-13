@@ -17,12 +17,16 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.PathParser
 import androidx.fragment.app.Fragment
 import se.ju.student.hihe1788.laderappen2.MainActivity.Companion.mActivity
 import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
+import java.time.LocalDateTime.now
+import java.time.LocalTime.now
 import java.util.*
+import kotlin.time.ExperimentalTime
 
 private val TAG = DriveFragment::class.java.simpleName
 
@@ -201,6 +205,7 @@ class DriveFragment: Fragment() {
      * Override function that hides action bar on resume.
      * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
+    @ExperimentalTime
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onResume() {
         super.onResume()
@@ -223,11 +228,13 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
+    @ExperimentalTime
     override fun onStop() {
         super.onStop()
         activity?.unregisterReceiver(mBroadcastReceiver)
     }
 
+    @ExperimentalTime
     private fun setupBroadcastReceiverFilter() {
         val filter = IntentFilter()
         filter.addAction(ACTION_DATA_RECEIVED_FROM_MOWER)
@@ -235,6 +242,7 @@ class DriveFragment: Fragment() {
     }
 
 
+    @ExperimentalTime
     private val mBroadcastReceiver = object: BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -242,28 +250,45 @@ class DriveFragment: Fragment() {
                     val data = intent.getByteArrayExtra("data")
                     Log.i(TAG, "mBroadcastReceiver - Data received from mower")
                     Log.i(TAG, "DATA = $data")
-                    /* decodeIncomingMsg(data) */
+                    return
+                    try {
+                        val msg = IncomingMessage(data)
+                        /**
+                         * 1. Hämta currentRoute
+                         * 2. Skapa en ny EventModel
+                         * 3. Skapa en ny PointModel
+                         * 4. Lägg till i antingen positionEvents eller collisionEvents
+                         * 5. Lägg till i EventModel, lägg till EventModel i currentRoute
+                         *
+                         */
+                        val newPoint = PointModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                                positionX = msg.mXPos!!.toFloat(),
+                                                positionY = msg.mYPos!!.toFloat())
+
+                        if (msg.mTypeOfMessage == "3") {
+                            val positionEvent = EventModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                                            dateCreated = Date(),
+                                                            positionEvent = newPoint)
+
+                            DataHandler.getCurrentRoute().events.add(positionEvent)
+                        } else {
+                            val collisionEvent = EventModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                                            dateCreated = Date(),
+                                                            collisionAvoidanceEvent = newPoint)
+
+                            DataHandler.getCurrentRoute().events.add(collisionEvent)
+                        }
+
+                    } catch (e: ParseIncomingMsgException) {
+                        Log.i(TAG, "Failed to create incomingMsg. Msg: $e")
+
+                    }
                 }
             }
         }
 
     }
 
-    /**
-     * TODO - Sort out the regex split and set it to a appropriate type. (MowerModel perhaps?)
-     * Also in need of some sanity checks in case we get some "slaskvärden".
-     * Don't forget to send back an ACK via [MainActivity.commandsToMowerReceiver] in case it's needed.
-     */
-    private fun decodeIncomingMsg(data: ByteArray) {
-        try {
-            val s = data.toString()
-            val pattern = Regex("[0-9]+")
-            val matches = pattern.findAll(s)
-            println("decodeIncomingMsg, this should be a 1/0 = "+matches.elementAt(1))
-        } catch (e: IOException) {
-            Log.i(TAG, "Could not decode incoming message. Msg: $e")
-        }
-    }
 
 
 }

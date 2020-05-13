@@ -27,7 +27,7 @@ object DataHandler {
 
     /**
      * Returns the current route.
-     * @return The curent route.
+     * @return The current route.
      */
     fun getCurrentRoute(): RouteModel {
         return currentRoute

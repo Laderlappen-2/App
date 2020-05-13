@@ -20,7 +20,7 @@ class RouteModel(val id: Int, val createdAt: Date, val events: ArrayList<EventMo
  * @property positionEvent If the event is a position event, this property contains it's data
  * @property collisionAvoidanceEvent If the event is a collision avoidance event, this property contains it's data
  */
-class EventModel(val id: Int, val eventTypeId: Int, val dateCreated: Date, val positionEvent: PointModel, val collisionAvoidanceEvent: PointModel)
+class EventModel(val id: Int? = null, val eventTypeId: Int, val dateCreated: Date, val positionEvent: PointModel? = null, val collisionAvoidanceEvent: PointModel? = null)
 
 /**
  * A model for a point.
