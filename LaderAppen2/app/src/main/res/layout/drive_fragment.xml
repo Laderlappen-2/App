@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <Button
-        android:id="@+id/btnAutoDrive"
+        android:id="@+id/btn_drive_auto"
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:text="@string/auto"

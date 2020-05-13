@@ -14,18 +14,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import se.ju.student.hihe1788.laderappen2.MainActivity.MainActivity.Companion.mActivity
+import se.ju.student.hihe1788.laderappen2.MainActivity.Companion.mActivity
 import java.io.IOException
-
-private val TAG = DriveFragment::class.java.simpleName
 import androidx.navigation.fragment.findNavController
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
 import java.util.*
+
+private val TAG = DriveFragment::class.java.simpleName
 
 /**
  * This fragment controls the connected mower via
@@ -80,7 +79,7 @@ class DriveFragment: Fragment() {
         mBtnLight = requireView().findViewById(R.id.btn_drive_light)
         mBtnHonk = requireView().findViewById(R.id.btn_drive_honk)
         mBtnBack = requireView().findViewById(R.id.btn_drive_back)
-        mBtnBluetooth = requireView().findViewById(R.id.btn_drive_bluetooth)
+        mBtnBluetooth = requireView().findViewById(R.id.btn_drive_bt)
         mBtnAuto = requireView().findViewById(R.id.btn_drive_auto)
 
         mBtnLight.setOnClickListener {

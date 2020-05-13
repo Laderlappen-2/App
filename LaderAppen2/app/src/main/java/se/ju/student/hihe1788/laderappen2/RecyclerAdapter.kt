@@ -85,7 +85,7 @@ class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView
                         v.findNavController().navigate(action)
                     }, { error ->
                         // TODO Bättre felmeddelande
-                        Toast.makeText(MainActivity.mAppContext, "Error: " + error?.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(MainActivity.mContext, "Error: " + error?.message, Toast.LENGTH_LONG).show()
                     })
                 }
             }
@@ -99,7 +99,7 @@ class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView
          */
         fun bindRoute(route: RouteModel) {
             this.mRoute = route
-            val text = MainActivity.mAppContext.getString(R.string.route_date,"${mRoute?.createdAt}.".substringBefore("G"))
+            val text = MainActivity.mContext.getString(R.string.route_date,"${mRoute?.createdAt}.".substringBefore("G"))
             mView.routeTitle.text = text
         }
     }

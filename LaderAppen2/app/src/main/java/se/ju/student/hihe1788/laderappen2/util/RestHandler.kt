@@ -53,7 +53,7 @@ object RestHandler {
                     )
                 })
         RequestQueueSingleton.getInstance(
-            MainActivity.mAppContext
+            MainActivity.mContext
         ).addToRequestQueue(jsonObjectRequest)
     }
 
@@ -88,7 +88,7 @@ object RestHandler {
                 }
             )
         RequestQueueSingleton.getInstance(
-            MainActivity.mAppContext
+            MainActivity.mContext
         ).addToRequestQueue(jsonObjectRequest)
     }
 
@@ -123,7 +123,7 @@ object RestHandler {
                 }
             )
         RequestQueueSingleton.getInstance(
-            MainActivity.mAppContext
+            MainActivity.mContext
         ).addToRequestQueue(jsonObjectRequest)
     }
 
@@ -159,7 +159,7 @@ object RestHandler {
                 })
 
         RequestQueueSingleton.getInstance(
-            MainActivity.mAppContext
+            MainActivity.mContext
         ).addToRequestQueue(jsonArrayRequest)
     }
 
@@ -190,7 +190,7 @@ object RestHandler {
             )
 
         RequestQueueSingleton.getInstance(
-            MainActivity.mAppContext
+            MainActivity.mContext
         ).addToRequestQueue(jsonObjectRequest)
     }
 

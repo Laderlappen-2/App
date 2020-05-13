@@ -73,13 +73,8 @@ val ON = 1
 val OFF = 0
 
 
+const val COLLISION_AVOIDANCE_POINT = 3
+const val POSITION_POINT = 5
 
+const val OFFICIAL_DOC_ANDROID_DEVELOPER = "https://developer.android.com/docs"
 
-
-    val ACTION_MSG_RECEIVED = "5"
-
-    const val COLLISION_AVOIDANCE_POINT = 3
-    const val POSITION_POINT = 5
-
-    const val OFFICIAL_DOC_ANDROID_DEVELOPER = "https://developer.android.com/docs"
-}

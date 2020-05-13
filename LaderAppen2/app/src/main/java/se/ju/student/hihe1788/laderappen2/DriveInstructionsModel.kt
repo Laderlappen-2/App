@@ -96,22 +96,4 @@ object DriveInstructionsModel {
         return "@D,$mThrust;$mTurn,0$".toByteArray()
     }
 
-    /**
-     * Translates a instruction to the mower according to our
-     * message protoC00L.
-     * “@Left/Right, Back/Forward, Light, Honk$”
-     * @: start of message
-     * Left/Right: -100:100
-     * Back/Forward: -100:100
-     * Light: 0 or 1
-     * Honk: 0 or 1
-     * $: end of message
-     * @return ByteArray consisting of the new instruction(s)
-
-    fun toByteArray(): ByteArray {
-    val bArr = "@$mThrust;$mTurn;$mLight;$mHonk;$mAuto$".toByteArray()
-    mHonk = 0
-    return bArr
-    }
-     */
 }

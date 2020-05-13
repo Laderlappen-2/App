@@ -62,8 +62,8 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
 
         for (event in route.events) {
             when (event.eventTypeId) {
-                Constants.COLLISION_AVOIDANCE_POINT -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
-                Constants.POSITION_POINT -> mPositionPoints.add(event.positionEvent)
+                COLLISION_AVOIDANCE_POINT -> mCollisionAvoidancePoints.add(event.collisionAvoidanceEvent)
+                POSITION_POINT -> mPositionPoints.add(event.positionEvent)
             }
         }
         setup()

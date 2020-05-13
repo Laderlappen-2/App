@@ -32,7 +32,7 @@ class RoutesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.routes_fragment, container, false)
-        mLinearLayoutManager = LinearLayoutManager(MainActivity.mAppContext)
+        mLinearLayoutManager = LinearLayoutManager(MainActivity.mContext)
         mRecyclerView = view.findViewById<RecyclerView>(R.id.routesFragmentRecyclerView)
         mRecyclerView.layoutManager = mLinearLayoutManager
         mAdapter = RecyclerAdapter(mRoutes)
