@@ -174,6 +174,7 @@ class MainActivity : AppCompatActivity() {
         filter2.addAction(ACTION_SEND_AUTO)
         filter2.addAction(ACTION_SEND_MANUAL)
         filter2.addAction(ACTION_CONNECT_TO_MOWER)
+        filter2.addAction(ACTION_SEND_ACK_TO_MOWER)
 
         registerReceiver(commandsToMowerReceiver, filter2)
 
@@ -249,6 +250,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 ACTION_CONNECT_TO_MOWER -> {
                     startBLEService()
+                }
+                ACTION_SEND_ACK_TO_MOWER -> {
+                    mBLEService.send(DriveInstructionsModel.getAckAsByteArray())
                 }
             }
         }

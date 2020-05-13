@@ -95,6 +95,10 @@ object DriveInstructionsModel {
         return "@Q,,0".toByteArray()
     }
 
+    fun getAckAsByteArray() : ByteArray {
+        return "A".toByteArray()
+    }
+
     /**
      * Only sends thrust and steer.
      * @return A command that the mower interpret as drive instruction.

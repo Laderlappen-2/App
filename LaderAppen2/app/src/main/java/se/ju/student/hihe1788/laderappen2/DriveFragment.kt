@@ -131,6 +131,20 @@ class DriveFragment: Fragment() {
             Log.i(TAG, "mBtnAuto.isActivated = ${mBtnAuto.isActivated}")
             DriveInstructionsModel.toggleDriveMode()
             MainActivity.mContext.sendBroadcast(intent)
+
+            // If connected, create a driving session at REST API
+            if(MowerModel.isConnected) {
+                RestHandler.createDrivingSession({
+                    // Request done, hide loading
+                    hasActiveDrivingSession = true
+                    Toast.makeText(this.attachedContext, "Driving session id: " + DataHandler.getCurrentRoute().id, Toast.LENGTH_SHORT).show()
+                }, { error ->
+                    // Request done, hide loading
+                    Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
+                })
+            }else{
+                hasActiveDrivingSession = false
+            }
         }
 
         // On GUI back button click
@@ -147,19 +161,7 @@ class DriveFragment: Fragment() {
             return@OnKeyListener false
         })*/
 
-        // If connected, create a driving session at REST API
-        if(MowerModel.isConnected) {
-            RestHandler.createDrivingSession({
-                // Request done, hide loading
-                hasActiveDrivingSession = true
-                Toast.makeText(this.attachedContext, "Driving session id: " + DataHandler.getCurrentRoute().id, Toast.LENGTH_SHORT).show()
-            }, { error ->
-                // Request done, hide loading
-                Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
-            })
-        }else{
-            hasActiveDrivingSession = false
-        }
+
     }
 
     /**
@@ -252,11 +254,11 @@ class DriveFragment: Fragment() {
             when (intent?.action) {
                 ACTION_DATA_RECEIVED_FROM_MOWER -> {
                     val data = intent.getByteArrayExtra("data")
-                    Log.i(TAG, "mBroadcastReceiver - Data received from mower")
-                    Log.i(TAG, "DATA = $data")
-                    try {
-                        val msg = IncomingMessage(data)
 
+                    try {
+                        val msg = IncomingMessage(data!!)
+
+                        Log.i(TAG, "msg = ${msg}")
 
                         if (!msg.mIsACK) {
                             val newPoint = PointModel(

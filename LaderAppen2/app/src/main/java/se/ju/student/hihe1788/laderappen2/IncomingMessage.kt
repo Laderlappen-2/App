@@ -8,6 +8,9 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.milliseconds
 
+@ExperimentalTime
+private val TAG = IncomingMessage::class.java.simpleName
+
 /**
  * A class that handles all incoming message from the mower
  * and maps it to accordingly fields.
@@ -25,12 +28,13 @@ class IncomingMessage(bytes: ByteArray) {
 
     init {
         try {
-            val rawData = bytes.toString(Charset.defaultCharset())
+            val rawData = bytes.toString(Charsets.UTF_8)
+            Log.i(TAG, "IncomingMsgRAW: $rawData")
             val data = trimString(rawData)
             if (data.isEmpty()) {
                 throw ParseIncomingMsgException("Garbage message")
             }
-            mTypeOfMessage = data[0]
+            mTypeOfMessage = data[1]
 
             when(mTypeOfMessage) {
                 "L",
@@ -39,9 +43,9 @@ class IncomingMessage(bytes: ByteArray) {
                 }
                 "0",
                 "1" -> {
-                    mXPos = data[1].toInt()
-                    mYPos = data[2].toInt()
-                    mTimestamp = data[3].toInt().milliseconds
+                    mXPos = data[2].toInt()
+                    mYPos = data[3].toInt()
+                    mTimestamp = data[4].toInt().milliseconds
 
                     /* Speak the same language as the REST-API */
                     if (mTypeOfMessage == "0") mTypeOfMessage = "5" // PositionEvent
@@ -62,19 +66,22 @@ class IncomingMessage(bytes: ByteArray) {
      * @throws ParseIncomingMsgException
      */
     private fun trimString(s: String): List<String> {
-        try {
-            if (s.contains("@") && s.contains("$")) {
-                if (s.contains(";")) {
-                    return s.split("@", ",", ";", "$")
-                } else {
-                    return s.split("@", ",", "$")
+
+        return if (s.contains("@") && s.contains("$")) {
+            if (s.contains(";")) {
+                s.split("@", ",", ";", "$").map {
+                    it.trim()
+                }
+            } else {
+                s.split("@", ",", "$").map {
+                    it.trim()
                 }
             }
-        } catch (e: Exception) {
-            throw ParseIncomingMsgException("failed")
-        } finally {
-            return emptyList()
+        } else {
+            emptyList()
         }
+
+
 
 
     }

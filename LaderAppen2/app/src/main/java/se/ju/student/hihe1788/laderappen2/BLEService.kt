@@ -129,6 +129,7 @@ class BLEService : Service() {
         mGatt = device.connectGatt(this, false, gattCallback)
 
         mIsConnected = true
+        MowerModel.isConnected = true
         Log.i(TAG,"CONNECTED TO DEVICE: ${device.address}")
         return true
     }
@@ -221,8 +222,8 @@ class BLEService : Service() {
 
             when (status) {
                 BluetoothGatt.GATT_SUCCESS -> {
-                    Log.i(TAG, "onCharacteristicWrite(): status == GATT_SUCCESS")
-                    Log.i(TAG, "onCharacteristicWrite(): value: " + characteristic.value.toString(Charsets.UTF_8))
+                    //Log.i(TAG, "onCharacteristicWrite(): status == GATT_SUCCESS")
+                    //Log.i(TAG, "onCharacteristicWrite(): value: " + characteristic.value.toString(Charsets.UTF_8))
                     //Thread.sleep(1000)
 
                     //broadcastUpdate(ACTION_DATA_WRITTEN, characteristic)
@@ -249,6 +250,7 @@ class BLEService : Service() {
                 intent.putExtra("data", data)
 
                 MainActivity.mContext.sendBroadcast(intent)
+                send("A".toByteArray()) // ACK
             }
         }
 
