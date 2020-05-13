@@ -22,7 +22,7 @@ class CustomRestRequest (
 ): StringRequest(method.value, url, listener, errorListener) {
 
     /**
-     * Returns the response body as a byte array
+     * @return The response body as a byte array
      */
     override fun getBody(): ByteArray {
         jsonString?.let {
@@ -32,7 +32,7 @@ class CustomRestRequest (
     }
 
     /**
-     * Returns the default body content type
+     * @return The default body content type
      */
     override fun getBodyContentType(): String {
         return "application/json; charset=utf-8"

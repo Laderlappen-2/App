@@ -7,6 +7,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 /**
  * A class that creates a volley request queue.
+ * @property context The application context to work with
  * @see OFFICIAL_DOC_ANDROID_DEVELOPER
  */
 class RequestQueueSingleton constructor(context: Context) {
@@ -22,7 +23,8 @@ class RequestQueueSingleton constructor(context: Context) {
     }
 
     /**
-     * Return the volley request queue, instantiates and sets a new instance if null
+     * The volley request queue.
+     * Instantiates and sets a new instance if null
      */
     private val requestQueue: RequestQueue by lazy {
         Volley.newRequestQueue(context.applicationContext)
@@ -30,6 +32,7 @@ class RequestQueueSingleton constructor(context: Context) {
 
     /**
      * Add a request to the volley request queue
+     * @param req The volley string request object
      */
     fun addToRequestQueue(req: StringRequest) {
         requestQueue.add(req)

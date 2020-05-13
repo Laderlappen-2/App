@@ -2,6 +2,7 @@ package se.ju.student.hihe1788.laderappen2.util
 
 /**
  * A class that holds enums for the steering mode.
+ * @property value The value for the enum
  */
 enum class SteeringModeEnum(val value: Int) {
     LEFT_HANDED(0),

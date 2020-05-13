@@ -6,6 +6,7 @@ import androidx.core.content.edit
 
 /**
  * Shared preferences manager to enable saving stuff, such as app settings
+ * @property context The application context to work with
  */
 class SharedPreferencesManager(context: Context) {
     private val PREFERENCES_NAME = "app_settings"

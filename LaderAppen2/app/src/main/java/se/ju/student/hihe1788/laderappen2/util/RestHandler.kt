@@ -11,11 +11,11 @@ import se.ju.student.hihe1788.laderappen2.models.RoutePagination
 import java.nio.charset.Charset
 
 /**
- * An object that handles all Http request to the Rest API.
+ * An object that handles all HTTP requests to the REST API.
  */
 object RestHandler {
     private const val BASE_URL = "https://laderlappen-2-rest-api.herokuapp.com/v1"
-    private const val URI_DRIVINGSESSIONS = "/drivingsessions"      //?from=1&limit=10"
+    private const val URI_DRIVINGSESSIONS = "/drivingsessions"
     private const val URI_EVENTS = "/events"
     private val gson = Gson()
 
