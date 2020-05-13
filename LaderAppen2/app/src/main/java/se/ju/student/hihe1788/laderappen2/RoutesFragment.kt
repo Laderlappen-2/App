@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
 
 /**
- * This fragment displays routes in a RecyclerView which is a typ of list.
+ * This fragment displays routes in a RecyclerView which is a type of list.
  * */
 class RoutesFragment : Fragment() {
     private lateinit var mLinearLayoutManager: LinearLayoutManager

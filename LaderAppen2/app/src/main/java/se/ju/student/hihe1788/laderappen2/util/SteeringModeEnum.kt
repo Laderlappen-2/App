@@ -9,6 +9,10 @@ enum class SteeringModeEnum(val value: Int) {
     TWO_HANDED(2);
 
     companion object {
+        /**
+         * Returns the SteeringModeEnum from its value
+         * @param value The value of the steering mode enum
+         */
         fun fromValue(value: Int): SteeringModeEnum? {
             return values().find { it.value == value }
         }
