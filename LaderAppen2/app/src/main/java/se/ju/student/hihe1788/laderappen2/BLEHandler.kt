@@ -2,9 +2,7 @@ package se.ju.student.hihe1788.laderappen2
 
 import android.bluetooth.*
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Log
 
 
 private val TAG = BLEHandler::class.java.simpleName
@@ -15,10 +13,6 @@ object BLEHandler {
     private var mBluetoothManager: BluetoothManager =
         mContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
 
-    /*private val mBluetoothAdapter: BluetoothAdapter? by lazy(LazyThreadSafetyMode.NONE) {
-        mBluetoothManager = mContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        mBluetoothManager.adapter
-    }*/
     private val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
     private lateinit var mGatt: BluetoothGatt
     private var mScanning: Boolean = false

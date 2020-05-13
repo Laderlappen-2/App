@@ -23,6 +23,7 @@ import se.ju.student.hihe1788.laderappen2.MainActivity.Companion.mActivity
 import java.io.IOException
 import androidx.navigation.fragment.findNavController
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
+import java.lang.Exception
 import java.time.LocalDateTime.now
 import java.time.LocalTime.now
 import java.util.*
@@ -128,15 +129,18 @@ class DriveFragment: Fragment() {
 
             if (!mBtnAuto.isActivated)
             {
-                mBtnAuto.isActivated
+                mBtnAuto.isActivated = true
+
                 DriveInstructionsModel.setAutoOn()
                 intent.action = ACTION_SEND_AUTO
             } else if (mBtnAuto.isActivated)
             {
-                mBtnAuto.isEnabled
+                mBtnAuto.isEnabled = true
+                mBtnAuto.isActivated = false
                 DriveInstructionsModel.setAutoOff()
                 intent.action = ACTION_SEND_MANUAL
             }
+            Log.i(TAG, "mBtnAuto.isActivated = ${mBtnAuto.isActivated}")
             MainActivity.mContext.sendBroadcast(intent)
         }
 
@@ -228,12 +232,19 @@ class DriveFragment: Fragment() {
         (activity as AppCompatActivity).requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
+    /**
+     * Override function that unregister a receiver.
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     @ExperimentalTime
     override fun onStop() {
         super.onStop()
         activity?.unregisterReceiver(mBroadcastReceiver)
     }
 
+    /**
+     * Setup a broadcastReceiver and it's filters
+     */
     @ExperimentalTime
     private fun setupBroadcastReceiverFilter() {
         val filter = IntentFilter()
@@ -241,47 +252,54 @@ class DriveFragment: Fragment() {
         activity?.registerReceiver(mBroadcastReceiver, filter)
     }
 
-
     @ExperimentalTime
     private val mBroadcastReceiver = object: BroadcastReceiver() {
+        /**
+         * Override function that receives a incoming broadcast from [BLEService]
+         * @param context: MainActivity's context
+         * @param intent: A intent with destination and data
+         */
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_DATA_RECEIVED_FROM_MOWER -> {
                     val data = intent.getByteArrayExtra("data")
                     Log.i(TAG, "mBroadcastReceiver - Data received from mower")
                     Log.i(TAG, "DATA = $data")
-                    return
                     try {
                         val msg = IncomingMessage(data)
-                        /**
-                         * 1. Hämta currentRoute
-                         * 2. Skapa en ny EventModel
-                         * 3. Skapa en ny PointModel
-                         * 4. Lägg till i antingen positionEvents eller collisionEvents
-                         * 5. Lägg till i EventModel, lägg till EventModel i currentRoute
-                         *
-                         */
-                        val newPoint = PointModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
-                                                positionX = msg.mXPos!!.toFloat(),
-                                                positionY = msg.mYPos!!.toFloat())
 
-                        if (msg.mTypeOfMessage == "3") {
-                            val positionEvent = EventModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
-                                                            dateCreated = Date(),
-                                                            positionEvent = newPoint)
 
-                            DataHandler.getCurrentRoute().events.add(positionEvent)
-                        } else {
-                            val collisionEvent = EventModel(eventTypeId = msg.mTypeOfMessage!!.toInt(),
-                                                            dateCreated = Date(),
-                                                            collisionAvoidanceEvent = newPoint)
+                        if (!msg.mIsACK) {
+                            val newPoint = PointModel(
+                                eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                positionX = msg.mXPos!!.toFloat(),
+                                positionY = msg.mYPos!!.toFloat()
+                            )
 
-                            DataHandler.getCurrentRoute().events.add(collisionEvent)
+                            if (msg.mTypeOfMessage == "3") {
+                                val positionEvent = EventModel(
+                                    eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                    dateCreated = Date(),
+                                    positionEvent = newPoint
+                                )
+
+                                DataHandler.getCurrentRoute().events.add(positionEvent)
+                            } else {
+                                val collisionEvent = EventModel(
+                                    eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                    dateCreated = Date(),
+                                    collisionAvoidanceEvent = newPoint
+                                )
+
+                                DataHandler.getCurrentRoute().events.add(collisionEvent)
+                            }
                         }
 
-                    } catch (e: ParseIncomingMsgException) {
-                        Log.i(TAG, "Failed to create incomingMsg. Msg: $e")
 
+                    } catch (e: ParseIncomingMsgException) {
+                        /* Hopefully what we in sweden call skräpdata*/
+                    } catch (e: Exception) {
+                        Log.i(TAG, e.message)
                     }
                 }
             }

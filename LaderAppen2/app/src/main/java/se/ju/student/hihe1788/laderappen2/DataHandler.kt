@@ -1,7 +1,5 @@
 package se.ju.student.hihe1788.laderappen2
 
-import se.ju.student.hihe1788.laderappen2.models.RoutePagination
-
 /**
  * An object that stores data.
  */

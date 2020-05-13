@@ -1,7 +1,6 @@
 package se.ju.student.hihe1788.laderappen2
 
 import android.content.Context
-import android.content.DialogInterface
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**

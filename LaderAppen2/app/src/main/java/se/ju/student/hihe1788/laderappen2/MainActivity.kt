@@ -58,30 +58,21 @@ class MainActivity : AppCompatActivity() {
         setupNavigationComponents()
     }
 
+    /**
+     * A lifecycle function that runs after [onResume]
+     * and setup broadcastReceivers
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onStart() {
         super.onStart()
         setupBroadcastReceiver()
     }
 
-    /** onStop */
-    /** User navigates to the Activity */
-    /** onStart is called after onRestart */
-    override fun onRestart() {
-        super.onRestart()
-    }
-
-    /** onPause */
-    /** User returns to the Activity */
-    override fun onResume() {
-        super.onResume()
-    }
-
-    /** Another Activity comes into the foreground */
-    override fun onPause() {
-        super.onPause()
-    }
-
-    /** The Activity is no longer visible */
+    /**
+     * A lifecycle function that runs after [onPause]
+     * and unregisters all broadcastReceivers
+     * @see OFFICIAL_DOC_ANDROID_DEVELOPER
+     */
     override fun onStop() {
         super.onStop()
         unregisterReceiver(gattUpdateReceiver)
@@ -99,27 +90,10 @@ class MainActivity : AppCompatActivity() {
             stopBLEService()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Check which request is responded to
-        if (requestCode == BLUETOOTH_REQUEST_ENABLE)
-        {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK)
-            {
-                // Thank you for turning on Bluetooth
-            } else if (resultCode == RESULT_CANCELED)
-            {
-                if (mIsBound)
-                    stopBLEService()
-                // Please turn on Bluetooth
-            }
-        }
-    }
-
     // region SET UP VIEWS AND NAVIGATION
-
+    /**
+     * Handles all navigation in app.
+     */
     private fun setupNavigationComponents() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -177,7 +151,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     //endregion
-
+    /**
+     * Setups broadcastReceivers and adds actions.
+     */
     private fun setupBroadcastReceiver() {
         val filter1 = IntentFilter()
 
@@ -203,6 +179,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Starts the Bluetooth Low Energy-service and binds it
+     * to this activity.
+     */
     fun startBLEService() {
         //Initiate Service, start it and then bind to it.
         val serviceClass = BLEService::class.java
@@ -211,6 +191,10 @@ class MainActivity : AppCompatActivity() {
         bindService(intent, myConnection, Context.BIND_AUTO_CREATE )
     }
 
+    /**
+     * Stops the Bluetooth Low Energy-service and unbinds it
+     * from this activity.
+     */
     fun stopBLEService() {
         //Initiate Service, start it and then bind to it.
         val serviceClass = BLEService::class.java
@@ -221,26 +205,33 @@ class MainActivity : AppCompatActivity() {
 
     //Returns an object used to access public methods of the bluetooth service
     private val myConnection = object : ServiceConnection {
-        override fun onServiceConnected(
-            className: ComponentName,
-            service: IBinder
-        ) {
+        /**
+         * Override function that runs when the service has connected
+         * and binds the activity to the service.
+         */
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as BLEService.MyLocalBinder
             mBLEService = binder.getService()
             mIsBound = true
             Log.i(TAG, "Bind connected")
         }
 
+        /**
+         * Override function that runs when the service has disconnected.
+         */
         override fun onServiceDisconnected(name: ComponentName) {
             Log.i(TAG, "Bind disconnected")
             mIsBound = false
         }
     }
 
-    /**
-     * Receives actions from [DriveFragment] and sends them to the [BLEService]
-     */
+
     private val commandsToMowerReceiver = object : BroadcastReceiver() {
+        /**
+         * Receives actions from [DriveFragment] and sends them to the [BLEService]
+         * @param context: [MainActivity]'s context.
+         * @param intent: A intent with destination and data.
+         */
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_SEND_LIGHTS -> {
@@ -249,9 +240,11 @@ class MainActivity : AppCompatActivity() {
                 ACTION_SEND_HONK -> {
                     mBLEService.send(DriveInstructionsModel.getHonkAsByteArray())
                 }
-                ACTION_SEND_MANUAL,
+                ACTION_SEND_MANUAL -> {
+                    mBLEService.send(DriveInstructionsModel.getManualModeAsByteArray())
+                }
                 ACTION_SEND_AUTO -> {
-                    mBLEService.send(DriveInstructionsModel.getAutonomousModeAsByteArray())
+                    mBLEService.send(DriveInstructionsModel.getManualModeAsByteArray())
                 }
                 ACTION_SEND_QUIT -> {
                     mBLEService.send(DriveInstructionsModel.getTurnOffCmdAsByteArray())
@@ -265,7 +258,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val gattUpdateReceiver = object : BroadcastReceiver() {
-
+        /**
+         * Receives actions from [BLEService] containing information
+         * about the BLE-status.
+         * @param context: [MainActivity]'s context.
+         * @param intent: A intent with destination and data.
+         */
         override fun onReceive(context: Context?, intent: Intent?) {
             println("BTStateReceiver: onReceive()")
             val action = intent?.action
@@ -354,7 +352,7 @@ class MainActivity : AppCompatActivity() {
             else if ( action.equals(ACTION_GATT_REGISTER_CHARACTERISTIC_READ) )
             {
                 Log.i(TAG, "ACTION_GATT_REGISTER_CHARACTERISTIC_READ")
-                mBLEService.readChar()
+
             }
         }
     }

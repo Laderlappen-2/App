@@ -77,6 +77,10 @@ object DriveInstructionsModel {
         mAuto = 0
     }
 
+    fun getManualModeAsByteArray() : ByteArray {
+        return "@M,,0$".toByteArray()
+    }
+
     fun getAutonomousModeAsByteArray() : ByteArray {
         return if (mAuto == 1) {
             "@A,,0$".toByteArray()

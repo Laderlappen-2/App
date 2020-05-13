@@ -8,6 +8,11 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.milliseconds
 
+/**
+ * A class that handles all incoming message from the mower
+ * and maps it to accordingly fields.
+ * @param bytes: Raw data received from mower.
+ */
 @ExperimentalTime
 class IncomingMessage(bytes: ByteArray) {
 
@@ -22,23 +27,25 @@ class IncomingMessage(bytes: ByteArray) {
         try {
             val rawData = bytes.toString(Charset.defaultCharset())
             val data = trimString(rawData)
-
+            if (data.isEmpty()) {
+                throw ParseIncomingMsgException("Garbage message")
+            }
             mTypeOfMessage = data[0]
 
             when(mTypeOfMessage) {
-                "L" -> {
+                "L",
+                "A" -> {
                     mIsACK = true
                 }
                 "0",
                 "1" -> {
-                    val positions = data[1].split(";")
-                    mXPos = positions[0].toInt()
-                    mYPos = positions[1].toInt()
-                    mTimestamp = data[2].toInt().milliseconds
+                    mXPos = data[1].toInt()
+                    mYPos = data[2].toInt()
+                    mTimestamp = data[3].toInt().milliseconds
 
                     /* Speak the same language as the REST-API */
-                    if (mTypeOfMessage == "0") mTypeOfMessage = "3" // PositionEvent
-                    else mTypeOfMessage = "5"                       // CollisionAvoidanceEvent
+                    if (mTypeOfMessage == "0") mTypeOfMessage = "5" // PositionEvent
+                    else mTypeOfMessage = "3"                       // CollisionAvoidanceEvent
                 }
             }
         } catch (e: IOException) {
@@ -46,17 +53,36 @@ class IncomingMessage(bytes: ByteArray) {
         }
     }
 
+    /**
+     * Trims the incoming message and returns it in a
+     * workable way.
+     * @param s: String in need of to be trimmed.
+     * @return A list of substrings that represent fields
+     * such as [mXPos] etc.
+     * @throws ParseIncomingMsgException
+     */
     private fun trimString(s: String): List<String> {
         try {
-            var trimmed1 = s.split("@")[1]
-            var trimmed2 = trimmed1.split("$")[0]
-            return trimmed2.split(",")
-        } catch (e: IOException) {
-            Log.i("Incoming message", "failed")
+            if (s.contains("@") && s.contains("$")) {
+                if (s.contains(";")) {
+                    return s.split("@", ",", ";", "$")
+                } else {
+                    return s.split("@", ",", "$")
+                }
+            }
+        } catch (e: Exception) {
+            throw ParseIncomingMsgException("failed")
+        } finally {
+            return emptyList()
         }
-            return listOf<String>()
+
+
     }
 }
 
+/**
+ * Exception-class for parsing incoming message.
+ * @param message: A exception message
+ */
 class ParseIncomingMsgException(message: String): Exception(message)
 
