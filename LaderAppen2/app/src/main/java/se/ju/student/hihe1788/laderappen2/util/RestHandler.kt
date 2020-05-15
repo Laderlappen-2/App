@@ -3,9 +3,11 @@ package se.ju.student.hihe1788.laderappen2.util
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import com.android.volley.toolbox.HttpHeaderParser
+import com.beust.klaxon.FieldRenamer
 import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import org.json.JSONObject
 import se.ju.student.hihe1788.laderappen2.*
 import se.ju.student.hihe1788.laderappen2.models.RoutePagination
 import java.nio.charset.Charset
@@ -137,7 +139,21 @@ object RestHandler {
     fun createBatchEvents(route: RouteModel, successCallback: () -> Unit, errorCallback: (error: RestErrorModel?) -> Unit) {
         val url = "$BASE_URL$URI_DRIVINGSESSIONS/${route.id}$URI_EVENTS"
 
-        val jsonString = Klaxon().toJsonString(route.events)
+        val renamer = object: FieldRenamer {
+            override fun fromJson(fieldName: String): String {
+                return fieldName
+            }
+
+            override fun toJson(fieldName: String): String {
+                if(fieldName == "collisionAvoidanceEvent" || fieldName == "positionEvent")
+                    return "eventData"
+                return fieldName
+            }
+        }
+
+        val jsonString = Klaxon()
+                        .fieldRenamer(renamer)
+                        .toJsonString(route.events)
 
         val jsonArrayRequest =
             CustomRestRequest(
