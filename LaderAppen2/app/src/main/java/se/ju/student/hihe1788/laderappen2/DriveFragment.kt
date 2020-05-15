@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,12 +15,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import se.ju.student.hihe1788.laderappen2.util.RestHandler
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.time.ExperimentalTime
 
 private val TAG = DriveFragment::class.java.simpleName
@@ -107,6 +110,16 @@ class DriveFragment: Fragment() {
             try {
                 MainActivity.mActivity?.startBLEService()
                 MowerModel.isConnected = true
+
+                // Create a driving session at REST API
+                RestHandler.createDrivingSession({
+                    // Request done, hide loading
+                    hasActiveDrivingSession = true
+                    Toast.makeText(this.attachedContext, "Driving session id: " + DataHandler.getCurrentRoute().id, Toast.LENGTH_SHORT).show()
+                }, { error ->
+                    // Request done, hide loading
+                    Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
+                })
             } catch (e: IOException) {
                 Log.i(TAG, "Could not connect to Mower. Msg: $e")
                 MowerModel.isConnected = false
@@ -116,7 +129,6 @@ class DriveFragment: Fragment() {
 
         mBtnAuto.setOnClickListener {
             val intent = Intent()
-
 
             if (!mBtnAuto.isActivated) {
                 mBtnAuto.isActivated = true
@@ -132,19 +144,7 @@ class DriveFragment: Fragment() {
             DriveInstructionsModel.toggleDriveMode()
             MainActivity.mContext.sendBroadcast(intent)
 
-            // If connected, create a driving session at REST API
-            if(MowerModel.isConnected) {
-                RestHandler.createDrivingSession({
-                    // Request done, hide loading
-                    hasActiveDrivingSession = true
-                    Toast.makeText(this.attachedContext, "Driving session id: " + DataHandler.getCurrentRoute().id, Toast.LENGTH_SHORT).show()
-                }, { error ->
-                    // Request done, hide loading
-                    Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
-                })
-            }else{
-                hasActiveDrivingSession = false
-            }
+
         }
 
         // On GUI back button click
@@ -171,6 +171,7 @@ class DriveFragment: Fragment() {
      */
     private fun backButtonAction() {
         // TODO: Stop autonomous mode if running?
+        hasActiveDrivingSession = true
         if(hasActiveDrivingSession)
             saveCurrentDrivingSession()
         else
@@ -230,7 +231,7 @@ class DriveFragment: Fragment() {
     @ExperimentalTime
     override fun onStop() {
         super.onStop()
-        activity?.unregisterReceiver(mBroadcastReceiver)
+        MainActivity.mActivity?.unregisterReceiver(mBroadcastReceiver)
     }
 
     /**
@@ -240,7 +241,7 @@ class DriveFragment: Fragment() {
     private fun setupBroadcastReceiverFilter() {
         val filter = IntentFilter()
         filter.addAction(ACTION_DATA_RECEIVED_FROM_MOWER)
-        activity?.registerReceiver(mBroadcastReceiver, filter)
+        MainActivity.mActivity?.registerReceiver(mBroadcastReceiver, filter)
     }
 
     @ExperimentalTime
@@ -250,6 +251,7 @@ class DriveFragment: Fragment() {
          * @param context: MainActivity's context
          * @param intent: A intent with destination and data
          */
+        @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
                 ACTION_DATA_RECEIVED_FROM_MOWER -> {
@@ -258,7 +260,6 @@ class DriveFragment: Fragment() {
                     try {
                         val msg = IncomingMessage(data!!)
 
-                        Log.i(TAG, "msg = ${msg}")
 
                         if (!msg.mIsACK) {
                             val newPoint = PointModel(
@@ -268,29 +269,35 @@ class DriveFragment: Fragment() {
                             )
 
                             if (msg.mTypeOfMessage == "3") {
-                                val positionEvent = EventModel(
-                                    eventTypeId = msg.mTypeOfMessage!!.toInt(),
-                                    dateCreated = Date(),
-                                    positionEvent = newPoint
-                                )
-
-                                DataHandler.getCurrentRoute().events.add(positionEvent)
-                            } else {
                                 val collisionEvent = EventModel(
                                     eventTypeId = msg.mTypeOfMessage!!.toInt(),
                                     dateCreated = Date(),
                                     collisionAvoidanceEvent = newPoint
                                 )
+                                if (DataHandler.getCurrentRoute().events.isNullOrEmpty()) {
+                                    DataHandler.getCurrentRoute().events = ArrayList()
+                                }
 
                                 DataHandler.getCurrentRoute().events.add(collisionEvent)
+                            } else {
+                                val positionEvent = EventModel(
+                                    eventTypeId = msg.mTypeOfMessage!!.toInt(),
+                                    dateCreated = Date(),
+                                    positionEvent = newPoint
+                                )
+                                if (DataHandler.getCurrentRoute().events.isNullOrEmpty()) {
+                                    DataHandler.getCurrentRoute().events = ArrayList()
+                                }
+
+                                DataHandler.getCurrentRoute().events.add(positionEvent)
                             }
                         }
 
 
                     } catch (e: ParseIncomingMsgException) {
-                        /* Hopefully what we in sweden call skräpdata*/
+                        /* Hopefully what we in Sweden call skräpdata*/
                     } catch (e: Exception) {
-                        Log.i(TAG, e.message)
+                        Log.i(TAG, "Error: ${e.message}")
                     }
                 }
             }

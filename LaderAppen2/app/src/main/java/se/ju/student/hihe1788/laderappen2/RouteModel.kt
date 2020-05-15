@@ -10,7 +10,7 @@ import kotlin.collections.ArrayList
  * @property createdAt The date the route was created
  * @property events An array list containing all events for this route
  */
-class RouteModel(val id: Int, val createdAt: Date, val events: ArrayList<EventModel>) :Serializable
+class RouteModel(val id: Int, val createdAt: Date, var events: ArrayList<EventModel>) :Serializable
 
 /**
  * A model for an event

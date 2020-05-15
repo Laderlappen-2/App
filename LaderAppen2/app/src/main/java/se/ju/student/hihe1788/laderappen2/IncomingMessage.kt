@@ -1,12 +1,15 @@
 package se.ju.student.hihe1788.laderappen2
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import java.io.IOException
-import java.lang.Exception
-import java.nio.charset.Charset
+import java.time.Instant.now
+import java.time.LocalDateTime
+import java.time.LocalDateTime.*
+import java.util.*
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
-import kotlin.time.milliseconds
 
 @ExperimentalTime
 private val TAG = IncomingMessage::class.java.simpleName
@@ -16,19 +19,22 @@ private val TAG = IncomingMessage::class.java.simpleName
  * and maps it to accordingly fields.
  * @param bytes: Raw data received from mower.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @ExperimentalTime
 class IncomingMessage(bytes: ByteArray) {
 
     var mTypeOfMessage: String? = null
     var mIsACK = false
-    var mXPos: Int? = null
-    var mYPos: Int? = null
+    var mXPos: Float? = null
+    var mYPos: Float? = null
 
-    var mTimestamp: Duration? = null
+
 
     init {
         try {
             val rawData = bytes.toString(Charsets.UTF_8)
+
+
             Log.i(TAG, "IncomingMsgRAW: $rawData")
             val data = trimString(rawData)
             if (data.isEmpty()) {
@@ -43,9 +49,9 @@ class IncomingMessage(bytes: ByteArray) {
                 }
                 "0",
                 "1" -> {
-                    mXPos = data[2].toInt()
-                    mYPos = data[3].toInt()
-                    mTimestamp = data[4].toInt().milliseconds
+                    mXPos = data[2].toFloat()
+                    mYPos = data[3].toFloat()
+
 
                     /* Speak the same language as the REST-API */
                     if (mTypeOfMessage == "0") mTypeOfMessage = "5" // PositionEvent
