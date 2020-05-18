@@ -160,12 +160,6 @@ class DriveFragment: Fragment() {
             }
             return@OnKeyListener false
         })*/
-
-        val events = ArrayList<EventModel>()
-        events.add(EventModel(null, 3, Date(), null, PointModel(null, 3, 0.0f, 0.0f)))
-        events.add(EventModel(null, 5, Date(), PointModel(null, 3, 0.0f, 2.0f), null))
-        events.add(EventModel(null, 5, Date(), PointModel(null, 3, 0.0f, 5.0f), null))
-        RestHandler.createBatchEvents(RouteModel(100, Date(), events), {}, {})
     }
 
     /**
@@ -180,7 +174,6 @@ class DriveFragment: Fragment() {
             saveCurrentDrivingSession()
         else
             findNavController().popBackStack()
-
     }
 
     /**
@@ -189,15 +182,19 @@ class DriveFragment: Fragment() {
      *  @see HomeFragment
      */
     private fun saveCurrentDrivingSession() {
-        if(hasActiveDrivingSession) {
-            RestHandler.createBatchEvents(DataHandler.getCurrentRoute(), {
-                // Success
-                Toast.makeText(this.attachedContext, "Saved route", Toast.LENGTH_LONG).show()
-                findNavController().popBackStack()
-            }, { error ->
-                Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
-                findNavController().popBackStack()
-            })
+        try {
+            if(hasActiveDrivingSession) {
+                RestHandler.createBatchEvents(DataHandler.getCurrentRoute(), {
+                    // Success
+                    Toast.makeText(this.attachedContext, "Saved route", Toast.LENGTH_LONG).show()
+                    findNavController().popBackStack()
+                }, { error ->
+                    Toast.makeText(this.attachedContext, "Error: " + error?.error, Toast.LENGTH_LONG).show()
+                    findNavController().popBackStack()
+                })
+            }
+        } catch(e: Exception) {
+            findNavController().popBackStack()
         }
     }
 
