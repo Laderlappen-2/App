@@ -11,6 +11,9 @@ import android.view.*
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.plus
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 import kotlin.math.abs
 
 /**
@@ -30,6 +33,8 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     private var motionTouchEventY = 0f
     private var currentX = 0f
     private var currentY = 0f
+    private var mResizing: Boolean = false
+    private var mZoomSpeed: Float = 1f
 
     private lateinit var mExtraCanvas: Canvas
     private lateinit var mExtraBitmap: Bitmap
@@ -111,7 +116,11 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
              * @param detector The Scale gesture detector
              * @see OFFICIAL_DOC_ANDROID_DEVELOPER
              */
-            override fun onScaleEnd(detector: ScaleGestureDetector) {}
+            override fun onScaleEnd(detector: ScaleGestureDetector) {
+                Timer("StopResizing", false).schedule(50) {
+                    mResizing = false
+                }
+            }
 
             /**
              * Override function that is called when user input starts.
@@ -120,7 +129,8 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
              * @return Returns true
              */
             override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-                return true
+                mResizing = true
+                return mResizing
             }
 
             /**
@@ -130,9 +140,9 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
              */
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 if(detector.scaleFactor > 1)
-                    mScale += detector.scaleFactor
+                    mScale += detector.scaleFactor * (abs(mScale) / 50) * mZoomSpeed
                 else
-                    mScale -= detector.scaleFactor
+                    mScale -= detector.scaleFactor * (abs(mScale) / 30) * mZoomSpeed
 
                 if(mScale < 1) mScale = 1f
 
@@ -153,12 +163,15 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector!!.onTouchEvent(event)
 
-        motionTouchEventX = event.x
-        motionTouchEventY = event.y
+        if(!mResizing)
+        {
+            motionTouchEventX = event.x
+            motionTouchEventY = event.y
 
-        when (event.action) {
-            MotionEvent.ACTION_DOWN -> touchStart()
-            MotionEvent.ACTION_MOVE -> touchMove()
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> touchStart()
+                MotionEvent.ACTION_MOVE -> touchMove()
+            }
         }
 
         invalidate()
@@ -169,22 +182,29 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
      * Is called when user input starts, sets current position (x,y) of the used finger on the screen.
      */
     private fun touchStart() {
-        currentX = motionTouchEventX
-        currentY = motionTouchEventY
+        if(!mResizing)
+        {
+            currentX = motionTouchEventX
+            currentY = motionTouchEventY
+        }
     }
 
     /**
      * Is called when the user moves their finger across the screen and moves the canvas accordingly.
      */
     private fun touchMove() {
-        val dx = motionTouchEventX - currentX
-        val dy = motionTouchEventY - currentY
-        if (abs(dx) >= touchTolerance || abs(dy) >= touchTolerance) {
-            mOffset.offset(dx, dy)
+        if(!mResizing)
+        {
+            val dx = motionTouchEventX - currentX
+            val dy = motionTouchEventY - currentY
+            if (abs(dx) >= touchTolerance || abs(dy) >= touchTolerance) {
+                mOffset.offset(dx, dy)
 
-            currentX = motionTouchEventX
-            currentY = motionTouchEventY
+                currentX = motionTouchEventX
+                currentY = motionTouchEventY
+            }
         }
+
         invalidate()
     }
 
