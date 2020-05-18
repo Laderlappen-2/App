@@ -114,11 +114,11 @@ class BLEService : Service() {
     }
 
     /**
-     * Connects to the given [MOWER_MAC_ADDRESS] and returns if it succeeded or not.
+     * Connects to the given [MowerModel.address] and returns if it succeeded or not.
      * @return if the connecting was successful
      */
     private fun connect() : Boolean {
-        val device = mBluetoothAdapter!!.getRemoteDevice(MOWER_MAC_ADDRESS)
+        val device = mBluetoothAdapter!!.getRemoteDevice(MowerModel.address)
 
         if(device == null || mBluetoothAdapter == null) {
             Log.e(TAG, "connect() - CANNOT CONNECT TO DEVICE")
@@ -149,11 +149,9 @@ class BLEService : Service() {
 
                     when (newState) {
                         BluetoothProfile.STATE_CONNECTED-> {
-                            //broadcastUpdate(ACTION_GATT_CONNECTED)
                             gatt.discoverServices()
                         }
                         BluetoothProfile.STATE_DISCONNECTED -> {
-                            //broadcastUpdate(ACTION_GATT_DISCONNECTED)
                         }
                     }
                 }
@@ -190,46 +188,6 @@ class BLEService : Service() {
                 }
                 else -> {
                     Log.i(TAG, "onServicesDiscovered(): status == GATT_FAIL")
-                }
-            }
-        }
-
-        /**
-         * TODO - Eventuellt ta bort
-         */
-        override fun onCharacteristicRead(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
-            super.onCharacteristicRead(gatt, characteristic, status)
-            //read data from characteristic.value
-            when(status) {
-                BluetoothGatt.GATT_SUCCESS -> {
-
-                    if (MOWER_CHARACTERISTIC_READ_UUID == characteristic.uuid) {
-                        val data = characteristic.value
-                        val value = data.toString()
-                    }
-                }
-                else -> {
-                    Log.i(TAG, "onCharacteristicRead(): status == GATT_FAIL")
-                }
-            }
-        }
-
-        /**
-         * TODO - Eventuellt ta bort
-         */
-        override fun onCharacteristicWrite(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, status: Int) {
-            super.onCharacteristicWrite(gatt, characteristic, status)
-
-            when (status) {
-                BluetoothGatt.GATT_SUCCESS -> {
-                    //Log.i(TAG, "onCharacteristicWrite(): status == GATT_SUCCESS")
-                    //Log.i(TAG, "onCharacteristicWrite(): value: " + characteristic.value.toString(Charsets.UTF_8))
-                    //Thread.sleep(1000)
-
-                    //broadcastUpdate(ACTION_DATA_WRITTEN, characteristic)
-                }
-                else -> {
-                    Log.i(TAG, "onCharacteristicWrite(): status == GATT_FAIL")
                 }
             }
         }
@@ -302,8 +260,6 @@ class BLEService : Service() {
 
         try {
             mGattCharacteristicWrite?.value = input
-
-
             mGatt!!.writeCharacteristic(mGattCharacteristicWrite)
         } catch (e: IOException) {
             Log.i(TAG,"Error in send(): $e")

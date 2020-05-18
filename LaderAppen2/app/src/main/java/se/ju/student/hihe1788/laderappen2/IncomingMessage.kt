@@ -4,14 +4,8 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.IOException
-import java.time.Instant.now
-import java.time.LocalDateTime
-import java.time.LocalDateTime.*
-import java.util.*
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
-@ExperimentalTime
+
 private val TAG = IncomingMessage::class.java.simpleName
 
 /**
@@ -20,7 +14,6 @@ private val TAG = IncomingMessage::class.java.simpleName
  * @param bytes: Raw data received from mower.
  */
 @RequiresApi(Build.VERSION_CODES.O)
-@ExperimentalTime
 class IncomingMessage(bytes: ByteArray) {
 
     var mTypeOfMessage: String? = null
@@ -86,10 +79,6 @@ class IncomingMessage(bytes: ByteArray) {
         } else {
             emptyList()
         }
-
-
-
-
     }
 }
 

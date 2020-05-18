@@ -6,4 +6,4 @@ package se.ju.student.hihe1788.laderappen2
  * @property error The error title
  * @property message A descriptive error message
  */
-class RestErrorModel(var statusCode: Int, val error: String, val message: String) { }
+class RestErrorModel(var statusCode: Int, val error: String, val message: String)

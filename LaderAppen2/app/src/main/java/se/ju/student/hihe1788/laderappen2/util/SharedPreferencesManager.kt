@@ -36,7 +36,7 @@ class SharedPreferencesManager(context: Context) {
      * @return The saved steering mode
      */
     fun getSteeringMode(): SteeringModeEnum {
-        var steeringMode = SteeringModeEnum.fromValue(sharedPrefs.getInt(STEERING_MODE, DEFAULT_STEERING_MODE.value))
+        val steeringMode = SteeringModeEnum.fromValue(sharedPrefs.getInt(STEERING_MODE, DEFAULT_STEERING_MODE.value))
         steeringMode?.let {
             return it
         }
@@ -47,7 +47,7 @@ class SharedPreferencesManager(context: Context) {
      * Get all stored devices
      * @return A set of stored device mac addresses
      */
-    fun getDevices(): MutableSet<String> {
+    private fun getDevices(): MutableSet<String> {
         val deviceList = sharedPrefs.getStringSet(DEVICE_LIST, HashSet<String>())
         deviceList?.let {
             return deviceList
@@ -59,7 +59,7 @@ class SharedPreferencesManager(context: Context) {
      * Sets the saved devices set
      * @param devices The list of devices to save
      */
-    fun setDevices(devices: Set<String>) {
+    private fun setDevices(devices: Set<String>) {
         sharedPrefs.edit {
             this.putStringSet(DEVICE_LIST, devices)
             this.commit()

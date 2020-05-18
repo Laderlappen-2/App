@@ -84,7 +84,6 @@ class RecyclerAdapter(private val mRoutes: ArrayList<RouteModel>) : RecyclerView
                         val action = RoutesFragmentDirections.nextAction(mRoute!!)
                         v.findNavController().navigate(action)
                     }, { error ->
-                        // TODO Bättre felmeddelande
                         Toast.makeText(MainActivity.mContext, "Error: " + error?.message, Toast.LENGTH_LONG).show()
                     })
                 }

@@ -33,7 +33,7 @@ class RoutesFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.routes_fragment, container, false)
         mLinearLayoutManager = LinearLayoutManager(MainActivity.mContext)
-        mRecyclerView = view.findViewById<RecyclerView>(R.id.routesFragmentRecyclerView)
+        mRecyclerView = view.findViewById(R.id.routesFragmentRecyclerView)
         mRecyclerView.layoutManager = mLinearLayoutManager
         mAdapter = RecyclerAdapter(mRoutes)
         mRecyclerView.adapter = mAdapter
@@ -52,7 +52,6 @@ class RoutesFragment : Fragment() {
      */
     override fun onStart() {
         super.onStart()
-        // TODO Inte köra den varje gång man "backar" in i viewen, utan endast när man kommer in i den från menyknappen, antar jag
         progressBarView.visibility = View.VISIBLE
         RestHandler.getAllRoutes({
             mRoutes.clear()
@@ -60,7 +59,6 @@ class RoutesFragment : Fragment() {
             updateRecycleView()
             progressBarView.visibility = View.GONE
         }, { error ->
-            // TODO Bättre felmeddelande
             Toast.makeText(context, "Error: " + error?.message, Toast.LENGTH_LONG).show()
             progressBarView.visibility = View.GONE
         })
@@ -69,7 +67,7 @@ class RoutesFragment : Fragment() {
     /**
      * Notifies the connected recycler adapter that changes have been made to the recyclerView.
      */
-    fun updateRecycleView() {
+    private fun updateRecycleView() {
         mAdapter.notifyDataSetChanged()
     }
 }

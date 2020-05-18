@@ -213,7 +213,7 @@ object RestHandler {
     /**
      * Parses the response string.
      * @param jsonString The response string
-     * @param done callback thata returnes the parsed object
+     * @param done callback that returns the parsed object
      */
     private inline fun<reified T> parseStringResponse(jsonString: String, done: (T?) -> Unit) {
         val json = gson.fromJson(jsonString, JsonObject::class.java)

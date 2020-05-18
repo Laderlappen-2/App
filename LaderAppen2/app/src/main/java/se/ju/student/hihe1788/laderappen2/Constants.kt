@@ -3,11 +3,10 @@ package se.ju.student.hihe1788.laderappen2
 import java.util.*
 
 /**
- * An object that handles all constants.
+ * A file that states all constants.
  */
 
 // Mower related UUID's
-val MOWER_MAC_ADDRESS = "00:1B:10:65:FC:81"
 val MOWER_SERVICE_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
 var MOWER_SERVICE_ALTERNATIVE_UUID: UUID = UUID.fromString("9e5d1e47-5c13-43a0-8635-82ad38a1386f")
 val MOWER_CHARACTERISTIC_READ_UUID = UUID.fromString("0000ffe2-0000-1000-8000-00805f9b34fb")

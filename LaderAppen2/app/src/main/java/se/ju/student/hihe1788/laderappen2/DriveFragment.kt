@@ -151,15 +151,7 @@ class DriveFragment: Fragment() {
         view.findViewById<ImageButton>(R.id.btn_drive_back)?.setOnClickListener {
             backButtonAction()
         }
-        // On "hardware" back button click
-        /* TODO Make this work :)
-        view.setOnKeyListener(View.OnKeyListener() { v, keyCode, event ->
-            if(event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
-                backButtonAction()
-                return@OnKeyListener true
-            }
-            return@OnKeyListener false
-        })*/
+
     }
 
     /**
@@ -202,7 +194,6 @@ class DriveFragment: Fragment() {
      * Override function that hides action bar on resume.
      * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
-    @ExperimentalTime
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onResume() {
         super.onResume()
@@ -229,7 +220,6 @@ class DriveFragment: Fragment() {
      * Override function that unregister a receiver.
      * @see OFFICIAL_DOC_ANDROID_DEVELOPER
      */
-    @ExperimentalTime
     override fun onStop() {
         super.onStop()
         MainActivity.mActivity?.unregisterReceiver(mBroadcastReceiver)
@@ -238,14 +228,12 @@ class DriveFragment: Fragment() {
     /**
      * Setup a broadcastReceiver and it's filters
      */
-    @ExperimentalTime
     private fun setupBroadcastReceiverFilter() {
         val filter = IntentFilter()
         filter.addAction(ACTION_DATA_RECEIVED_FROM_MOWER)
         MainActivity.mActivity?.registerReceiver(mBroadcastReceiver, filter)
     }
 
-    @ExperimentalTime
     private val mBroadcastReceiver = object: BroadcastReceiver() {
         /**
          * Override function that receives a incoming broadcast from [BLEService]

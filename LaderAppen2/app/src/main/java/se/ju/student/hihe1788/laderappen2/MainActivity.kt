@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onStop() {
         super.onStop()
-        unregisterReceiver(gattUpdateReceiver)
         unregisterReceiver(commandsToMowerReceiver)
     }
 
@@ -155,17 +154,6 @@ class MainActivity : AppCompatActivity() {
      * Setups broadcastReceivers and adds actions.
      */
     private fun setupBroadcastReceiver() {
-        val filter1 = IntentFilter()
-
-        filter1.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-        filter1.addAction(ACTION_GATT_CONNECTED)
-        filter1.addAction(ACTION_GATT_DISCONNECTED)
-        filter1.addAction(ACTION_GATT_SERVICES_DISCOVERED)
-        filter1.addAction(ACTION_DATA_WRITTEN)
-        filter1.addAction(ACTION_GATT_REGISTER_CHARACTERISTIC_READ)
-
-        registerReceiver(gattUpdateReceiver, filter1)
-
         val filter2 = IntentFilter()
 
         filter2.addAction(ACTION_SEND_HONK)
@@ -196,7 +184,7 @@ class MainActivity : AppCompatActivity() {
      * Stops the Bluetooth Low Energy-service and unbinds it
      * from this activity.
      */
-    fun stopBLEService() {
+    private fun stopBLEService() {
         //Initiate Service, start it and then bind to it.
         val serviceClass = BLEService::class.java
         val intent = Intent(applicationContext, serviceClass)
@@ -256,106 +244,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
-    private val gattUpdateReceiver = object : BroadcastReceiver() {
-        /**
-         * Receives actions from [BLEService] containing information
-         * about the BLE-status.
-         * @param context: [MainActivity]'s context.
-         * @param intent: A intent with destination and data.
-         */
-        override fun onReceive(context: Context?, intent: Intent?) {
-            println("BTStateReceiver: onReceive()")
-            val action = intent?.action
-            val data = intent?.data
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED))
-            {
-                val state = intent?.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
-
-                when (state)
-                {
-                    BluetoothAdapter.STATE_TURNING_OFF -> {
-                        /**
-                         * BLUETOOTH IS TURNING OFF
-                         * - Automatically switch back on
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_OFF -> {
-                        /**
-                         * BLUETOOTH IS OFF
-                         * - Inform user
-                         * - Give opportunity to switch on
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_TURNING_ON -> {
-                        /**
-                         * BLUETOOTH IS TURNING ON
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_ON -> {
-                        /**
-                         * BLUETOOTH IS ON
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_CONNECTING -> {
-                        /**
-                         * IS IN CONNECTING STATE
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_CONNECTED -> {
-                        /**
-                         * IS IN CONNECTED STATE
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_DISCONNECTING -> {
-                        /**
-                         * IS IN DISCONNECTING STATE
-                         */
-                    }
-
-                    BluetoothAdapter.STATE_DISCONNECTED -> {
-                        /**
-                         * IS IN DISCONNECTED STATE
-                         */
-                    }
-                }
-
-            }
-            else if ( action.equals(ACTION_GATT_CONNECTED) )
-            {
-                println("BTStateReceiver: onReceive(): ACTION_GATT_CONNECTED")
-            }
-            else if ( action.equals(ACTION_GATT_DISCONNECTED) )
-            {
-                println("BTStateReceiver: onReceive(): ACTION_GATT_DISCONNECTED")
-            }
-            else if ( action.equals(ACTION_GATT_SERVICES_DISCOVERED) )
-            {
-                println("BTStateReceiver: onReceive(): ACTION_GATT_SERVICES_DISCOVERED")
-            }
-            else if ( action.equals(ACTION_DATA_WRITTEN) )
-            {
-                println("BTStateReceiver: onReceive(): ACTION_DATA_WRITTEN")
-
-                if (data != null)
-                {
-                    // PROCESS DATA
-                }
-            }
-            else if ( action.equals(ACTION_GATT_REGISTER_CHARACTERISTIC_READ) )
-            {
-                Log.i(TAG, "ACTION_GATT_REGISTER_CHARACTERISTIC_READ")
-
-            }
-        }
-    }
 }

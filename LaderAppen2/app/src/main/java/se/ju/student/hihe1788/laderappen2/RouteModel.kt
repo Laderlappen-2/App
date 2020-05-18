@@ -29,4 +29,4 @@ class EventModel(val id: Int? = null, val eventTypeId: Int, val dateCreated: Dat
  * @property positionX Position X for the point
  * @property positionY Position Y for the point
  */
-class PointModel(val eventId: Int? = null, val eventTypeId: Int, val positionX: Float, val positionY: Float)
+class PointModel(private val eventId: Int? = null, val eventTypeId: Int, val positionX: Float, val positionY: Float)

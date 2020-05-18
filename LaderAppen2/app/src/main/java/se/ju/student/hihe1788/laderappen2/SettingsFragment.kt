@@ -71,7 +71,7 @@ class SettingsFragment : Fragment() {
      * @param steeringMode The chosen mode
      * @param button The button pressed
      */
-    fun setSteeringMode(steeringMode: SteeringModeEnum, button: View) {
+    private fun setSteeringMode(steeringMode: SteeringModeEnum, button: View) {
         settings.setSteeringMode(steeringMode)
         resetSteeringButtons()
         button.isSelected = true
@@ -80,7 +80,7 @@ class SettingsFragment : Fragment() {
     /**
      * Resets the steering mode buttons.
      */
-    fun resetSteeringButtons() {
+    private fun resetSteeringButtons() {
         view?.findViewById<ImageButton>(R.id.steering_btn_one)?.isSelected = false
         view?.findViewById<ImageButton>(R.id.steering_btn_right)?.isSelected = false
         view?.findViewById<ImageButton>(R.id.steering_btn_left)?.isSelected = false
