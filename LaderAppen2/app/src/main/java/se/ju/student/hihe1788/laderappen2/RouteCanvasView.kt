@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.PointF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.*
 import android.view.ScaleGestureDetector.OnScaleGestureListener
 import androidx.core.content.res.ResourcesCompat
@@ -76,6 +77,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     fun setup() {
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
+        mSortedPoints.sortBy { it.eventId }
     }
 
     /**
@@ -175,11 +177,10 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
      * Is called when the user moves their finger across the screen and moves the canvas accordingly.
      */
     private fun touchMove() {
-        val dx = abs(motionTouchEventX - currentX)
-        val dy = abs(motionTouchEventY - currentY)
-        if (dx >= touchTolerance || dy >= touchTolerance) {
-
-            mOffset.set((dx + currentX).minus(mOrigin.x), (dy + currentY).minus(mOrigin.y))
+        val dx = motionTouchEventX - currentX
+        val dy = motionTouchEventY - currentY
+        if (abs(dx) >= touchTolerance || abs(dy) >= touchTolerance) {
+            mOffset.offset(dx, dy)
 
             currentX = motionTouchEventX
             currentY = motionTouchEventY
