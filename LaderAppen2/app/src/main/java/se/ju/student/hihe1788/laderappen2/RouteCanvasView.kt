@@ -79,7 +79,7 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
     /**
      *Puts all position and collision avoidance points in a combined ArrayList.
      */
-    fun setup() {
+    private fun setup() {
         mSortedPoints.addAll(mPositionPoints)
         mSortedPoints.addAll(mCollisionAvoidancePoints)
         mSortedPoints.sortBy { it.eventId }
@@ -235,10 +235,15 @@ class RouteCanvasView(context: Context, attrs: AttributeSet): View(context, attr
 
             val position = PointF(value.positionX.toFloat() * mScale, value.positionY.toFloat() * mScale).plus(mOrigin).plus(mOffset)
 
+            canvas?.drawCircle(position.x, position.y, 20f, mPositionPaint)
+        }
+        for ((index, value) in mSortedPoints.withIndex()) {
+
+            val position = PointF(value.positionX.toFloat() * mScale, value.positionY.toFloat() * mScale).plus(mOrigin).plus(mOffset)
+
             when (index) {
                 0 -> { canvas?.drawCircle(position.x, position.y, 35f, mStartPositionPaint) }
-                (mPositionPoints.size - 1) -> { canvas?.drawCircle(position.x, position.y, 35f, mStopPositionPaint) }
-                else -> { canvas?.drawCircle(position.x, position.y, 20f, mPositionPaint) }
+                (mSortedPoints.size -1) -> { canvas?.drawCircle(position.x, position.y, 35f, mStopPositionPaint) }
             }
         }
     }
