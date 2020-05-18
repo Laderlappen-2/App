@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/home_dest">
+
+    <fragment
+        android:id="@+id/home_dest"
+        android:name="se.ju.student.hihe1788.laderappen2.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/fragment_home"/>
+    <fragment
+        android:id="@+id/routes_dest"
+        android:name="se.ju.student.hihe1788.laderappen2.RoutesFragment"
+        android:label="RoutesFragment"
+        tools:layout="@layout/routes_fragment">
+        <action
+            android:id="@+id/next_action"
+            app:destination="@id/routeItemFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settings_dest"
+        android:name="se.ju.student.hihe1788.laderappen2.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/settings_fragment"/>
+    <fragment
+        android:id="@+id/driveFragment"
+        android:name="se.ju.student.hihe1788.laderappen2.DriveFragment"
+        android:label="DriveFragment"
+        tools:layout="@layout/drive_fragment"/>
+    <fragment
+        android:id="@+id/routeItemFragment"
+        android:name="se.ju.student.hihe1788.laderappen2.RouteItemFragment"
+        android:label="RouteItemFragment"
+        tools:layout="@layout/route_item_fragement">
+        <argument
+            android:name="routeArgs"
+            app:argType="se.ju.student.hihe1788.laderappen2.RouteModel" />
+    </fragment>
+
+</navigation>

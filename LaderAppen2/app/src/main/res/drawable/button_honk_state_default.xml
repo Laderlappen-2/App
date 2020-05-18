@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:height="70dp"
+        android:width="70dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorPrimaryLight"/>
+            <corners android:radius="40dp"/>
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/ic_honk_white_35dp"
+        android:height="45dp"
+        android:width="45dp"
+        android:gravity="center"/>
+</layer-list>
